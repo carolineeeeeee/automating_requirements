@@ -469,7 +469,7 @@ if __name__ == "__main__":
 	for model in models:
 		print("###################" + model + "###################")
 		time_start = time.process_time()
-		ground_truth, detections = read_result("bootstrap_results/validation_"+ model +".txt", 'inet.val.list')
+		ground_truth, detections = read_result("bootstrap_results/validation_"+ model +".txt", 'bootstrap_results/inet.val.list')
 		print("--------------------------------------------")
 		print("i. Precision and f1 on ILSVRC2012 validation set:")
 		accuracy, f1 = print_metrics(ground_truth, detections)
