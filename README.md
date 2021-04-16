@@ -14,8 +14,8 @@ To run the evaluation in the paper, follow these steps to set up:
 5. Obtain ILSVRC2012 validation images following the instructions in the "Validating On ImageNet" section here: https://pjreddie.com/darknet/imagenet/. Make sure that this file inet.val.list is generated and copy it to verifying/. 
 6. From the same page as 2, download the pretrained weights for AlexNet, VGG-16, Darknet19, Darknet53 448x448, Resnet 50 and ResNeXt 50. Put all the weights in the darknet directory.
 
-In the directory verifying/ we also provide bootstrapping and detection result files from the experiments conducted for the evaluation section in the paper. Simply run `python3 automated_bootstrap.txt -r` to reproduce the results of our evaluation experiments. 
+In the directory verifying/ we also provide bootstrapping and detection result files from the experiments conducted for the evaluation section in the paper. Simply complete steps 1-3 from above and then run `python3 automated_bootstrap.txt -r` to reproduce the results of our evaluation experiments. 
 
-To re-run bootstrapping, run `python3 automated_bootstrap.txt -d path_to_darknet -i path_to_ILSVRC2012_validation_images -n number_of_batches -s number_of_images_per_batch`. 
+To re-run bootstrapping, complete all the steps then run `python3 automated_bootstrap.txt -d path_to_darknet -i path_to_ILSVRC2012_validation_images -n number_of_batches -s number_of_images_per_batch`. 
 
 ## 3. Supplementary matrials
