@@ -283,8 +283,8 @@ def calculate_confidence(acc_list, base_acc, req_acc):
 		print("requirement NOT SATISFIED")
 	return result
 
-def estimate_conf_int(ground_truth, orig_results, transformed_result, a): #rel or abs
-	car_labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car', 'flamingo']
+def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels): #rel or abs
+	labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car', 'flamingo']
 
 	batch_results_abs = {}
 	batch_results_rel = {}
@@ -304,9 +304,9 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a): #rel o
 		if batch not in batch_results_rel.keys():
 			batch_results_rel[batch] = {}
 		#print(ground_truth[orig_img_name][0])
-		if ground_truth[orig_img_name][0] in car_labels:
+		if ground_truth[orig_img_name][0] in labels:
 			batch_results_abs[batch][orig_img_name] = transformed_result[trans_img]
-		if transformed_result[trans_img] in car_labels:
+		if transformed_result[trans_img] in labels:
 			batch_results_rel[batch][orig_img_name] = transformed_result[trans_img]
 	#print(batch_results)
 
@@ -343,7 +343,6 @@ def print_metrics(ground_truth, detections):
 	false_pos = 0
 	false_neg = 0
 	for image in detections.keys():
-
 		if ground_truth[image][0] in car_labels: 
 			if detections[image] in car_labels: # true positive
 				true_pos += 1
@@ -355,9 +354,9 @@ def print_metrics(ground_truth, detections):
 			else: 	# true negative
 				true_neg += 1
 	accuracy = (true_pos+true_neg)/(true_pos+true_neg+false_pos+false_neg)
-	#print("Accuracy: " + str(accuracy))
+	print("Accuracy: " + str(accuracy))
 	precision = true_pos/(true_pos+false_pos)
-	print("Precision: " + str(precision))
+	#print("Precision: " + str(precision))
 	recall = true_pos/(true_pos+false_neg)
 	#print("Recall: " + str(recall))
 	print("f1: " + str(2*(recall * precision) / (recall + precision)))
@@ -383,9 +382,9 @@ def print_metrics_batch_result(ground_truth, batch_result):
 			else: 	# true negative
 				true_neg += 1
 	accuracy = (true_pos+true_neg)/(true_pos+true_neg+false_pos+false_neg)
-	#print("Accuracy: " + str(accuracy))
+	print("Accuracy: " + str(accuracy))
 	precision = true_pos/(true_pos+false_pos)
-	print("Precision: " + str(precision))
+	#print("Precision: " + str(precision))
 	recall = true_pos/(true_pos+false_neg)
 	#print("Recall: " + str(recall))
 	print("f1: " + str(2*(recall * precision) / (recall + precision)))
@@ -467,20 +466,26 @@ if __name__ == "__main__":
 	trans_acc = []
 	trans_f1 = []
 	for model in models:
+		#models = 'resnet50'
 		print("###################" + model + "###################")
 		time_start = time.process_time()
 		ground_truth, detections = read_result("bootstrap_results/validation_"+ model +".txt", 'bootstrap_results/inet.val.list')
-		print("--------------------------------------------")
-		print("i. Precision and f1 on ILSVRC2012 validation set:")
-		accuracy, f1 = print_metrics(ground_truth, detections)
-		val_acc.append(accuracy)
-		val_f1.append(f1)
+		#print("--------------------------------------------")
+		#print("i. Precision and f1 on ILSVRC2012 validation set:")
+		#accuracy, f1 = print_metrics(ground_truth, detections)
+		#val_acc.append(accuracy)
+		#val_f1.append(f1)
 		if read_exist:
 			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_results/bootstrap_orig_list.txt", model, run=False)
 			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_results/bootstrap_transformed_list.txt", model, run=False)
 		else:
 			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", model, run=True)
 			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", model, run=True)
+		print("--------------------------------------------")
+		print("i. Precision and f1 on ILSVRC2012 validation set:")
+		accuracy, f1 = print_metrics(ground_truth, orig_results)
+		val_acc.append(accuracy)
+		val_f1.append(f1)
 		print("ii. Precision and f1 on sampled transformed images from bootstrap:")
 		accuracy, f1 = print_metrics_batch_result(ground_truth, transformed_results)
 		trans_acc.append(accuracy)
@@ -497,7 +502,7 @@ if __name__ == "__main__":
 	print('-----------------------------------------------------------------------------------------')
 	print('|                 Satisfying Absolute VS standard ML reliability metrics                |')
 	print('-----------------------------------------------------------------------------------------')
-	print('|           | metrics for ILSVRC2012 validation | metrics for sampled transformed images|')
+	print('|           |metrics for sampled original images| metrics for sampled transformed images|')
 	print('-----------------------------------------------------------------------------------------')
 	print('| corr type |    accuracy     |        f1       |      accuracy       |        f1       |')
 	print('-----------------------------------------------------------------------------------------')
@@ -511,13 +516,13 @@ if __name__ == "__main__":
 	f1_corr, _ = spearmanr(sat_abs, val_f1)
 	t_acc_corr, _ = spearmanr(sat_abs, trans_acc)
 	t_f1_corr, _ = spearmanr(sat_abs, trans_f1) 
-	print('| Spearman  |       ' + str(acc_corr) + '       |       ' + str(f1_corr) + '       |        ' + str(t_acc_corr) + '          |      ' + str(t_f1_corr) + '        |')
+	print('| Spearman  |      ' + str(round(acc_corr, 3)) + '      |      ' + str(round(f1_corr, 3)) + '      |       ' + str(round(t_acc_corr, 3)) + '         |     ' + str(round(t_f1_corr, 3)) + '       |')
 	print('-----------------------------------------------------------------------------------------')
 	print('\n')
 	print('-----------------------------------------------------------------------------------------')
 	print('|                 Satisfying Relative VS standard ML reliability metrics                |')
 	print('-----------------------------------------------------------------------------------------')
-	print('|           | metrics for ILSVRC2012 validation | metrics for sampled transformed images|')
+	print('|           |metrics for sampled original images| metrics for sampled transformed images|')
 	print('-----------------------------------------------------------------------------------------')
 	print('| corr type |    accuracy     |        f1       |      accuracy       |        f1       |')
 	print('-----------------------------------------------------------------------------------------')
