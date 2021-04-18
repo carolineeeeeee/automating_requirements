@@ -284,8 +284,8 @@ def calculate_confidence(acc_list, base_acc, req_acc):
 	return result
 
 def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels): #rel or abs
-	labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car', 'flamingo']
-
+	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
+	#print(labels)
 	batch_results_abs = {}
 	batch_results_rel = {}
 	#sort batch results
@@ -314,11 +314,13 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels)
 	batch_accuracies = []
 	for batch in batch_results_abs.keys():
 		#print(sum([1 for x in batch_results[batch].keys() if batch_results[batch][x] in ground_truth[x]]))
-		batch_accuracies.append(sum([1 for x in batch_results_abs[batch].keys() if batch_results_abs[batch][x] in ground_truth[x]])/len(batch_results_abs[batch].keys()))
+		if len(batch_results_abs[batch].keys()) > 0:
+			batch_accuracies.append(sum([1 for x in batch_results_abs[batch].keys() if batch_results_abs[batch][x] in ground_truth[x]])/len(batch_results_abs[batch].keys()))
 
 	batch_preserved = []
 	for batch in batch_results_rel.keys():
-		batch_preserved.append(sum([1 for x in batch_results_rel[batch].keys() if (batch_results_rel[batch][x] in car_labels) == (orig_results[x] in car_labels)]  )/len(batch_results_rel[batch].keys()))
+		if len(batch_results_rel[batch].keys()) > 0:
+			batch_preserved.append(sum([1 for x in batch_results_rel[batch].keys() if (batch_results_rel[batch][x] in labels) == (orig_results[x] in labels)] )/len(batch_results_rel[batch].keys()))
 
 	#print("ABS batches")
 	#print(batch_accuracies)
@@ -336,20 +338,20 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels)
 
 	return conf_abs, conf_rel
 
-def print_metrics(ground_truth, detections):
-	car_labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
+def print_metrics(ground_truth, detections, labels):
+	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
 	true_pos = 0
 	true_neg = 0
 	false_pos = 0
 	false_neg = 0
 	for image in detections.keys():
-		if ground_truth[image][0] in car_labels: 
-			if detections[image] in car_labels: # true positive
+		if ground_truth[image][0] in labels: 
+			if detections[image] in labels: # true positive
 				true_pos += 1
 			else: 	# false negative
 				false_neg += 1
 		else: #negatives
-			if detections[image] in car_labels: # false positive
+			if detections[image] in labels: # false positive
 				false_pos += 1
 			else: 	# true negative
 				true_neg += 1
@@ -362,8 +364,8 @@ def print_metrics(ground_truth, detections):
 	print("f1: " + str(2*(recall * precision) / (recall + precision)))
 	return accuracy, 2*(recall * precision) / (recall + precision)
 
-def print_metrics_batch_result(ground_truth, batch_result):
-	car_labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
+def print_metrics_batch_result(ground_truth, batch_result, labels):
+	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
 	true_pos = 0
 	true_neg = 0
 	false_pos = 0
@@ -371,13 +373,13 @@ def print_metrics_batch_result(ground_truth, batch_result):
 	for image in batch_result.keys():
 		image_name = re.findall('(ILSVRC2012_val_\d+)', image)[0]
 		gt = ground_truth[image_name][0]
-		if gt in car_labels: 
-			if batch_result[image] in car_labels: # true positive
+		if gt in labels: 
+			if batch_result[image] in labels: # true positive
 				true_pos += 1
 			else: 	# false negative
 				false_neg += 1
 		else: #negatives
-			if batch_result[image] in car_labels: # false positive
+			if batch_result[image] in labels: # false positive
 				false_pos += 1
 			else: 	# true negative
 				true_neg += 1
@@ -458,7 +460,7 @@ if __name__ == "__main__":
 		gen_bootstrapping(number_of_batches, image_path, 'bootstrap_samples/', batch_size=batch_size)
 	#gen_bootstrapping(1, '/Users/caroline/Desktop/REforML/HVS/scripts/val_img_classes/', 'bootstrap_samples/')
 	#ground_truth, detections = read_result("/u/boyue/darknet/validation_darknet19.txt", '/u/boyue/Desktop/inet.val.list')
-	models = ['darknet19', 'darknet53_448', 'alexnet', 'resnext50', 'vgg-16', 'resnet50']
+	models = ['darknet19', 'darknet53_448', 'alexnet', 'vgg-16', 'resnext50', 'resnet50']
 	sat_abs = []
 	sat_rel = []
 	val_acc = []
@@ -481,16 +483,17 @@ if __name__ == "__main__":
 		else:
 			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", model, run=True)
 			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", model, run=True)
+		labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
 		print("--------------------------------------------")
 		print("i. Precision and f1 on ILSVRC2012 validation set:")
-		accuracy, f1 = print_metrics(ground_truth, orig_results)
+		accuracy, f1 = print_metrics(ground_truth, orig_results, labels)
 		val_acc.append(accuracy)
 		val_f1.append(f1)
 		print("ii. Precision and f1 on sampled transformed images from bootstrap:")
-		accuracy, f1 = print_metrics_batch_result(ground_truth, transformed_results)
+		accuracy, f1 = print_metrics_batch_result(ground_truth, transformed_results, labels)
 		trans_acc.append(accuracy)
 		trans_f1.append(f1)
-		conf_abs, conf_rel = estimate_conf_int(ground_truth, orig_results, transformed_results, 0.95)
+		conf_abs, conf_rel = estimate_conf_int(ground_truth, orig_results, transformed_results, 0.95, labels)
 		time_elapsed = (time.process_time() - time_start)
 		sat_abs.append(conf_abs)
 		sat_rel.append(conf_rel)
