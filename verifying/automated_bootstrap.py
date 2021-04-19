@@ -24,72 +24,68 @@ import argparse
 
 # sample transformation parameter values with in the specified range, here chosen to be evenly distributed
 # obtained through sampling images and checking the vd value in the requirements
-intensity_shift_params = [-120, -100, -80, -60, -40 ,-20 , 20, 40, 60, 80, 100, 120]
-gaussian_noise_params = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]
-gamma_params = [0.9, 0.92, 0.94, 0.96, 0.98, 1.02, 1.04, 1.06, 1.08]
+intensity_shift_params = list(range(-120, 121))
+gaussian_noise_params = list(range(4, 49))
+gamma_params = [x/100 for x in list(range(90, 109))]
 
 # transformations
-def intensity_shift(img, degree, precision=0):  # state should contain values for the parameters
-	#img = img.astype(float)
+def intensity_shift(img, degree, precision=0):  
 	return (img + np.around(degree, precision)).clip(min=0, max=255) 
 
-def gaussian_noise(img, state, img_h, img_w, ch, precision=0): #state is (mean, sigma) sigma is standard deviation
+def gaussian_noise(img, state, img_h, img_w, ch, precision=0): 
 	# currently gaussian with mean 0
 	if ch > 1:
 		gauss = np.random.normal(0,state,(img_h, img_w, ch))
 	else:
 		gauss = np.random.normal(0,state,(img_h, img_w))
-
-	#print(gauss)
-	#print(img)
-	#gauss = gauss.reshape(self.img_h,self.img_w,self.ch)
 	noisy = img + np.around(gauss, precision)
 	return noisy.clip(min=0, max=255) 
 
 def adjust_gamma(img, gamma, precision=0):
 	return np.around(exposure.adjust_gamma(img, gamma), precision)
 
-# first function: sample from all the classes (/Users/caroline/Desktop/REforML/HVS/experiment_code/orig_images)
-# 100 batches of 50 images
-
-def filter_image_classes(JPEG_files):
-	mapping_file = open("MSCOCO_to_ImageNet_category_mapping.txt", "r").readlines()
-	labels = re.findall('(n\d+)', ' '.join(mapping_file))
-	#JPEG_files = open("inet.val.list", "r").readlines()
+def filter_image_classes(JPEG_files, object_class):
+	class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
+	dict_class_to_list = {}
+	f = open(class_to_list, "r")
+	for line in f:
+		match = re.findall('\s+(.*)\s+=\s+\[(.*)\]', line)
+		if len(match) > 0:
+			if match[0][0] not in dict_class_to_list.keys():
+				dict_class_to_list[match[0][0]] = []
+			dict_class_to_list[match[0][0]] += match[0][1].split(', ')
+	f.close()
+	all_lists = sum(dict_class_to_list.values(),[])# ' '.join(dict_class_to_list.values())
+	#mapping_file = open(class_to_list, "r").readlines()
+	#labels = re.findall('(n\d+)', ' '.join(mapping_file))
 	#print(len(JPEG_files))
-	def find_label(filename):
+	def find_label(filename, object_class):
 		label = re.findall('\.(n\d+)\.', filename)[0]
-		if label in labels:
+		if label in dict_class_to_list[object_class]:
 			return True
 		else:
-			return False
-	JPEG_files = [f for f in JPEG_files if find_label(f) == True]
-	#print(len(JPEG_files))
-	#print(JPEG_files[0])
-
-	#list_to_filter = []
-	#print(labels)
-	#while True:
-	#	line = mapping_file.readline()
-	#	if not line:
-	#		break
-		
-	return JPEG_files
+			x = random.uniform(0, 1)#x = random()500/(10350 - 150)
+			if x < 100/(10350 - 150):
+				return True
+			else:
+				return False
+	JPEG_files_car = [f.strip() for f in JPEG_files if re.findall('\.(n\d+)\.', f)[0] in dict_class_to_list['car']]
+	JPEG_files_not_car = random.sample([f.strip() for f in JPEG_files if re.findall('\.(n\d+)\.', f)[0] not in dict_class_to_list['car']], 500)
+	print(len(JPEG_files_car))
+	print(len(JPEG_files_not_car))
+	return JPEG_files_car + JPEG_files_not_car
 
 
-def gen_bootstrapping(num_batch, orig_path, gen_path, batch_size=50, transformation='intensity_shift'):
+def gen_bootstrapping(num_batch, orig_path, gen_path, object_class, batch_size=50, transformation='intensity_shift'):
 	if not os.path.exists(gen_path):
 		os.makedirs(gen_path)
-	#JPEG_files = [f for f in os.listdir(orig_path) if isfile(join(orig_path, f)) and f.endswith('JPEG')] #here it should be full path
-	#list.sort(JPEG_files, key=find_num)
-	JPEG_files = [y for x in os.walk(orig_path) for y in glob(os.path.join(x[0], '*.JPEG'))]
-	JPEG_files = filter_image_classes(JPEG_files)
-	#print(len(JPEG_files))
+	JPEG_files = open(orig_path, "r").readlines()#[y for x in os.walk(orig_path) for y in glob(os.path.join(x[0], '*.JPEG'))]
+	JPEG_files = filter_image_classes(JPEG_files, object_class)
+	#print(JPEG_files)
 	#exit()
-	# filter out other classes
-
 	set_orig = []
 	set_transformed = []
+	pwd = os.popen("pwd").read().strip()
 	for i in range(num_batch):
 		print("batch " + str(i))
 		batch = random.sample(JPEG_files, batch_size)
@@ -98,52 +94,41 @@ def gen_bootstrapping(num_batch, orig_path, gen_path, batch_size=50, transformat
 			os.makedirs(gen_path + "batch_" +str(i) + '/')
 		store_path = gen_path + "batch_" +str(i) + '/'
 		for f in batch:
-			#image_name = f[:-5]
 			image_name = re.findall('(ILSVRC2012_val_\d+)', f)[0]
 			img = np.asarray(cv2.imread(f), dtype=np.float32)
-			#print(img)
-			# get image name
-			#image_name = re.findall('\/(n\d+\_\d+).JPEG', f)#[0][0]
-			#print(image_name)
-			#exit()
-
-			#gen_images(f, label, transformation, gen_path + "batch_" +str(i) + '/')
 			if transformation == 'gaussian_noise':
 				img_h, img_w, ch = img.shape
 				param = random.choice(gaussian_noise_params)
 				img2 = gaussian_noise(img, param, img_h, img_w, ch)
-				cv2.imwrite(store_path+'_gaussian_' + str(param) + "_" + image_name + '.JPEG', img2)
-				set_transformed.append(store_path+ '_gaussian_' + str(param) + "_" + image_name + '.JPEG')
+				cv2.imwrite(pwd + '/' + store_path+'gaussian_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd + '/' + store_path+ 'gaussian_' + str(param) + "_" + image_name + '.JPEG')
 			if transformation == 'intensity_shift':
-				param = random.choice(intensity_shift_params)#for param in intensity_shift_params:
+				param = random.choice(intensity_shift_params)
 				img2 = intensity_shift(img, param)
-				#print(store_path+ label+'_intensity_' + str(param) + "_" + image_name)
-				cv2.imwrite(store_path+'_intensity_' + str(param) + "_" + image_name + '.JPEG', img2)
-				set_transformed.append(store_path+ '_intensity_' + str(param) + "_" + image_name + '.JPEG')
+				cv2.imwrite(pwd  + '/'+ store_path+'intensity_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd + '/'+ store_path+ 'intensity_' + str(param) + "_" + image_name + '.JPEG')
+				#print(pwd  + '/'+ store_path+'intensity_' + str(param) + "_" + image_name + '.JPEG')
+				#exit()
 			if transformation == 'gamma':
-				param = random.choice(gamma_params)#for param in intensity_shift_params:
+				param = random.choice(gamma_params)
 				img2 = adjust_gamma(img, param)
-				cv2.imwrite(store_path+'_gamma_' + str(param) + "_" + image_name + '.JPEG', img2)
-				set_transformed.append(store_path+ '_gamma_' + str(param) + "_" + image_name + '.JPEG')
+				cv2.imwrite(pwd  + '/'+ store_path+'gamma_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'gamma_' + str(param) + "_" + image_name + '.JPEG')
 	
 	# write two txt files
 	txt = open("bootstrap_orig_list.txt", "w")
-	#print(all_transformed_files)
-	#exit()
 	for f in set_orig:
 		txt.write(f + '\n')
 	txt.close()
 
 	txt = open("bootstrap_transformed_list.txt", "w")
-	#print(all_transformed_files)
-	#exit()
 	for f in set_transformed:
 		txt.write(f + '\n')
 	txt.close()
 	return set_orig, set_transformed
 
 # obtain detection of the original images
-def obtain_orig_detection(YOLO_path, list_orig_path, model, run=False):
+def obtain_orig_detection(YOLO_path, list_orig_path, model_detection, run=False):
 	if run:
 		os.popen("touch " + YOLO_path +"/boot_orig_"+model+ ".txt")
 		pwd = os.popen("pwd").read()
@@ -152,13 +137,11 @@ def obtain_orig_detection(YOLO_path, list_orig_path, model, run=False):
 		print(command)
 		cmd_result = os.popen(command).read()
 
-	#exit()
-	#results_f = open(YOLO_path + '/boot_orig_'+model+'.txt', "r")
-	# if run = False, read existing
-	if not run:
-		results_f = open('bootstrap_results/boot_orig_'+model+'.txt', "r")
-	else:
-		results_f = open(YOLO_path +'boot_orig_'+model+'.txt', "r")
+	#if not run:
+	#	results_f = open('bootstrap_results/boot_orig_'+model+'.txt', "r")
+	#else:
+	#	results_f = open(YOLO_path +'boot_orig_'+model+'.txt', "r")
+	results_f = open(model_detection, "r")
 	file_name_f = open(list_orig_path, 'r')
 	results = {}
 	while True:
@@ -168,7 +151,6 @@ def obtain_orig_detection(YOLO_path, list_orig_path, model, run=False):
 		if line.startswith('Enter Image Path:'):
 			filename = re.findall('(ILSVRC2012_val_\d+)', file_name_f.readline())#[0]
 			if filename != []:
-				#print(line)
 				matches = re.findall('([a-zA-Z\s]+$)', line)
 				detection = matches[0].strip()
 				if detection != '':
@@ -176,19 +158,18 @@ def obtain_orig_detection(YOLO_path, list_orig_path, model, run=False):
 	return results
 
 # obtain detection of transformed images
-def obtain_transformed_detection(YOLO_path, list_transformed_path, model, run=False):
+def obtain_transformed_detection(YOLO_path, list_transformed_path, model_detection, run=False):
 	if run:
 		os.popen("touch " + YOLO_path +"/boot_transformed_"+model+ ".txt")
 		pwd = os.popen("pwd").read()
-		print(pwd)
 		command = 'cd ' + YOLO_path + '; ./darknet classifier predict cfg/imagenet1k.data cfg/' + model +'.cfg '+ model + '.weights < ' +pwd.strip() + '/' + list_transformed_path + ' > boot_transformed_'+model+'.txt'
 		cmd_result = os.popen(command).read()
 
-	#results_f = open(YOLO_path + '/boot_transformed_'+model+'.txt', "r")
-	if not run:
-		results_f = open('bootstrap_results/boot_transformed_'+model+'.txt', "r")
-	else:
-		results_f = open(YOLO_path +'boot_transformed_'+model+'.txt', "r")
+	#if not run:
+	#	results_f = open('bootstrap_results/boot_transformed_'+model+'.txt', "r")
+	#else:
+	#	results_f = open(YOLO_path +'boot_transformed_'+model+'.txt', "r")
+	results_f = open(model_detection, "r")
 	file_name_f = open(list_transformed_path, 'r')
 	results = {}
 	while True:
@@ -197,7 +178,6 @@ def obtain_transformed_detection(YOLO_path, list_transformed_path, model, run=Fa
 			break
 		if line.startswith('Enter Image Path:'):
 			filename = file_name_f.readline()
-			#print(line)
 			matches = re.findall('([a-zA-Z\s]+$)', line)
 			detection = matches[0].strip()
 			if detection != '':
@@ -205,7 +185,7 @@ def obtain_transformed_detection(YOLO_path, list_transformed_path, model, run=Fa
 	return results
 
 # read result files and estimate confidence interval and print metrics
-def read_result(result_txt, image_list):
+def read_ground_truth(image_list):
 	# find list to label
 	list_to_label = "synset_words.txt"
 	dict_list_to_label = {}
@@ -225,15 +205,12 @@ def read_result(result_txt, image_list):
 		line = image_list_f.readline()
 		if not line:
 			break
-		# this may change based on the file we are running
 		matches = re.findall('(ILSVRC2012\_val\_\d+)\.(n\d+)', line) #validation
-		# others check later, include batch dir for batch results
 		filename = matches[0][0]
 		ground_truth_list = matches[0][1]
 		image_names_set.append(filename)
 		ground_truth[filename] = dict_list_to_label[ground_truth_list]
-		#print("ground truth: " + filename + " -> " + str(dict_list_to_label[ground_truth_list]))
- 
+	'''
 	image_list_f.close()
 	results = {}
 	results_f = open(result_txt, "r")
@@ -243,16 +220,13 @@ def read_result(result_txt, image_list):
 		if not line:
 			break
 		if line.startswith('Enter Image Path:'):
-			#print(line)
 			matches = re.findall('([a-zA-Z\s]+$)', line)
 			detection = matches[0].strip()
 			if detection != '':
 				results[image_names_set[cur_id]] = detection
-				#print("detection " + str(cur_id) +" : " + image_names_set[cur_id] + " -> " + detection)
 				cur_id += 1
-	#for image in ground_truth.keys():
-	#	print(image + " ground truth: " + str(ground_truth[image]) + "; detection: " + results[image])
-	return ground_truth, results
+	'''
+	return ground_truth#, results
 
 def calculate_confidence(acc_list, base_acc, req_acc):
 	# fitting a normal distribution
@@ -271,11 +245,7 @@ def calculate_confidence(acc_list, base_acc, req_acc):
 	#plt.show()
 	
 	distribution = scipy.stats.norm(mu, sigma)
-	#if base_acc < mu:
-	#	result = distribution.cdf(base_acc)
-	#else:
 	result = 1- distribution.cdf(req_acc)
-	#print(distribution.cdf(requirement_acc))
 	print('confidence of satisfication:' + str(result))
 	if result >= 0.5:
 		print("requirement SATISFIED")
@@ -284,38 +254,28 @@ def calculate_confidence(acc_list, base_acc, req_acc):
 	return result
 
 def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels): #rel or abs
-	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
-	#print(labels)
 	batch_results_abs = {}
 	batch_results_rel = {}
 	#sort batch results
 	for trans_img in transformed_result.keys():
-		#print(trans_img)
 		matches = re.findall('(batch\_\d+).*(ILSVRC2012_val_\d+)', trans_img)
 		orig_img_name = matches[0][1]
 		batch = matches[0][0]
-		#print(orig_img_name)
-		#print(orig_img_name, trans_img)
-		#print(transformed_result[trans_img], ground_truth[orig_img_name])
-		#continue
-		#print(orig_img_name, batch)
 		if batch not in batch_results_abs.keys():
 			batch_results_abs[batch] = {}
 		if batch not in batch_results_rel.keys():
 			batch_results_rel[batch] = {}
-		#print(ground_truth[orig_img_name][0])
-		if ground_truth[orig_img_name][0] in labels:
-			batch_results_abs[batch][orig_img_name] = transformed_result[trans_img]
-		if transformed_result[trans_img] in labels:
-			batch_results_rel[batch][orig_img_name] = transformed_result[trans_img]
-	#print(batch_results)
+
+		#if ground_truth[orig_img_name][0] in labels:
+		batch_results_abs[batch][orig_img_name] = transformed_result[trans_img]
+		#if transformed_result[trans_img] in labels:
+		batch_results_rel[batch][orig_img_name] = transformed_result[trans_img]
 
 	# obtain abs
 	batch_accuracies = []
 	for batch in batch_results_abs.keys():
-		#print(sum([1 for x in batch_results[batch].keys() if batch_results[batch][x] in ground_truth[x]]))
 		if len(batch_results_abs[batch].keys()) > 0:
-			batch_accuracies.append(sum([1 for x in batch_results_abs[batch].keys() if batch_results_abs[batch][x] in ground_truth[x]])/len(batch_results_abs[batch].keys()))
+			batch_accuracies.append(sum([1 for x in batch_results_abs[batch].keys() if (batch_results_abs[batch][x] in labels) == (ground_truth[x][0] in labels)])/len(batch_results_abs[batch].keys()))
 
 	batch_preserved = []
 	for batch in batch_results_rel.keys():
@@ -327,7 +287,7 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels)
 	#print("REL batches")
 	#print(batch_preserved)
 
-	base_acc = sum([1 for x in orig_results.keys() if orig_results[x] in ground_truth[x]])/len(orig_results.keys())
+	base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in labels) == (ground_truth[x][0] in labels) ])/len(orig_results.keys())
 	print("--------------------------------------------")
 	print("1. Verifying Absolute Requirement: ")
 	conf_abs = calculate_confidence(batch_accuracies, base_acc, base_acc) #abs
@@ -339,7 +299,6 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels)
 	return conf_abs, conf_rel
 
 def print_metrics(ground_truth, detections, labels):
-	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
 	true_pos = 0
 	true_neg = 0
 	false_pos = 0
@@ -365,7 +324,6 @@ def print_metrics(ground_truth, detections, labels):
 	return accuracy, 2*(recall * precision) / (recall + precision)
 
 def print_metrics_batch_result(ground_truth, batch_result, labels):
-	#labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
 	true_pos = 0
 	true_neg = 0
 	false_pos = 0
@@ -395,71 +353,133 @@ def print_metrics_batch_result(ground_truth, batch_result, labels):
 def usage():
 	#usage = ""
 	parser=argparse.ArgumentParser(
-    description='''My Description. And what a lovely description it is. ''',
-    epilog="""All is well that ends well.""")
-	#parser.add_argument('--foo', type=int，help='FOO!')
+	description='''This is the script for our subprocess IV Verifying MLC against requirement ''')
 	parser.add_argument('-d', '--Darknet_path', type=str, help='path to Darknet directory')
-	parser.add_argument('-r', '--read_existing', type=str, help='read from exisitng run')
-	parser.add_argument('-i', '--image_path', type=str, help='path to ILSVRC2012 validation images')
-	parser.add_argument('-n', '--number_of_batches', type=int, help='the number of batches for bootstrapping, must be integer')
-	parser.add_argument('-s', '--batch_size', type=int, help='the number of images per batch for bootstrapping, must be integer')
-	#parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
+	parser.add_argument('--load_existing', type=str, help='load the experiment results from the paper')
+	parser.add_argument('-r', type=str, help='read from previous run result')
+	parser.add_argument('-i', '--image_name_file', type=str, help='path to inet.val.list')
+	parser.add_argument('-n', '--number_of_batches', type=int, help='the number of batches for bootstrapping, must be integer, default is 200')
+	parser.add_argument('-s', '--batch_size', type=int, help='the number of images per batch for bootstrapping, must be integer, default is 500')
+	parser.add_argument('-c', '--class', type=str, help='the object class y to test in both requirements, default is car, must be one of airplane, bicycle, boat, car, chair, dog, keyboard, oven, bear, bird, bottle, cat, clock, elephant, knife, truck')
+
 	args=parser.parse_args()
-	#return usage
+
 if __name__ == "__main__":
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hd:ri:n:s:", ["help", "Darknet_path=", "read_existing", "image_path", "number_of_batches", "batch_size"])
+		opts, args = getopt.getopt(sys.argv[1:], "hd:i:n:s:c:r", ["help", "Darknet_path=", "load_existing", "image_name_file=", "number_of_batches=", "batch_size=", "class="])
 	except getopt.GetoptError as err:
 		# print help information and exit:
-		print(err)  # will print something like "option -a not recognized"
-		#usage()
+		print(err)  
+		usage()
 		sys.exit(2)
+
+	list_labels = ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']
+	#print(dict_list_to_label)
+
+	# mapping class to labels
+	'''
+	# find all the labels for this object_class
+	list_to_label = 'synset_words.txt'
+	dict_list_to_label = {}
+	f = open(list_to_label, "r")
+	for line in f:
+		match = re.findall('(n\d+) (.*)', line)
+		if match[0][0] not in dict_list_to_label.keys():
+			dict_list_to_label[match[0][0]] = []
+		dict_list_to_label[match[0][0]] += match[0][1].split(', ')
+	f.close()
+	class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
+	dict_class_to_list = {}
+	f = open(class_to_list, "r")
+	for line in f:
+		match = re.findall('\s+(.*)\s+=\s+\[(.*)\]', line)
+		if len(match) > 0:
+			if match[0][0] not in dict_class_to_list.keys():
+				dict_class_to_list[match[0][0]] = []
+			dict_class_to_list[match[0][0]] += match[0][1].split(', ')
+	f.close()
+	for label in list_labels:
+		print(label)
+		labels = []	
+	#print(dict_class_to_list[object_class])
+	#exit()
+		n_lists = dict_class_to_list[label]
+		for n_l in n_lists:
+			if n_l in dict_list_to_label.keys():
+				labels += dict_list_to_label[n_l]
+		print(labels)
+	#print(dict_list_to_label.keys():)
+	#print(labels)
+	'''
+	class_to_labels = {}
+	class_to_labels['airplane'] = ['airliner']
+	class_to_labels['bicycle'] = ['bicycle-built-for-two', 'tandem bicycle', 'tandem', 'mountain bike', 'all-terrain bike', 'off-roader']
+	class_to_labels['boat'] = ['canoe', 'fireboat', 'lifeboat', 'speedboat', 'yawl']
+	class_to_labels['car'] = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
+	class_to_labels['chair'] = ['barber chair', 'folding chair', 'rocking chair', 'rocker', 'throne']
+	class_to_labels['dog'] = ['Japanese spaniel', 'Maltese dog', 'Maltese terrier', 'Maltese', 'Pekinese', 'Pekingese', 'Peke', 'Shih-Tzu', 'Blenheim spaniel', 'papillon', 'toy terrier', 'Rhodesian ridgeback', 'Afghan hound', 'Afghan', 'basset', 'basset hound', 'beagle', 'bloodhound', 'sleuthhound', 'bluetick', 'black-and-tan coonhound', 'Walker hound', 'Walker foxhound', 'English foxhound', 'redbone', 'borzoi', 'Russian wolfhound', 'Irish wolfhound', 'Italian greyhound', 'whippet', 'Ibizan hound', 'Ibizan Podenco', 'Norwegian elkhound', 'elkhound', 'otterhound', 'otter hound', 'Saluki', 'gazelle hound', 'Scottish deerhound', 'deerhound', 'Weimaraner', 'Staffordshire bullterrier', 'Staffordshire bull terrier', 'American Staffordshire terrier', 'Staffordshire terrier', 'American pit bull terrier', 'pit bull terrier', 'Bedlington terrier', 'Border terrier', 'Kerry blue terrier', 'Irish terrier', 'Norfolk terrier', 'Norwich terrier', 'Yorkshire terrier', 'wire-haired fox terrier', 'Lakeland terrier', 'Sealyham terrier', 'Sealyham', 'Airedale', 'Airedale terrier', 'Australian terrier', 'Dandie Dinmont', 'Dandie Dinmont terrier', 'Boston bull', 'Boston terrier', 'miniature schnauzer', 'giant schnauzer', 'standard schnauzer', 'Scotch terrier', 'Scottish terrier', 'Scottie', 'Tibetan terrier', 'chrysanthemum dog', 'silky terrier', 'Sydney silky', 'soft-coated wheaten terrier', 'West Highland white terrier', 'flat-coated retriever', 'curly-coated retriever', 'golden retriever', 'Labrador retriever', 'Chesapeake Bay retriever', 'German short-haired pointer', 'vizsla', 'Hungarian pointer', 'English setter', 'Irish setter', 'red setter', 'Gordon setter', 'Brittany spaniel', 'clumber', 'clumber spaniel', 'English springer', 'English springer spaniel', 'Welsh springer spaniel', 'cocker spaniel', 'English cocker spaniel', 'cocker', 'Sussex spaniel', 'Irish water spaniel', 'kuvasz', 'schipperke', 'groenendael', 'malinois', 'briard', 'komondor', 'Old English sheepdog', 'bobtail', 'Shetland sheepdog', 'Shetland sheep dog', 'Shetland', 'collie', 'Border collie', 'Bouvier des Flandres', 'Bouviers des Flandres', 'Rottweiler', 'German shepherd', 'German shepherd dog', 'German police dog', 'alsatian', 'Doberman', 'Doberman pinscher', 'miniature pinscher', 'Greater Swiss Mountain dog', 'Bernese mountain dog', 'Appenzeller', 'EntleBucher', 'bull mastiff', 'Tibetan mastiff', 'French bulldog', 'Great Dane', 'Saint Bernard', 'St Bernard', 'Eskimo dog', 'husky', 'malamute', 'malemute', 'Alaskan malamute', 'Siberian husky', 'affenpinscher', 'monkey pinscher', 'monkey dog', 'basenji', 'pug', 'pug-dog', 'Leonberg', 'Newfoundland', 'Newfoundland dog', 'Great Pyrenees', 'Pomeranian', 'keeshond', 'Brabancon griffon', 'Pembroke', 'Pembroke Welsh corgi', 'toy poodle', 'miniature poodle', 'standard poodle', 'Mexican hairless']
+	class_to_labels['keyboard'] = ['computer keyboard', 'keypad', 'typewriter keyboard']
+	class_to_labels['oven'] = ['rotisserie']
+	class_to_labels['bear'] = ['brown bear', 'bruin', 'Ursus arctos', 'American black bear', 'black bear', 'Ursus americanus', 'Euarctos americanus', 'ice bear', 'polar bear', 'Ursus Maritimus', 'Thalarctos maritimus', 'sloth bear', 'Melursus ursinus', 'Ursus ursinus']
+	class_to_labels['bird'] = ['hen', 'brambling', 'Fringilla montifringilla', 'goldfinch', 'Carduelis carduelis', 'house finch', 'linnet', 'Carpodacus mexicanus', 'junco', 'snowbird', 'indigo bunting', 'indigo finch', 'indigo bird', 'Passerina cyanea', 'robin', 'American robin', 'Turdus migratorius', 'bulbul', 'magpie', 'chickadee', 'water ouzel', 'dipper', 'bald eagle', 'American eagle', 'Haliaeetus leucocephalus', 'vulture', 'great grey owl', 'great gray owl', 'Strix nebulosa', 'black grouse', 'ptarmigan', 'ruffed grouse', 'partridge', 'Bonasa umbellus', 'prairie chicken', 'prairie grouse', 'prairie fowl', 'African grey', 'African gray', 'Psittacus erithacus', 'macaw', 'sulphur-crested cockatoo', 'Kakatoe galerita', 'Cacatua galerita', 'lorikeet', 'coucal', 'bee eater', 'hornbill', 'hummingbird', 'jacamar', 'toucan', 'red-breasted merganser', 'Mergus serrator', 'goose', 'black swan', 'Cygnus atratus', 'white stork', 'Ciconia ciconia', 'black stork', 'Ciconia nigra', 'spoonbill', 'flamingo', 'little blue heron', 'Egretta caerulea', 'American egret', 'great white heron', 'Egretta albus', 'bittern', 'limpkin', 'Aramus pictus', 'European gallinule', 'Porphyrio porphyrio', 'American coot', 'marsh hen', 'mud hen', 'water hen', 'Fulica americana', 'bustard', 'ruddy turnstone', 'Arenaria interpres', 'red-backed sandpiper', 'dunlin', 'Erolia alpina', 'redshank', 'Tringa totanus', 'dowitcher', 'oystercatcher', 'oyster catcher', 'pelican', 'king penguin', 'Aptenodytes patagonica']
+	class_to_labels['bottle'] = ['beer bottle', 'pill bottle', 'pop bottle', 'soda bottle', 'water bottle', 'water jug', 'whiskey jug', 'wine bottle']
+	class_to_labels['cat'] = ['tabby', 'tabby cat', 'tiger cat', 'Persian cat', 'Siamese cat', 'Siamese', 'Egyptian cat', 'cougar', 'puma', 'catamount', 'mountain lion', 'painter', 'panther', 'Felis concolor']
+	class_to_labels['clock'] = ['analog clock', 'digital clock', 'wall clock']
+	class_to_labels['elephant'] = ['Indian elephant', 'Elephas maximus', 'African elephant', 'Loxodonta africana']
+	class_to_labels['knife'] = ['cleaver', 'meat cleaver', 'chopper']
+	class_to_labels['truck'] = ['fire engine', 'fire truck', 'garbage truck', 'dustcart', 'minivan', 'moving van', 'pickup', 'pickup truck', 'police van', 'police wagon', 'paddy wagon', 'patrol wagon', 'wagon', 'black Maria', 'tow truck', 'tow car', 'wrecker', 'trailer truck', 'tractor trailer', 'trucking rig', 'rig', 'articulated lorry', 'semi']
+
 	YOLO_path = None
 	read_exist = False
-	image_path = None
+	image_name_file = None
 	number_of_batches = 200
 	batch_size = 500
-	for o, a in opts:
-		if o in ("-r", "--read_existing"):#o == "-v": 
+	object_class = 'car'
+	only_read = False
+	for o,a in opts:
+		if o in ("-r"):
+			only_read = True
+		elif o in ("--load_existing"):
 			read_exist = True
-			print("reading exising")
-		if o in ("-h", "--help"):
+		elif o in ("-h", "--help"):
 			usage()
 			print("help")
 			sys.exit()
-		if o in ("-d", "--Darknet_path"):
+		elif o in ("-d", "--Darknet_path"):
 			YOLO_path = a
 			if not YOLO_path.endswith('/'):
 				YOLO_path += '/'
-			print("YOLO_path" + YOLO_path)
-		if o in ("-i", "--image_path"):
-			image_path = a
-			if not image_path.endswith('/'):
-				image_path += '/'
-			print("image_path" + image_path)
-		if o in ("-n", "--number_of_batches"):
+		elif o in ("-i", "--image_name_file"):
+			image_name_file = a
+		elif o in ("-n", "--number_of_batches"):
 			try:
 				number_of_batches = int(a)
 			except:
 				print("invalid number of batches, must be integer")
-		if o in ("-s", "--batch_size"):
+		elif o in ("-s", "--batch_size"):
 			try:
 				batch_size = int(a)
 			except:
 				print("invalid batch size, must be integer")
-		#else:
-			#assert False, "unhandled option"
-		#	print("invalid argument\n")
-		#	usage()
-		#	sys.exit()
-
-	if not read_exist and not image_path:
-		print("missing path to validation images")
+		elif o in ("-c", "--class"):
+			object_class = a
+			if object_class not in list_labels:
+				print("invalid object class, must be one of airplane, bicycle, boat, car, chair, dog, keyboard, oven, bear, bird, bottle, cat, clock, elephant, knife, truck")
+		else:
+			assert False, "unhandled option"
+			print("invalid argument\n")
+			usage()
+			sys.exit()
+	if not read_exist and not image_name_file:
+		print("missing path to inet.val.list")
 		sys.exit()
-	if not read_exist:
-		gen_bootstrapping(number_of_batches, image_path, 'bootstrap_samples/', batch_size=batch_size)
-	#gen_bootstrapping(1, '/Users/caroline/Desktop/REforML/HVS/scripts/val_img_classes/', 'bootstrap_samples/')
-	#ground_truth, detections = read_result("/u/boyue/darknet/validation_darknet19.txt", '/u/boyue/Desktop/inet.val.list')
+
+	
+	labels = class_to_labels[object_class]
+
+	if not read_exist and not only_read:
+		gen_bootstrapping(number_of_batches, image_name_file, 'bootstrap_samples/', object_class, batch_size=batch_size)
+
 	models = ['darknet19', 'darknet53_448', 'alexnet', 'vgg-16', 'resnext50', 'resnet50']
 	sat_abs = []
 	sat_rel = []
@@ -467,23 +487,25 @@ if __name__ == "__main__":
 	val_f1 = []
 	trans_acc = []
 	trans_f1 = []
-	for model in models:
-		#models = 'resnet50'
+	for model in models:	
 		print("###################" + model + "###################")
-		time_start = time.process_time()
-		ground_truth, detections = read_result("bootstrap_results/validation_"+ model +".txt", 'bootstrap_results/inet.val.list')
-		#print("--------------------------------------------")
-		#print("i. Precision and f1 on ILSVRC2012 validation set:")
-		#accuracy, f1 = print_metrics(ground_truth, detections)
-		#val_acc.append(accuracy)
-		#val_f1.append(f1)
-		if read_exist:
-			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_results/bootstrap_orig_list.txt", model, run=False)
-			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_results/bootstrap_transformed_list.txt", model, run=False)
+		if not read_exist:
+			ground_truth = read_ground_truth(image_name_file)
 		else:
-			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", model, run=True)
-			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", model, run=True)
-		labels = ['beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon', 'convertible', 'sports car', 'sport car']
+			ground_truth = read_ground_truth('bootstrap_results/inet.val.list')
+
+		if read_exist:
+			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_results/bootstrap_orig_list.txt", 'bootstrap_results/boot_orig_'+model+'.txt', run=False)
+			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_results/bootstrap_transformed_list.txt", 'bootstrap_results/boot_transformed_'+model+'.txt', run=False)
+		else:
+			if only_read:
+				orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", YOLO_path +'boot_orig_'+ model +'.txt', run=False)
+				transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", YOLO_path +'boot_transformed_'+model+'.txt', run=False)
+			else:
+				orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", YOLO_path +'boot_orig_'+model+'.txt', run=True)
+				transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", YOLO_path +'boot_transformed_'+model+'.txt', run=True)
+		
+		time_start = time.process_time()
 		print("--------------------------------------------")
 		print("i. Precision and f1 on ILSVRC2012 validation set:")
 		accuracy, f1 = print_metrics(ground_truth, orig_results, labels)
