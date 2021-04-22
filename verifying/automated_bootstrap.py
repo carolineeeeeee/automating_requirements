@@ -230,11 +230,12 @@ def read_ground_truth(image_list):
 
 def calculate_confidence(acc_list, base_acc, req_acc):
 	# fitting a normal distribution
-	_, bins, _ = plt.hist(acc_list, 20, alpha=0.5, density=True)
-	mu, sigma = scipy.stats.norm.fit(acc_list)
+	#print(acc_list)
+	_, bins, _ = plt.hist(acc_list, 30, alpha=0.5, density=True)
+	mu, sigma = scipy.stats.norm.fit(data=acc_list)
 	best_fit_line = scipy.stats.norm.pdf(bins, mu, sigma)
-	print("Estimated mean from bootstrapping: " + str(mu))
-	print("Estimated sigma from bootstrapping: " + str(sigma))
+	#print("Estimated mean from bootstrapping: " + str(round(mu,3)))
+	#print("Estimated sigma from bootstrapping: " + str(round(sigma,3)))
 	# calculate the requirement
 	#requirement_acc = base_acc - x_squared_inverse(IQA_value) 
 	#print("requirement is " + str(requirement_acc))
@@ -246,12 +247,14 @@ def calculate_confidence(acc_list, base_acc, req_acc):
 	
 	distribution = scipy.stats.norm(mu, sigma)
 	result = 1- distribution.cdf(req_acc)
-	print('confidence of satisfication:' + str(result))
-	if result >= 0.5:
-		print("requirement SATISFIED")
-	else:
-		print("requirement NOT SATISFIED")
-	return result
+	#print('confidence of satisfication:' + str(round(result,3)))
+	#if result >= 0.5:
+	#	print("requirement SATISFIED")
+	#else:
+	#	print("requirement NOT SATISFIED")
+	#return result
+	#print(round(mu - req_acc, 3))
+	return round(result,3), round(mu,3), round(sigma,3)
 
 def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels): #rel or abs
 	batch_results_abs = {}
@@ -288,15 +291,15 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, labels)
 	#print(batch_preserved)
 
 	base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in labels) == (ground_truth[x][0] in labels) ])/len(orig_results.keys())
-	print("--------------------------------------------")
-	print("1. Verifying Absolute Requirement: ")
-	conf_abs = calculate_confidence(batch_accuracies, base_acc, base_acc) #abs
-	print("--------------------------------------------")
-	print("2. Verifying Relative Requirement:")
-	conf_rel = calculate_confidence(batch_preserved, base_acc, a) #rel
-	print("--------------------------------------------")
+	#print("--------------------------------------------")
+	#print("1. Verifying Absolute Requirement: ")
+	conf_abs, mu_abs, sigma_abs = calculate_confidence(batch_accuracies, base_acc, base_acc) #abs
+	#print("--------------------------------------------")
+	#print("2. Verifying Relative Requirement:")
+	conf_rel, mu_rel, sigma_rel = calculate_confidence(batch_preserved, base_acc, a) #rel
+	#print("--------------------------------------------")
 
-	return conf_abs, conf_rel
+	return conf_abs, mu_abs, sigma_abs, conf_rel, mu_rel, sigma_rel
 
 def print_metrics(ground_truth, detections, labels):
 	true_pos = 0
@@ -315,13 +318,16 @@ def print_metrics(ground_truth, detections, labels):
 			else: 	# true negative
 				true_neg += 1
 	accuracy = (true_pos+true_neg)/(true_pos+true_neg+false_pos+false_neg)
+	accuracy = round(accuracy, 3)
 	print("Accuracy: " + str(accuracy))
 	precision = true_pos/(true_pos+false_pos)
 	#print("Precision: " + str(precision))
 	recall = true_pos/(true_pos+false_neg)
 	#print("Recall: " + str(recall))
-	print("f1: " + str(2*(recall * precision) / (recall + precision)))
-	return accuracy, 2*(recall * precision) / (recall + precision)
+	f1  = 2*(recall * precision) / (recall + precision)
+	f1 = round(f1, 3)
+	print("f1: " + str(f1))
+	return accuracy, f1
 
 def print_metrics_batch_result(ground_truth, batch_result, labels):
 	true_pos = 0
@@ -342,75 +348,87 @@ def print_metrics_batch_result(ground_truth, batch_result, labels):
 			else: 	# true negative
 				true_neg += 1
 	accuracy = (true_pos+true_neg)/(true_pos+true_neg+false_pos+false_neg)
+	accuracy = round(accuracy, 3)
 	print("Accuracy: " + str(accuracy))
 	precision = true_pos/(true_pos+false_pos)
 	#print("Precision: " + str(precision))
 	recall = true_pos/(true_pos+false_neg)
 	#print("Recall: " + str(recall))
-	print("f1: " + str(2*(recall * precision) / (recall + precision)))
-	return accuracy, 2*(recall * precision)/(recall + precision)
+	f1 = 2*(recall * precision) / (recall + precision)
+	f1 = round(f1, 3)
+	print("f1: " + str(f1))
+	return accuracy, f1
+
+def print_ML_metrics(ground_truth, orig_detections, batch_result, labels):
+	true_pos = 0
+	true_neg = 0
+	false_pos = 0
+	false_neg = 0
+
+	for image in orig_detections.keys():
+		if ground_truth[image][0] in labels: 
+			if orig_detections[image] in labels: # true positive
+				true_pos += 1
+			else: 	# false negative
+				false_neg += 1
+		else: #negatives
+			if orig_detections[image] in labels: # false positive
+				false_pos += 1
+			else: 	# true negative
+				true_neg += 1
+
+	for image in batch_result.keys():
+		image_name = re.findall('(ILSVRC2012_val_\d+)', image)[0]
+		gt = ground_truth[image_name][0]
+		if gt in labels: 
+			if batch_result[image] in labels: # true positive
+				true_pos += 1
+			else: 	# false negative
+				false_neg += 1
+		else: #negatives
+			if batch_result[image] in labels: # false positive
+				false_pos += 1
+			else: 	# true negative
+				true_neg += 1
+
+	accuracy = (true_pos+true_neg)/(true_pos+true_neg+false_pos+false_neg)
+	accuracy = round(accuracy, 3)
+	#print("Accuracy: " + str(accuracy))
+	precision = true_pos/(true_pos+false_pos)
+	#print("Precision: " + str(precision))
+	recall = true_pos/(true_pos+false_neg)
+	#print("Recall: " + str(recall))
+	f1 = 2*(recall * precision) / (recall + precision)
+	f1 =  round(f1, 3)
+	#print("f1: " + str(f1))
+	return accuracy, f1
+
 
 def usage():
-	#usage = ""
 	parser=argparse.ArgumentParser(
 	description='''This is the script for our subprocess IV Verifying MLC against requirement ''')
 	parser.add_argument('-d', '--Darknet_path', type=str, help='path to Darknet directory')
-	parser.add_argument('--load_existing', type=str, help='load the experiment results from the paper')
+	parser.add_argument('--load_existing', type=str, help='to load the experiment results from the paper for the transformation specified by -t')
 	parser.add_argument('-r', type=str, help='read from previous run result')
 	parser.add_argument('-i', '--image_name_file', type=str, help='path to inet.val.list')
 	parser.add_argument('-n', '--number_of_batches', type=int, help='the number of batches for bootstrapping, must be integer, default is 200')
 	parser.add_argument('-s', '--batch_size', type=int, help='the number of images per batch for bootstrapping, must be integer, default is 500')
 	parser.add_argument('-c', '--class', type=str, help='the object class y to test in both requirements, default is car, must be one of airplane, bicycle, boat, car, chair, dog, keyboard, oven, bear, bird, bottle, cat, clock, elephant, knife, truck')
-
+	parser.add_argument('-t', '--transformation', type=str, help='the transformation to test, choose from one of intensity_shift, gaussian_noise or gamme, default is intensity_shift')
 	args=parser.parse_args()
 
 if __name__ == "__main__":
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hd:i:n:s:c:r", ["help", "Darknet_path=", "load_existing", "image_name_file=", "number_of_batches=", "batch_size=", "class="])
+		opts, args = getopt.getopt(sys.argv[1:], "hd:i:n:s:c:rt:", ["help", "Darknet_path=", "load_existing", "image_name_file=", "number_of_batches=", "batch_size=", "class=", "transformation="])
 	except getopt.GetoptError as err:
 		# print help information and exit:
 		print(err)  
 		usage()
 		sys.exit(2)
 
-	list_labels = ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']
-	#print(dict_list_to_label)
 
-	# mapping class to labels
-	'''
-	# find all the labels for this object_class
-	list_to_label = 'synset_words.txt'
-	dict_list_to_label = {}
-	f = open(list_to_label, "r")
-	for line in f:
-		match = re.findall('(n\d+) (.*)', line)
-		if match[0][0] not in dict_list_to_label.keys():
-			dict_list_to_label[match[0][0]] = []
-		dict_list_to_label[match[0][0]] += match[0][1].split(', ')
-	f.close()
-	class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
-	dict_class_to_list = {}
-	f = open(class_to_list, "r")
-	for line in f:
-		match = re.findall('\s+(.*)\s+=\s+\[(.*)\]', line)
-		if len(match) > 0:
-			if match[0][0] not in dict_class_to_list.keys():
-				dict_class_to_list[match[0][0]] = []
-			dict_class_to_list[match[0][0]] += match[0][1].split(', ')
-	f.close()
-	for label in list_labels:
-		print(label)
-		labels = []	
-	#print(dict_class_to_list[object_class])
-	#exit()
-		n_lists = dict_class_to_list[label]
-		for n_l in n_lists:
-			if n_l in dict_list_to_label.keys():
-				labels += dict_list_to_label[n_l]
-		print(labels)
-	#print(dict_list_to_label.keys():)
-	#print(labels)
-	'''
+	list_labels = ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']
+
 	class_to_labels = {}
 	class_to_labels['airplane'] = ['airliner']
 	class_to_labels['bicycle'] = ['bicycle-built-for-two', 'tandem bicycle', 'tandem', 'mountain bike', 'all-terrain bike', 'off-roader']
@@ -429,6 +447,8 @@ if __name__ == "__main__":
 	class_to_labels['knife'] = ['cleaver', 'meat cleaver', 'chopper']
 	class_to_labels['truck'] = ['fire engine', 'fire truck', 'garbage truck', 'dustcart', 'minivan', 'moving van', 'pickup', 'pickup truck', 'police van', 'police wagon', 'paddy wagon', 'patrol wagon', 'wagon', 'black Maria', 'tow truck', 'tow car', 'wrecker', 'trailer truck', 'tractor trailer', 'trucking rig', 'rig', 'articulated lorry', 'semi']
 
+	list_transf = ['intensity_shift', "gaussian_noise", "gamma"]
+
 	YOLO_path = None
 	read_exist = False
 	image_name_file = None
@@ -436,6 +456,8 @@ if __name__ == "__main__":
 	batch_size = 500
 	object_class = 'car'
 	only_read = False
+	load_existing_path = 'bootstrap_results/'
+	transf = 'intensity_shift'
 	for o,a in opts:
 		if o in ("-r"):
 			only_read = True
@@ -443,7 +465,6 @@ if __name__ == "__main__":
 			read_exist = True
 		elif o in ("-h", "--help"):
 			usage()
-			print("help")
 			sys.exit()
 		elif o in ("-d", "--Darknet_path"):
 			YOLO_path = a
@@ -456,15 +477,23 @@ if __name__ == "__main__":
 				number_of_batches = int(a)
 			except:
 				print("invalid number of batches, must be integer")
+				sys.exit()
 		elif o in ("-s", "--batch_size"):
 			try:
 				batch_size = int(a)
 			except:
 				print("invalid batch size, must be integer")
+				sys.exit()
 		elif o in ("-c", "--class"):
 			object_class = a
 			if object_class not in list_labels:
 				print("invalid object class, must be one of airplane, bicycle, boat, car, chair, dog, keyboard, oven, bear, bird, bottle, cat, clock, elephant, knife, truck")
+				sys.exit()
+		elif o in ('-t', '--transformation'):
+			transf = a
+			if transf not in list_transf:
+				print("transformation must be from one of intensity_shift, gaussian_noise, gamma")
+				sys.exit()
 		else:
 			assert False, "unhandled option"
 			print("invalid argument\n")
@@ -476,27 +505,37 @@ if __name__ == "__main__":
 
 	
 	labels = class_to_labels[object_class]
-
+	
 	if not read_exist and not only_read:
-		gen_bootstrapping(number_of_batches, image_name_file, 'bootstrap_samples/', object_class, batch_size=batch_size)
+		gen_bootstrapping(number_of_batches, image_name_file, 'bootstrap_samples/', object_class, batch_size=batch_size, transformation=transf)
 
-	models = ['darknet19', 'darknet53_448', 'alexnet', 'vgg-16', 'resnext50', 'resnet50']
+	models = ['alexnet', 'darknet19', 'darknet53_448', 'resnet50', 'resnext50', 'vgg-16']
+
+	l_mu_abs = []
+	l_sigma_abs = []
 	sat_abs = []
+	l_mu_rel = []
+	l_sigma_rel = []
 	sat_rel = []
-	val_acc = []
-	val_f1 = []
-	trans_acc = []
-	trans_f1 = []
+	test_acc = []
+	test_f1 = []
+
+
+	print("---------------------------------------" + transf + "----------------------------------------")
+	print("|       | verifying accuracy-preserving | verifying prediction-preserving | ML metrics (accuracy, f1)|")
+	print('----------------------------------------------------------------------------------------------')
+	print('| model |   mu   |   sigma  | conf_acc  |   mu   |   sigma   |  conf_acc  |   accuracy   |     f1    |')
+	print('------------------------------------------------------------------------------------------------------')
+
 	for model in models:	
-		print("###################" + model + "###################")
 		if not read_exist:
 			ground_truth = read_ground_truth(image_name_file)
 		else:
 			ground_truth = read_ground_truth('bootstrap_results/inet.val.list')
 
 		if read_exist:
-			orig_results = obtain_orig_detection(YOLO_path, "bootstrap_results/bootstrap_orig_list.txt", 'bootstrap_results/boot_orig_'+model+'.txt', run=False)
-			transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_results/bootstrap_transformed_list.txt", 'bootstrap_results/boot_transformed_'+model+'.txt', run=False)
+			orig_results = obtain_orig_detection(YOLO_path, load_existing_path + transf+"/bootstrap_orig_list.txt", load_existing_path+transf+'/boot_orig_'+model+'.txt', run=False)
+			transformed_results = obtain_transformed_detection(YOLO_path, load_existing_path+transf+"/bootstrap_transformed_list.txt", load_existing_path+transf+'/boot_transformed_'+model+'.txt', run=False)
 		else:
 			if only_read:
 				orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", YOLO_path +'boot_orig_'+ model +'.txt', run=False)
@@ -504,68 +543,28 @@ if __name__ == "__main__":
 			else:
 				orig_results = obtain_orig_detection(YOLO_path, "bootstrap_orig_list.txt", YOLO_path +'boot_orig_'+model+'.txt', run=True)
 				transformed_results = obtain_transformed_detection(YOLO_path, "bootstrap_transformed_list.txt", YOLO_path +'boot_transformed_'+model+'.txt', run=True)
-		
-		time_start = time.process_time()
-		print("--------------------------------------------")
-		print("i. Precision and f1 on ILSVRC2012 validation set:")
-		accuracy, f1 = print_metrics(ground_truth, orig_results, labels)
-		val_acc.append(accuracy)
-		val_f1.append(f1)
-		print("ii. Precision and f1 on sampled transformed images from bootstrap:")
-		accuracy, f1 = print_metrics_batch_result(ground_truth, transformed_results, labels)
-		trans_acc.append(accuracy)
-		trans_f1.append(f1)
-		conf_abs, conf_rel = estimate_conf_int(ground_truth, orig_results, transformed_results, 0.95, labels)
-		time_elapsed = (time.process_time() - time_start)
+		accuracy, f1 = print_ML_metrics(ground_truth, orig_results, transformed_results, labels)
+		test_acc.append(accuracy)
+		test_f1.append(f1)
+		conf_abs, mu_abs, sigma_abs, conf_rel, mu_rel, sigma_rel = estimate_conf_int(ground_truth, orig_results, transformed_results, 1, labels)
 		sat_abs.append(conf_abs)
 		sat_rel.append(conf_rel)
-		print("3. Print runtime and memory useage")
-		print(resource.getrusage(resource.RUSAGE_SELF))
-	print("##########################################")
-	
-	print('********************correlation results**********************')
-	print('-----------------------------------------------------------------------------------------')
-	print('|                 Satisfying Absolute VS standard ML reliability metrics                |')
-	print('-----------------------------------------------------------------------------------------')
-	print('|           |metrics for sampled original images| metrics for sampled transformed images|')
-	print('-----------------------------------------------------------------------------------------')
-	print('| corr type |    accuracy     |        f1       |      accuracy       |        f1       |')
-	print('-----------------------------------------------------------------------------------------')
-	acc_corr, _ = pearsonr(sat_abs, val_acc)
-	f1_corr, _ = pearsonr(sat_abs, val_f1)
-	t_acc_corr, _ = pearsonr(sat_abs, trans_acc)
-	t_f1_corr, _ = pearsonr(sat_abs, trans_f1)
-	print('| Pearson   |      ' + str(round(acc_corr, 3)) + '      |      '  + str(round(f1_corr, 3)) + '      |       ' + str(round(t_acc_corr, 3)) + '         |     ' + str(round(t_f1_corr, 3)) + '       |')
-	print('-----------------------------------------------------------------------------------------')
-	acc_corr, _ = spearmanr(sat_abs, val_acc)
-	f1_corr, _ = spearmanr(sat_abs, val_f1)
-	t_acc_corr, _ = spearmanr(sat_abs, trans_acc)
-	t_f1_corr, _ = spearmanr(sat_abs, trans_f1) 
-	print('| Spearman  |      ' + str(round(acc_corr, 3)) + '      |      ' + str(round(f1_corr, 3)) + '      |       ' + str(round(t_acc_corr, 3)) + '         |     ' + str(round(t_f1_corr, 3)) + '       |')
-	print('-----------------------------------------------------------------------------------------')
-	print('\n')
-	print('-----------------------------------------------------------------------------------------')
-	print('|                 Satisfying Relative VS standard ML reliability metrics                |')
-	print('-----------------------------------------------------------------------------------------')
-	print('|           |metrics for sampled original images| metrics for sampled transformed images|')
-	print('-----------------------------------------------------------------------------------------')
-	print('| corr type |    accuracy     |        f1       |      accuracy       |        f1       |')
-	print('-----------------------------------------------------------------------------------------')
-	acc_corr, _ = pearsonr(sat_rel, val_acc)
-	f1_corr, _ = pearsonr(sat_rel, val_f1)
-	t_acc_corr, _ = pearsonr(sat_rel, trans_acc)
-	t_f1_corr, _ = pearsonr(sat_rel, trans_f1)
-	print('| Pearson   |      ' + str(round(acc_corr, 3)) + '      |      '  + str(round(f1_corr, 3)) + '      |       ' + str(round(t_acc_corr, 3)) + '         |     ' + str(round(t_f1_corr, 3)) + '       |')
-	print('-----------------------------------------------------------------------------------------')
-	acc_corr, _ = spearmanr(sat_rel, val_acc)
-	f1_corr, _ = spearmanr(sat_rel, val_f1)
-	t_acc_corr, _ = spearmanr(sat_rel, trans_acc)
-	t_f1_corr, _ = spearmanr(sat_rel, trans_f1) 
-	print('| Spearman  |      ' + str(round(acc_corr, 3)) + '      |      '  + str(round(f1_corr, 3)) + '      |       ' + str(round(t_acc_corr, 3)) + '         |     ' + str(round(t_f1_corr, 3)) + '       |')
-	print('-----------------------------------------------------------------------------------------')
+		l_mu_abs.append(mu_abs)
+		l_sigma_abs.append(sigma_abs)
+		l_mu_rel.append(mu_rel)
+		l_sigma_rel.append(sigma_rel)
 
-	print("Correlation between the satisfaction of two requirements:")
-	corr, _ = pearsonr(sat_rel, sat_abs)
-	print('pearson correlation: %.3f' % corr)
-	corr, _ = spearmanr(sat_rel, sat_abs)
-	print('spearman correlation: %.3f' % corr)
+	
+		print('| '+ model  +' | ' + str(mu_abs) + ' | ' + str(sigma_abs) + ' | ' + str(conf_abs) + ' | ' + str(mu_rel) + ' | ' + str(sigma_rel) + ' | ' + str(conf_rel) + ' | ' + str(accuracy) + ' | ' + str(f1) + ' |')
+		print('------------------------------------------------------------------------------------------------------')
+
+	print("Correlations:")
+	abs_acc, _ = pearsonr(sat_abs, test_acc)
+	print("conf_acc and accuacy of test images: " + str(round(abs_acc, 3)))
+	abs_f1, _ = pearsonr(sat_abs, test_f1)
+	print("conf_acc and f1 of test images: " + str(round(abs_f1, 3)))
+	rel_acc, _ = pearsonr(sat_rel, test_acc)
+	print("conf_pred and accuracy of test images: " + str(round(rel_acc, 3)))
+	rel_f1, _ = pearsonr(sat_rel, test_f1)
+	print("conf_pred and f1 of test images: " + str(round(rel_f1, 3)))
+	
