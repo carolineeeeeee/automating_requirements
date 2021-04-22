@@ -4,7 +4,7 @@ This is for our submission "Tackling the Unspecifiable: Reliability Requirements
 ## 1. Estimating parameters
 Our estimation scripts are in estimating/
 
-**Note:** estimating/image_maniputation.py is originally from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py. We made minor changes to adapt it to our scripts. 
+> **_NOTE:_** estimating/image_maniputation.py is originally from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py. We made minor changes to adapt it to our scripts. 
 
 To run parameter estimation in our paper, follow these steps to set up:
 1. Download ILSVRC2012 training set from http://www.image-net.org/challenges/LSVRC/2012/
@@ -28,8 +28,102 @@ To run the evaluation in the paper, follow these steps to set up:
 
 In the directory verifying/ we also provide bootstrapping and detection result files from the experiments conducted for the evaluation section in the paper. Simply complete steps 1-3 from above and then run `python3 automated_bootstrap.txt -load_existing -t TRANSFORMATION` to reproduce the results of our evaluation experiments for one specific transformation. 
 
-To re-run bootstrapping, complete all the steps then run `python3 automated_bootstrap.txt -d path_to_darknet -i path_to_inet.val.list -n number_of_batches -s number_of_images_per_batch`. 
+To re-run bootstrapping, complete all the steps then run `python3 automated_bootstrap.txt -d path_to_darknet -i path_to_inet.val.list -n number_of_batches -s number_of_images_per_batch -t transformation`. 
 
 ## 3. Supplementary materials
 ### 3.1 CV-HAZOP entries 
-### 3.1 Extended experiment results
+> **_NOTE:_** The complete CV-HAZOP checklist can be found: https://vitro-testing.com/cv-hazop/
+
+Here we show our identified relevant and applicable CV-HAZOP entries. We provide the entry numbers, to see the details of each entry, please refer to the original CV-HAZOP check list with the link above.
+1. Relevant entries for identifying safety-related image transformations.
+
+2. Applicable entries for our method.
+
+### 3.1 Extended experiment results from Evaluation
+> **_NOTE:_** All images are taken from ILSVRC2012 validation set, all models are retrieved from http://pjreddie.com/darknet/
+1. Testing on 150 car images and 500 random images from other classes. 200 batches of 200 images are sampled during bootstrap.
+Since for bootstrapping, the number of batches is considered enough if we change the random seed and see similar results, we first demonstrate that 200 batches of images are enough batches through two runs with different random seeds.
+
+    Verifying whether darknet 19 satisfies our requirements for recognizing cars with the transformation intensity_shift:
+
+    Verifying accuracy-preserving: 
+    |       | Estimated mean      | Estimated standard deviation  |
+    | ----------- | ----------- | ----------- |
+    | first run      | 0.92      | 0.016       |
+    | second run   | 0.92   | 0.017        |
+
+    Verifying prediction-preserving:
+    |       | Estimated mean      | Estimated standard deviation |
+    | ----------- | ----------- | ----------- |
+    | first run      | 0.973      | 0.010       |
+    | second run   | 0.977   | 0.010        |
+
+As shown in the above tables, we see very similar results for verifying both requirements. Thus, though it may not be the smallest number of batches needed, 200 batches are considred enough samples.
+
+2. Due to space limit, here we show the esimated mean and standard deviation for the experiment results included in the paper.
+
+    - Intensity shift
+
+        Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.897|0.017|  0.141 |
+        | darknet19 | 0.92 | 0.016 | 0.251 |
+        | darknet53_448 | 0.94 | 0.014 | 0.367 |
+        | resnet50 | 0.936 | 0.016 | 0.18 |
+        |resnext50 | 0.94 | 0.014 | 0.22 |
+        | vgg-16 | 0.929 | 0.016 | 0.215 |
+
+        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.973 | 0.01 | 0.004|
+        | darknet19 | 0.978 | 0.01 | 0.013 |
+        | darknet53_448 | 0.988 | 0.007 | 0.046  |
+        | resnet50 | 0.978 | 0.01 | 0.019 |
+        |resnext50 | 0.983 | 0.008 | 0.023 |
+        | vgg-16 | 0.977 | 0.01 | 0.01 |
+
+    - Gaussian noise
+
+        Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.866 | 0.02 | 0.007 |
+        | darknet19 | 0.906 | 0.019 | 0.095|
+        | darknet53_448 | 0.941 | 0.014 | 0.391 |
+        | resnet50 | 0.931 | 0.015 | 0.094  |
+        |resnext50 | 0.934 | 0.014 | 0.125  |
+        | vgg-16 | 0.906 | 0.017 | 0.019|
+
+        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.949 | 0.014 | 0.0|
+        | darknet19 | 0.968 | 0.012 | 0.006  |
+        | darknet53_448 | 0.976 | 0.01 | 0.007 |
+        | resnet50 |0.969 | 0.01 | 0.002  |
+        |resnext50 | 0.973 | 0.01 | 0.004|
+        | vgg-16 | 0.955 | 0.013 | 0.0 |
+    
+    - Gamma adjustment
+        
+         Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.911 | 0.016 | 0.402 |
+        | darknet19 | 0.931 | 0.015 | 0.511|
+        | darknet53_448 | 0.946 | 0.013 | 0.557 |
+        | resnet50 | 0.951 | 0.013 | 0.5  |
+        |resnext50 | 0.949 | 0.013 | 0.447  |
+        | vgg-16 | 0.94 | 0.015 | 0.459 |
+
+        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
+        |model| mean | standard deviation| confidence of satisfaction  | 
+        |-----|----|------|-----------|
+        |  alexnet   | 0.992 | 0.006 | 0.075|
+        | darknet19 | 0.993 | 0.005 | 0.096   |
+        | darknet53_448 | 0.994 | 0.005 | 0.098 |
+        | resnet50 |0.991 | 0.006 | 0.068  |
+        |resnext50 | 0.993 | 0.006 | 0.101|
+        | vgg-16 | 0.992 | 0.006 | 0.091 |
