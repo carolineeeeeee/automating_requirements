@@ -7,14 +7,15 @@ Our estimation scripts are in estimating/
 > **_NOTE:_** estimating/image_maniputation.py is originally from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py. We made minor changes to adapt it to our scripts. 
 
 To run parameter estimation in our paper, follow these steps to set up:
-1. Download ILSVRC2012 training set from http://www.image-net.org/challenges/LSVRC/2012/
-2. Download experiment results for the five transformations used in the paper (contrast, noise, highpass, lowpass, phase noise) from https://github.com/rgeirhos/generalisation-humans-DNNs/tree/master/raw-data/humans. Create a directory in estimating/ and name it csv_files/, then put the files in estimating/csv_files/.
-3. Download VSNR, VIF and CW-SSIM implementations from Chandler et al., Sheikh et al. and Sampat et al.
-4. Run get_IQA.py with `python3 get_IQA.py --VIF_PATH VIF_PATH --CW_SSIM_PATH CW_SSIM_PATH --matlabPyrTools_PATH matlabPyrTools_PATH` to obtain the image pair to visual_change score mapping 
+1. Clone this repo
+2. Download ILSVRC2012 training set from http://www.image-net.org/challenges/LSVRC/2012/
+3. Download experiment results for the five transformations used in the paper (contrast, noise, highpass, lowpass, phase noise) from https://github.com/rgeirhos/generalisation-humans-DNNs/tree/master/raw-data/humans. Create a directory in estimating/ and name it csv_files/, then put the files in estimating/csv_files/.
+4. Download VSNR, VIF and CW-SSIM implementations from Chandler et al., Sheikh et al. and Sampat et al.
+5. Run get_IQA.py with `python3 get_IQA.py --VIF_PATH VIF_PATH --CW_SSIM_PATH CW_SSIM_PATH --matlabPyrTools_PATH matlabPyrTools_PATH` to obtain the image pair to visual_change score mapping 
 
 5. Run `python3 collect_results -c CLASS` to obtain the parameters for one specific class.
 
-(**Note:** steps 1, 3, 4 can be skipped since we also provided our pre-compiled file estimating/all_filename_to_IQA.pkl)
+(**Note:** steps 2, 4, 5 can be skipped since we also provided our pre-compiled file estimating/all_filename_to_IQA.pkl)
 ## 2. Verifying ML models with our reliability requirements
 Our testing script is verifying/automated_bootstrap.py
 Run `python3 automated_bootstrap.py -h` to see instructions for input arguments.
