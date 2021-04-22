@@ -186,12 +186,12 @@ def find_labels_preserved():
 			if (orig_detection != a) and (a != b) and (orig_detection == b): 
 				wrong_wrong_same += 1
 
-	print(str(wrong_right_count) + '/' + str(len(results_tuples)))
-	print(str(wrong_wrong_count) + '/' + str(len(results_tuples)))
-	print(str(wrong_wrong_same) + '/' + str(len(results_tuples)))
+	#print(str(wrong_right_count) + '/' + str(len(results_tuples)))
+	#print(str(wrong_wrong_count) + '/' + str(len(results_tuples)))
+	#print(str(wrong_wrong_same) + '/' + str(len(results_tuples)))
 	return all_base_results, results_tuples
 
-def all_class_diff_trans(results_tuples, interval, display=True):
+def all_class_diff_trans(results_tuples, object_class, interval, display=True):
 	classes = ['dog', 'bird', 'car', 'truck', 'bottle', 'cat', 'boat', 'bear', 'chair', 'oven', 'clock', 'airplane', 'bicycle', 'elephant', 'keyboard', 'knife']
 
 	transformations = ['contrast', 'noise', 'highpass', 'lowpass', "rotation", 'phase-scrambling']
@@ -212,9 +212,9 @@ def all_class_diff_trans(results_tuples, interval, display=True):
 		while i <= 1:
 			i = round(i, 2)
 			interval_result = [r for r in results_transformation if r[2] <= i and r[2] > i-interval]
-			if len(interval_result) > 0:
-				acc = len([r for r in interval_result if r[1]==r[-1]])/len(interval_result)
-				accuracy_list.append((i, acc, len(interval_result), acc, len([r for r in interval_result if r[1]==r[-1]])))
+			if len(interval_result) >=10:
+				acc = len([r for r in interval_result if (r[1]== object_class)==(r[-1]==object_class)])/len(interval_result)
+				accuracy_list.append((i, acc, len(interval_result), acc, len([r for r in interval_result if (r[1]== object_class)==(r[-1]==object_class)])))
 			i += interval
 			i = round(i, 2)
 		result_transformation[t] = accuracy_list#![c][t] = accuracy_list
@@ -280,14 +280,12 @@ def find_decrease_in_percentage(interval, display=True):
 	final_all_results = {}
 
 	for c in classes:
-		print(c)
 		# first filter all the results with this class
 		results_all_transformations = [t for t in all_results if t[3] == c]
 		base_results_all_transformations = [t for t in all_base_results if t[3] == c]
 		final_all_results[c] = {}
 		#then look at all the transformations
 		for t in transformations:
-			print(t)
 			results_transformation = [r for r in results_all_transformations if r[-1] == t]
 			base_results_transformation = [r for r in base_results_all_transformations if r[-1] == t]
 			if len(base_results_transformation) > 0:
@@ -319,35 +317,101 @@ def find_decrease_in_percentage(interval, display=True):
 
 	return final_all_results, all_results, all_base_results
 
-if __name__ == "__main__":
-	object_class = 'car'
+def usage():
+	#usage = ""
+	parser=argparse.ArgumentParser(
+	description='''This is the script for our subprocess IV Verifying MLC against requirement ''')
+	parser.add_argument('-c', '--class', type=str, help='the class of object to estimate the parameter, default is car')
 	
+	args=parser.parse_args()
+if __name__ == "__main__":
+	list_labels = ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']
+	transformations = ['contrast', 'noise', 'highpass', 'lowpass',  'phase-scrambling']
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "class="])
+	except getopt.GetoptError as err:
+		# print help information and exit:
+		print(err)  
+		usage()
+		sys.exit(2)
+
+	object_class = 'car'
+
+	for o,a in opts:
+		if o in ("-h", "--help"):
+			usage()
+			sys.exit()
+			only_read = True
+		elif o in ("-c", "--class"):
+			object_class = a.lower().strip()
+		else:
+			assert False, "unhandled option"
+			print("invalid argument\n")
+			usage()
+			sys.exit()
+	if a not in list_labels:
+		print("invalid class, must be from one of ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']")
+		usage()
+		sys.exit()
+		
 	# -load, -dont_show
 	write_new_csv()
 	
+	# TODO: need to change the accuracy measure to car not car
 	# for relative
 	all_base_result, results_tuples = find_labels_preserved()
-	result_transformation = all_class_diff_trans(results_tuples, 0.01, False)
+	result_transformation = all_class_diff_trans(results_tuples, 'car', 0.01, False)
 	
+	t_diff_trans = []
+	a_diff_trans = []
+	for t in transformations:
+		cur_acc_array = result_transformation[t]
+		a = cur_acc_array[0][1]
+		a_diff_trans.append(a)
+		vd_score_to_p_value = []
+		for entry in cur_acc_array:
+			p_value = stats.binom_test(entry[-1], n=entry[2], p=a)
+			vd_score_to_p_value.append(p_value)
+		i = len(vd_score_to_p_value)-1
+		while i > 0:
+			if (vd_score_to_p_value[i] > 0.05):
+				break
+			i = i -1
+
+		t_diff_trans.append(cur_acc_array[i-1][0])
+	print(a_diff_trans)
+	print("For prediction preservation:")
+	t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
+	print("t = " + str(t[0]))
+
+	a = stats.t.interval(0.95, len(a_diff_trans)-1, loc=np.mean(a_diff_trans), scale=stats.sem(a_diff_trans))
+	print("a = "+ str(a[0]))
+
+
 	# for absolute
 	final_all_results, all_results, all_base_results = find_decrease_in_percentage(0.01, False)
-	#print(final_all_results['car']['noise'])
-
-	exit()
-	#ground truth, detection, IQA, transformation, orig_detection
-
-	#(i, acc, len(interval_result), acc, len([r for r in transformation_results if r[1]==r[-1]]))
-
-	# non-binary transformations excluding eidolon because they are just not good 
-	transformations = ['contrast', 'noise', 'highpass', 'lowpass', 'rotation',  'phase-scrambling']
+	final_object_results = final_all_results[object_class]
+	base_results_all_transformations = [t for t in all_base_results if t[3] == object_class]
+	t_diff_trans = []
 	for t in transformations:
-		print(t+"_same_label.txt")
-		f = open(t+"_same_label.txt", 'w')
-		#i, acc, len(interval_result), base_accuracy-acc))
-		f.write("IQA" + "\t" + "Accuracy" + '\t' + "Count" + '\t' + 'Accuracy_Decrease' +'\t' + 'Num_Accs'+'\n')
-		#f.write("IQA" + "\t"  + 'Accuracy_Decrease' +'\n')
-		for i in result_transformation[t]:
-			if i[2] >= 10:
-				f.write(str(i[0]) + "\t" + str(i[1]) + "\t" + str(i[2]) + "\t" + str(i[3]) + "\t" + str(i[4])+ "\n")
-		f.close()
+		cur_acc_array = final_object_results[t]
+		base_results_transformation = [r for r in base_results_all_transformations if r[-1] == t]
+		if len(base_results_transformation) > 0:
+			base_acc = len([t for t in base_results_transformation if t[1]])/len(base_results_transformation)
+		vd_score_to_p_value = []
+		for entry in cur_acc_array:
+			p_value = stats.binom_test(entry[-1], n=entry[2], p=base_acc)
+			vd_score_to_p_value.append(p_value)
+		i = len(vd_score_to_p_value)-1
+		while i > 0:
+			if (vd_score_to_p_value[i] > 0.05):
+				break
+			i = i -1
+
+		t_diff_trans.append(cur_acc_array[i-1][0])
+	print("For accuracy preservation:")
+	t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
+	print("t = " + str(t[0]))
+
 	
