@@ -38,9 +38,11 @@ To re-run bootstrapping, complete all the steps then run `python3 automated_boot
 > **_NOTE:_** The complete CV-HAZOP checklist can be found: https://vitro-testing.com/cv-hazop/
 
 Here we show our identified relevant and applicable CV-HAZOP entries. We provide the entry numbers, to see the details of each entry, please refer to the original CV-HAZOP check list with the link above.
-1. Relevant entries for identifying safety-related image transformations.
 
-2. Applicable entries for our method.
+In our annotated version of CV-HAZOP checklist, which is included in this repo, entries that are annotated as yellow are considered not related to image transformations and entries that are annotated as blue are not applicable to our approach.
+
+1. Relevant entries for identifying safety-related image transformations are the entries that are not yellow.
+2. Applicable entries for our method are the entries that are neither yellow nor blue.
 
 ### 3.1 Extended experiment results from Evaluation
 > **_NOTE:_** All images are taken from ILSVRC2012 validation set, all models are retrieved from http://pjreddie.com/darknet/
