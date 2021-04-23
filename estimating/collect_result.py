@@ -10,6 +10,9 @@ import math
 from scipy.optimize import minimize, least_squares, curve_fit
 from scipy import stats
 import numpy as np
+import getopt
+import argparse
+import sys
 
 csv_files_dir = './csv_files/'
 new_csv_file_dir = './new_csv/'
@@ -345,16 +348,17 @@ if __name__ == "__main__":
 			only_read = True
 		elif o in ("-c", "--class"):
 			object_class = a.lower().strip()
+			if object_class not in list_labels:
+				print("invalid class, must be from one of ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']")
+				usage()
+				sys.exit()
 		else:
 			assert False, "unhandled option"
 			print("invalid argument\n")
 			usage()
 			sys.exit()
-	if a not in list_labels:
-		print("invalid class, must be from one of ['airplane', 'bicycle', 'boat', 'car', 'chair', 'dog', 'keyboard', 'oven', 'bear', 'bird', 'bottle', 'cat', 'clock', 'elephant', 'knife', 'truck']")
-		usage()
-		sys.exit()
-		
+	
+
 	# -load, -dont_show
 	write_new_csv()
 	
@@ -365,6 +369,7 @@ if __name__ == "__main__":
 	
 	t_diff_trans = []
 	a_diff_trans = []
+	print("For prediction preservation:")
 	for t in transformations:
 		cur_acc_array = result_transformation[t]
 		a = cur_acc_array[0][1]
@@ -378,22 +383,28 @@ if __name__ == "__main__":
 			if (vd_score_to_p_value[i] > 0.05):
 				break
 			i = i -1
-
 		t_diff_trans.append(cur_acc_array[i-1][0])
-	print(a_diff_trans)
-	print("For prediction preservation:")
-	t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
-	print("t = " + str(t[0]))
+		print("threshold t for " + t + ": " + str(cur_acc_array[i-1][0]))
+		print("human percentage a for " + t + ": " + str(a))
+	
+	if all(elem == t_diff_trans[0] for elem in t_diff_trans):
+		print("generalized t = " + str(t_diff_trans[0]))
+	else:
+		t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
+		print("generalized t = " + str(t[0]))
 
-	a = stats.t.interval(0.95, len(a_diff_trans)-1, loc=np.mean(a_diff_trans), scale=stats.sem(a_diff_trans))
-	print("a = "+ str(a[0]))
-
+	if all(elem == a_diff_trans[0] for elem in a_diff_trans):
+		print("generalized a = "+ str(a_diff_trans[0]))
+	else:
+		a = stats.t.interval(0.95, len(a_diff_trans)-1, loc=np.mean(a_diff_trans), scale=stats.sem(a_diff_trans))
+		print("generalized a = "+ str(a[0]))
 
 	# for absolute
 	final_all_results, all_results, all_base_results = find_decrease_in_percentage(0.01, False)
 	final_object_results = final_all_results[object_class]
 	base_results_all_transformations = [t for t in all_base_results if t[3] == object_class]
 	t_diff_trans = []
+	print("For accuracy preservation:")
 	for t in transformations:
 		cur_acc_array = final_object_results[t]
 		base_results_transformation = [r for r in base_results_all_transformations if r[-1] == t]
@@ -410,8 +421,13 @@ if __name__ == "__main__":
 			i = i -1
 
 		t_diff_trans.append(cur_acc_array[i-1][0])
-	print("For accuracy preservation:")
-	t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
-	print("t = " + str(t[0]))
+		print("threshold t for " + t + ": " + str(cur_acc_array[i-1][0]))
+
+	if all(elem == t_diff_trans[0] for elem in t_diff_trans):
+		print("generalized t = " + str(t_diff_trans[0]))
+	else:
+		t = stats.t.interval(0.95, len(t_diff_trans)-1, loc=np.mean(t_diff_trans), scale=stats.sem(t_diff_trans))
+		print("generalized t = " + str(t[0]))
+	
 
 	

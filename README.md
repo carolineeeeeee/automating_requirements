@@ -44,6 +44,15 @@ In our annotated version of CV-HAZOP checklist, which is included in this repo, 
 1. Relevant entries for identifying safety-related image transformations are the entries that are not yellow.
 2. Applicable entries for our method are the entries that are neither yellow nor blue.
 
+To determine whether an image transformation is safety-related and whether it is applicable to our approach. Follow the following steps:
+1. Identify the location on the perception pipeline that the transformation is affecting. For example, intensity shift affects light sources.
+2. Then identify the parameter of that the transformation is changing. For example, intensity shift changes the intensity.
+3. Filter the CV-HAZOP entries with the known location and parameter on their website:https://vitro-testing.com/cv-hazop/ 
+For example, this is what we would see if we fileter entries for light sources and intensity. 
+![image info](cv_hazop_filtering.png)
+4. Filter more by checking possible guide word or consequence to locate the exact entry. 
+5. To see whether the found entry is applicable to our approach, check if it is annotated with color in our annotated version of CV-HAZOP checklist.
+
 ### 3.1 Extended experiment results from Evaluation
 > **_NOTE:_** All images are taken from ILSVRC2012 validation set, all models are retrieved from http://pjreddie.com/darknet/
 1. Testing on 150 car images and 500 random images from other classes. 200 batches of 200 images are sampled during bootstrap.
@@ -132,3 +141,5 @@ As shown in the above tables, we see very similar results for verifying both req
         | ResNet50 |0.991 | 0.006 | 0.068  |
         |ResNext50 | 0.993 | 0.006 | 0.101|
         | VGG-16 | 0.992 | 0.006 | 0.091 |
+
+        Notice that the estimated mean measured for the requirement satisfactions, accuracy and𝑓1-score are verysimilar across different models, some only differ by0.2%. Due to thelow variances in data samples, the correlation is lower than0.5[16],which is observed with the Gama transformation. Therefore, thelow correlation for the Gama transformation is not an evidenceagainst the validity of our requirements. 

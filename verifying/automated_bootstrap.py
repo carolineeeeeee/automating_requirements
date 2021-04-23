@@ -21,13 +21,20 @@ import time
 import resource
 import getopt
 import argparse
+from scipy.ndimage.filters import gaussian_filter
+from scipy import fftpack as fp
+from skimage.color import rgb2gray, rgb2grey
 
 # sample transformation parameter values with in the specified range, here chosen to be evenly distributed
 # obtained through sampling images and checking the vd value in the requirements
 intensity_shift_params = list(range(-120, 121))
 gaussian_noise_params = list(range(4, 49))
 gamma_params = [x/100 for x in list(range(90, 109))]
-
+contrast_params = [x/10 for x in list(range(1, 10))]
+uniform_noise_params = [x/10 for x in list(range(0, 7))]
+lowpass_params = [x/10 for x in list(range(0, 30))]
+highpass_params = [x/10 for x in list(range(5, 150))]
+phase_noise_params = list(range(0, 90))
 # transformations
 def intensity_shift(img, degree, precision=0):  
 	return (img + np.around(degree, precision)).clip(min=0, max=255) 
@@ -43,6 +50,185 @@ def gaussian_noise(img, state, img_h, img_w, ch, precision=0):
 
 def adjust_gamma(img, gamma, precision=0):
 	return np.around(exposure.adjust_gamma(img, gamma), precision)
+
+def adjust_contrast(image, contrast_level):
+	"""
+	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+	"""
+
+	assert(contrast_level >= 0.0), "contrast_level too low."
+	assert(contrast_level <= 1.0), "contrast_level too high."
+
+	return (1-contrast_level)/2.0 + image.dot(contrast_level)
+
+def apply_uniform_noise(image, low, high, rng=None):
+	"""
+	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+	"""    
+	nrow = image.shape[0]
+	ncol = image.shape[1]
+	nch = image.shape[2]   
+	
+	image = image / 255 
+	
+	image = image + get_uniform_noise(low, high, nrow, ncol, nch, rng)    #clip values
+	
+	image = np.where(image < 0, 0, image)
+	image = np.where(image > 1, 1, image)    
+	
+	assert is_in_bounds(image, 0, 1), "values <0 or >1 occurred"   
+	
+	image = image * 255
+	return image
+	
+def get_uniform_noise(low, high, nrow, ncol, nch, rng=None):
+	"""
+	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+	"""    
+	if rng is None:
+		return np.random.uniform(low=low, high=high,
+								 size=(nrow, ncol, nch))
+	else:
+		return rng.uniform(low=low, high=high,
+						   size=(nrow, ncol, nch))
+
+def is_in_bounds(mat, low, high):
+	"""
+	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+	"""    
+	return np.all(np.logical_and(mat >= 0, mat <= 1))
+
+def low_pass_filter(image, std):
+    """
+    Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+    """
+    # set this to mean pixel value over all images
+    bg_grey = 0.4423
+    image = image / 255 
+    # covert image to greyscale and define variable prepare new image
+    #image = rgb2grey(image)
+    new_image = np.zeros(image.shape, image.dtype)
+
+    # aplly Gaussian low-pass filter
+    new_image = gaussian_filter(image, std, mode ='constant', cval=bg_grey)
+
+    # crop too small and too large values
+    #new_image[new_image < 0] = 0
+    #new_image[new_image > 1] = 1
+
+    # return stacked (RGB) grey image
+    #return np.dstack((new_image,new_image,new_image))
+    new_image = new_image * 255
+    return new_image.clip(min=0, max=255) 
+
+def high_pass_filter(image, std):
+    """
+	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+    """
+
+    # set this to mean pixel value over all images
+    bg_grey = 0.4423
+    image = image / 255 
+    
+    # convert image to greyscale and define variable prepare new image
+    #image = rgb2grey(image)
+    new_image = np.zeros(image.shape, image.dtype)
+
+    # aplly the gaussian filter and subtract from the original image
+    gauss_filter = gaussian_filter(image, std, mode ='constant', cval=bg_grey)
+    new_image = image - gauss_filter
+
+    # add mean of old image to retain image statistics
+    mean_diff = bg_grey - np.mean(new_image, axis=(0,1))
+    new_image = new_image + mean_diff
+
+    # crop too small and too large values
+    #new_image[new_image < 0] = 0
+    #new_image[new_image > 1] = 1
+
+    # return stacked (RGB) grey image
+    #return np.dstack((new_image,new_image,new_image))
+    new_image = new_image * 255
+    return new_image.clip(min=0, max=255) 
+
+def scramble_phases(image, width):
+    """
+    Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+    """
+    image = image / 255 
+    # create array with random phase shifts from the interval [-width,width]
+    length = (image.shape[0]-1)*(image.shape[1]-1)
+    phase_shifts = np.random.random(length//2) - 0.5
+    phase_shifts = phase_shifts * 2 * width/180 * np.pi
+    
+    # convert to graysclae
+    channel = rgb2grey(image)
+    #channel = image
+    #print(channel.shape)
+
+    # Fourier Forward Tranform and shift to centre
+    f = fp.fft2(channel) #rfft for real values
+    f = fp.fftshift(f)
+
+
+    # get amplitudes and phases
+    f_amp = np.abs(f)
+    f_phase = np.angle(f)
+
+    # transformations of phases
+    # just change the symmetric parts of FFT outcome, which is
+    # [1:,1:] for the case of even image sizes
+    fnew_phase = f_phase
+    #print(f_phase.shape)
+    #print(phase_shifts.shape)
+    fnew_phase[1:,1:] = shift_phases(f_phase[1:,1:], phase_shifts)
+
+    # recalculating FFT complex representation from new phases and amplitudes
+    fnew = f_amp*np.exp(1j*fnew_phase)
+
+    # reverse shift to centre and perform Fourier Backwards Transformation
+    fnew = fp.ifftshift(fnew)
+    new_channel = fp.ifft2(fnew)
+
+    # make sure that there are no imaginary parts after transformation
+    new_channel = new_channel.real
+
+    # clip too small and too large values
+    new_channel[new_channel > 1] = 1
+    new_channel[new_channel < 0] = 0
+
+    new_channel = new_channel * 255
+    # return stacked (RGB) grey image
+    return np.dstack((new_channel, new_channel, new_channel))
+
+def shift_phases(f_phase, phase_shifts):
+    """
+    Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py 
+    """
+
+    # flatten array for easier transformation
+    f_shape = f_phase.shape
+    flat_phase = f_phase.flatten()
+    length = flat_phase.shape[0]
+
+    # apply phase shifts symmetrically to complex conjugate frequency pairs
+    # do not change c-component
+    print(phase_shifts.shape)
+    print(flat_phase[:length//2].shape)
+    if length%2 == 1:
+        flat_phase[:length//2] += phase_shifts
+        flat_phase[length//2+1:] -= phase_shifts
+    else:
+        flat_phase[:length//2] += phase_shifts
+        flat_phase[length//2:] -= phase_shifts
+
+
+    # reshape into output format
+    f_phase = flat_phase.reshape(f_shape)
+
+    return f_phase
+
+
 
 def filter_image_classes(JPEG_files, object_class):
 	class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
@@ -114,7 +300,37 @@ def gen_bootstrapping(num_batch, orig_path, gen_path, object_class, batch_size=5
 				img2 = adjust_gamma(img, param)
 				cv2.imwrite(pwd  + '/'+ store_path+'gamma_' + str(param) + "_" + image_name + '.JPEG', img2)
 				set_transformed.append(pwd  + '/'+ store_path+ 'gamma_' + str(param) + "_" + image_name + '.JPEG')
-	
+
+			if transformation == 'contrast':
+				param = random.choice(contrast_params)
+				img2 = adjust_contrast(img, param)
+				cv2.imwrite(pwd  + '/'+ store_path+'contrast_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'contrast_' + str(param) + "_" + image_name + '.JPEG')
+			
+			if transformation == 'uniform_noise':
+				param = random.choice(uniform_noise_params)
+				img2 = apply_uniform_noise(img, 0, param)
+				cv2.imwrite(pwd  + '/'+ store_path+'uniform_noise_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'uniform_noise_' + str(param) + "_" + image_name + '.JPEG')
+
+			if transformation == 'lowpass':
+				param = random.choice(lowpass_params)
+				img2 = low_pass_filter(img, param)
+				cv2.imwrite(pwd  + '/'+ store_path+'lowpass_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'lowpass_' + str(param) + "_" + image_name + '.JPEG')
+
+			if transformation == 'highpass':
+				param = random.choice(highpass_params)
+				img2 = high_pass_filter(img, param)
+				cv2.imwrite(pwd  + '/'+ store_path+'highpass_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'highpass_' + str(param) + "_" + image_name + '.JPEG')
+
+			if transformation == 'phase_noise':
+				param = random.choice(phase_noise_params)
+				img2 = scramble_phases(img, param)
+				cv2.imwrite(pwd  + '/'+ store_path+'phase_noise_' + str(param) + "_" + image_name + '.JPEG', img2)
+				set_transformed.append(pwd  + '/'+ store_path+ 'phase_noise_' + str(param) + "_" + image_name + '.JPEG')
+
 	# write two txt files
 	txt = open("bootstrap_orig_list.txt", "w")
 	for f in set_orig:
@@ -414,7 +630,7 @@ def usage():
 	parser.add_argument('-n', '--number_of_batches', type=int, help='the number of batches for bootstrapping, must be integer, default is 200')
 	parser.add_argument('-s', '--batch_size', type=int, help='the number of images per batch for bootstrapping, must be integer, default is 500')
 	parser.add_argument('-c', '--class', type=str, help='the object class y to test in both requirements, default is car, must be one of airplane, bicycle, boat, car, chair, dog, keyboard, oven, bear, bird, bottle, cat, clock, elephant, knife, truck')
-	parser.add_argument('-t', '--transformation', type=str, help='the transformation to test, choose from one of intensity_shift, gaussian_noise or gamme, default is intensity_shift')
+	parser.add_argument('-t', '--transformation', type=str, help='the transformation to test, choose from one of intensity_shift, gaussian_noise, gamme, contrast, uniform_noise, lowpass, highpass and phase_noise, default is intensity_shift')
 	args=parser.parse_args()
 
 if __name__ == "__main__":
@@ -447,7 +663,7 @@ if __name__ == "__main__":
 	class_to_labels['knife'] = ['cleaver', 'meat cleaver', 'chopper']
 	class_to_labels['truck'] = ['fire engine', 'fire truck', 'garbage truck', 'dustcart', 'minivan', 'moving van', 'pickup', 'pickup truck', 'police van', 'police wagon', 'paddy wagon', 'patrol wagon', 'wagon', 'black Maria', 'tow truck', 'tow car', 'wrecker', 'trailer truck', 'tractor trailer', 'trucking rig', 'rig', 'articulated lorry', 'semi']
 
-	list_transf = ['intensity_shift', "gaussian_noise", "gamma"]
+	list_transf = ['intensity_shift', "gaussian_noise", "gamma", 'contrast', 'uniform_noise', 'lowpass', "highpass", "phase_noise"]
 
 	YOLO_path = None
 	read_exist = False
@@ -492,7 +708,7 @@ if __name__ == "__main__":
 		elif o in ('-t', '--transformation'):
 			transf = a
 			if transf not in list_transf:
-				print("transformation must be from one of intensity_shift, gaussian_noise, gamma")
+				print("transformation must be from one of intensity_shift, gaussian_noise, gamma, contrast, uniform_noise, lowpass, highpass, phase_noise")
 				sys.exit()
 		else:
 			assert False, "unhandled option"
@@ -567,4 +783,6 @@ if __name__ == "__main__":
 	print("conf_pred and accuracy of test images: " + str(round(rel_acc, 3)))
 	rel_f1, _ = pearsonr(sat_rel, test_f1)
 	print("conf_pred and f1 of test images: " + str(round(rel_f1, 3)))
+	abs_rel, _ = pearsonr(sat_abs, sat_rel)
+	print("conf_acc and conf_pred: " + str(round(abs_rel, 3)))
 	
