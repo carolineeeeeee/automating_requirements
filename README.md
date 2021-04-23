@@ -74,72 +74,190 @@ Since for bootstrapping, the number of batches is considered enough if we change
 
 As shown in the above tables, we see very similar results for verifying both requirements. Thus, though it may not be the smallest number of batches needed, 200 batches are considred enough samples.
 
-2. Due to space limit, here we show the esimated mean and standard deviation for the experiment results included in the paper.
+2. Due to space limit, here we show the esimated mean and standard deviation for the experiment results included in the paper. For verifying **accuracy-preservation** requirement, we are estimating the _accuracy_ of an ML model on the test images generated through bootstrapping.  For verifying **prediction-preservation** requirement, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated through bootstrapping.
 
+    - Contrast adjustment
+        - Verifying **accuracy-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.882|0.021|  0.054 |
+            | Darknet19 | 0.912 | 0.018 | 0.142|
+            | Darknet53_448 | 0.943 | 0.015 | 0.446  |
+            | ResNet50 | 0.933 | 0.016 | 0.125 |
+            |ResNext50 |  0.942 | 0.015 | 0.277 |
+            | VGG-16 | 0.931 | 0.016 | 0.246 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.958 | 0.013 | 0.001 |
+            | Darknet19 | 0.973 | 0.011 | 0.007|
+            | Darknet53_448 | 0.987 | 0.007 | 0.035  |
+            | ResNet50 | 0.976 | 0.01 | 0.007 |
+            |ResNext50 |  0.986 | 0.007 | 0.028 |
+            | VGG-16 | 0.978 | 0.01 | 0.011 |
+
+    - Uniform noise
+        - Verifying **accuracy-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.867 | 0.02 | 0.01 |
+            | Darknet19 | 0.904 | 0.019 | 0.083 |
+            | Darknet53_448 | 0.939 | 0.015 | 0.343  |
+            | ResNet50 | 0.926 | 0.016 | 0.058 |
+            |ResNext50 |  0.932 | 0.016 | 0.117 |
+            | VGG-16 | 0.903 | 0.018 | 0.019 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.95 | 0.014 | 0.0  |
+            | Darknet19 | 0.963 | 0.012 | 0.001|
+            | Darknet53_448 | 0.976 | 0.01 | 0.008  |
+            | ResNet50 | 0.97 | 0.011 | 0.004 |
+            |ResNext50 |  0.97 | 0.011 | 0.003 |
+            | VGG-16 | 0.952 | 0.014 | 0.0 |
+    - High-pass filter
+        - Verifying **accuracy-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.894 | 0.019 | 0.169 |
+            | Darknet19 | 0.922 | 0.018 | 0.352 |
+            | Darknet53_448 | 0.94 | 0.014 | 0.416  |
+            | ResNet50 | 0.937 | 0.014 | 0.18 |
+            |ResNext50 |  0.948 | 0.014 | 0.41 |
+            | VGG-16 |  0.929 | 0.015 | 0.23 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.971 | 0.01 | 0.003  |
+            | Darknet19 | 0.977 | 0.01 | 0.01|
+            | Darknet53_448 | 0.984 | 0.008 | 0.021  |
+            | ResNet50 | 0.979 | 0.009 | 0.01|
+            |ResNext50 |  0.982 | 0.009 | 0.021 |
+            | VGG-16 | 0.979 | 0.01 | 0.015 |
+    - Low-pass filter
+        - Verifying **accuracy-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.86 | 0.021 | 0.005 |
+            | Darknet19 | 0.877 | 0.02 | 0.005 |
+            | Darknet53_448 | 0.916 | 0.019 | 0.087  |
+            | ResNet50 | 0.917 | 0.018 | 0.044 |
+            |ResNext50 |  0.918 | 0.018 | 0.051 |
+            | VGG-16 |  0.91 | 0.019 | 0.085 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.936 | 0.016 | 0.0  |
+            | Darknet19 | 0.937 | 0.016 | 0.0|
+            | Darknet53_448 | 0.955 | 0.014 | 0.001 |
+            | ResNet50 | 0.962 | 0.012 | 0.001|
+            |ResNext50 |  0.955 | 0.015 | 0.001 |
+            | VGG-16 | 0.95 | 0.014 | 0.0 |
+    - Phase noise
+        - Verifying **accuracy-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.824 | 0.022 | 0.0 |
+            | Darknet19 | 0.839 | 0.021 | 0.0 |
+            | Darknet53_448 | 0.873 | 0.019 | 0.0 |
+            | ResNet50 | 0.871 | 0.021 | 0.0 |
+            |ResNext50 |  0.877 | 0.019 | 0.0 |
+            | VGG-16 |  0.845 | 0.021 | 0.0 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.902 | 0.018 | 0.0  |
+            | Darknet19 |  0.895 | 0.018 | 0.0|
+            | Darknet53_448 | 0.923 | 0.017 | 0.0 |
+            | ResNet50 | 0.912 | 0.019 | 0.0|
+            |ResNext50 |  0.917 | 0.017 | 0.0 |
+            | VGG-16 | 0.889 | 0.02 | 0.0 |
     - Intensity shift
 
-        Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.897|0.017|  0.141 |
-        | Darknet19 | 0.92 | 0.016 | 0.251 |
-        | Darknet53_448 | 0.94 | 0.014 | 0.367 |
-        | ResNet50 | 0.936 | 0.016 | 0.18 |
-        |ResNext50 | 0.94 | 0.014 | 0.22 |
-        | VGG-16 | 0.929 | 0.016 | 0.215 |
+        - Verifying **accuracy-preservation** 
 
-        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.973 | 0.01 | 0.004|
-        | Darknet19 | 0.978 | 0.01 | 0.013 |
-        | Darknet53_448 | 0.988 | 0.007 | 0.046  |
-        | ResNet50 | 0.978 | 0.01 | 0.019 |
-        |ResNext50 | 0.983 | 0.008 | 0.023 |
-        | VGG-16 | 0.977 | 0.01 | 0.01 |
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.897|0.017|  0.141 |
+            | Darknet19 | 0.92 | 0.016 | 0.251 |
+            | Darknet53_448 | 0.94 | 0.014 | 0.367 |
+            | ResNet50 | 0.936 | 0.016 | 0.18 |
+            |ResNext50 | 0.94 | 0.014 | 0.22 |
+            | VGG-16 | 0.929 | 0.016 | 0.215 |
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.973 | 0.01 | 0.004|
+            | Darknet19 | 0.978 | 0.01 | 0.013 |
+            | Darknet53_448 | 0.988 | 0.007 | 0.046  |
+            | ResNet50 | 0.978 | 0.01 | 0.019 |
+            |ResNext50 | 0.983 | 0.008 | 0.023 |
+            | VGG-16 | 0.977 | 0.01 | 0.01 |
 
     - Gaussian noise
 
-        Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.866 | 0.02 | 0.007 |
-        | Darknet19 | 0.906 | 0.019 | 0.095|
-        | Darknet53_448 | 0.941 | 0.014 | 0.391 |
-        | ResNet50 | 0.931 | 0.015 | 0.094  |
-        |ResNext50 | 0.934 | 0.014 | 0.125  |
-        | VGG-16 | 0.906 | 0.017 | 0.019|
+        - Verifying **accuracy-preservation** 
 
-        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.949 | 0.014 | 0.0|
-        | Darknet19 | 0.968 | 0.012 | 0.006  |
-        | Darknet53_448 | 0.976 | 0.01 | 0.007 |
-        | Resnet50 |0.969 | 0.01 | 0.002  |
-        |Resnext50 | 0.973 | 0.01 | 0.004|
-        | VGG-16 | 0.955 | 0.013 | 0.0 |
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.866 | 0.02 | 0.007 |
+            | Darknet19 | 0.906 | 0.019 | 0.095|
+            | Darknet53_448 | 0.941 | 0.014 | 0.391 |
+            | ResNet50 | 0.931 | 0.015 | 0.094  |
+            |ResNext50 | 0.934 | 0.014 | 0.125  |
+            | VGG-16 | 0.906 | 0.017 | 0.019|
+
+        - Verifying **prediction-preservation** 
+
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.949 | 0.014 | 0.0|
+            | Darknet19 | 0.968 | 0.012 | 0.006  |
+            | Darknet53_448 | 0.976 | 0.01 | 0.007 |
+            | Resnet50 |0.969 | 0.01 | 0.002  |
+            |Resnext50 | 0.973 | 0.01 | 0.004|
+            | VGG-16 | 0.955 | 0.013 | 0.0 |
     
     - Gamma adjustment
         
-         Verifying **accuracy-preserving** requirement. Through bootstrapping, we are estimating the _accuracy_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.911 | 0.016 | 0.402 |
-        | Darknet19 | 0.931 | 0.015 | 0.511|
-        | Darknet53_448 | 0.946 | 0.013 | 0.557 |
-        | ResNet50 | 0.951 | 0.013 | 0.5  |
-        |ResNext50 | 0.949 | 0.013 | 0.447  |
-        | VGG-16 | 0.94 | 0.015 | 0.459 |
+         - Verifying **accuracy-preservation** 
+         
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.911 | 0.016 | 0.402 |
+            | Darknet19 | 0.931 | 0.015 | 0.511|
+            | Darknet53_448 | 0.946 | 0.013 | 0.557 |
+            | ResNet50 | 0.951 | 0.013 | 0.5  |
+            |ResNext50 | 0.949 | 0.013 | 0.447  |
+            | VGG-16 | 0.94 | 0.015 | 0.459 |
 
-        Verifying **prediction-preserving** requirement. Through bootstrapping, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated. 
-        |model| mean | standard deviation| confidence of satisfaction  | 
-        |-----|----|------|-----------|
-        |  Alexnet   | 0.992 | 0.006 | 0.075|
-        | Darknet19 | 0.993 | 0.005 | 0.096   |
-        | Darknet53_448 | 0.994 | 0.005 | 0.098 |
-        | ResNet50 |0.991 | 0.006 | 0.068  |
-        |ResNext50 | 0.993 | 0.006 | 0.101|
-        | VGG-16 | 0.992 | 0.006 | 0.091 |
+        - Verifying **prediction-preservation** 
+        
+            |model| mean | standard deviation| confidence of satisfaction  | 
+            |-----|----|------|-----------|
+            |  Alexnet   | 0.992 | 0.006 | 0.075|
+            | Darknet19 | 0.993 | 0.005 | 0.096   |
+            | Darknet53_448 | 0.994 | 0.005 | 0.098 |
+            | ResNet50 |0.991 | 0.006 | 0.068  |
+            |ResNext50 | 0.993 | 0.006 | 0.101|
+            | VGG-16 | 0.992 | 0.006 | 0.091 |
 
-        Notice that the estimated mean measured for the requirement satisfactions, accuracy and𝑓1-score are verysimilar across different models, some only differ by0.2%. Due to thelow variances in data samples, the correlation is lower than0.5[16],which is observed with the Gama transformation. Therefore, thelow correlation for the Gama transformation is not an evidenceagainst the validity of our requirements. 
+        
+    

@@ -738,7 +738,7 @@ if __name__ == "__main__":
 
 
 	print("---------------------------------------" + transf + "----------------------------------------")
-	print("|       | verifying accuracy-preserving | verifying prediction-preserving | ML metrics (accuracy, f1)|")
+	print("|       | verifying accuracy-preservation | verifying prediction-preservation | ML metrics (accuracy, f1)|")
 	print('----------------------------------------------------------------------------------------------')
 	print('| model |   mu   |   sigma  | conf_acc  |   mu   |   sigma   |  conf_acc  |   accuracy   |     f1    |')
 	print('------------------------------------------------------------------------------------------------------')
