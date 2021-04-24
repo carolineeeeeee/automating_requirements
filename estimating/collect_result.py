@@ -16,6 +16,8 @@ import sys
 
 csv_files_dir = './csv_files/'
 new_csv_file_dir = './new_csv/'
+if not os.path.exists(new_csv_file_dir):
+	os.makedirs(new_csv_file_dir)
 
 def write_new_csv():
 	# load the name to IQAs to a big dictionary
