@@ -48,7 +48,7 @@ To determine whether an image transformation is safety-related and whether it is
 1. Identify the location on the perception pipeline that the transformation is affecting. For example, intensity shift affects light sources.
 2. Then identify the parameter of that the transformation is changing. For example, intensity shift changes the intensity.
 3. Filter the CV-HAZOP entries with the known location and parameter on their website:https://vitro-testing.com/cv-hazop/ 
-For example, this is what we would see if we fileter entries for light sources and intensity. 
+For example, this is what we would see if we filter entries for light sources and intensity. 
 ![image info](cv_hazop_filtering.png)
 4. Filter more by checking possible guide word or consequence to locate the exact entry. 
 5. To see whether the found entry is applicable to our approach, check if it is annotated with color in our annotated version of CV-HAZOP checklist.
