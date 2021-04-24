@@ -72,9 +72,9 @@ Since for bootstrapping, the number of batches is considered enough if we change
     | first run      | 0.973      | 0.010       |
     | second run   | 0.977   | 0.010        |
 
-As shown in the above tables, we see very similar results for verifying both requirements. Thus, though it may not be the smallest number of batches needed, 200 batches are considred enough samples.
+As shown in the above tables, we see very similar results for verifying both requirements. Thus, though it may not be the smallest number of batches needed, 200 batches are considered enough samples.
 
-2. Due to space limit, here we show the esimated mean and standard deviation for the experiment results included in the paper. For verifying **accuracy-preservation** requirement, we are estimating the _accuracy_ of an ML model on the test images generated through bootstrapping.  For verifying **prediction-preservation** requirement, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated through bootstrapping.
+2. Due to the space limit, here we show the esimated mean and standard deviation for the experiment results included in the paper. For verifying **accuracy-preservation** requirement, we are estimating the _accuracy_ of an ML model on the test images generated through bootstrapping.  For verifying **prediction-preservation** requirement, we are estimating the _percentage of labels preserved_ of an ML model on the test images generated through bootstrapping.
 
     - Contrast adjustment
         - Verifying **accuracy-preservation** 
