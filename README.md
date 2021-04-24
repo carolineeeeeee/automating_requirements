@@ -36,7 +36,7 @@ To run the evaluation in the paper, follow these steps to set up:
 
 
 
-To re-run bootstrapping, complete all the steps then run `python3 automated_bootstrap.txt -d path_to_darknet -i path_to_inet.val.list -n number_of_batches -s number_of_images_per_batch -t transformation`. 
+To re-run bootstrapping, complete all the steps then run `python3 automated_bootstrap.py -d path_to_darknet -i path_to_inet.val.list -n number_of_batches -s number_of_images_per_batch -t transformation`. 
 
 ## 3. Supplementary materials
 ### 3.1 CV-HAZOP entries 
