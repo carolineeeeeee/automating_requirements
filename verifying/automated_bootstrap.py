@@ -228,7 +228,41 @@ def shift_phases(f_phase, phase_shifts):
 
     return f_phase
 
+def filter_image_classes(JPEG_files, object_class):
+    class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
+    dict_class_to_list = {}
+    with open(class_to_list, "r") as f:
+        lines = f.readlines()
+    valid_lines = list(filter(lambda l: '#' != l[0], lines))    # remove comment lines with #
+    clean_line = ''.join(valid_lines).replace('\n', '').replace(' ', '')    # remove new line character and spaces
+    parsed_lines = [match[0] for match in re.findall(r'([a-z]+=\[(n\d+,)*n\d+])', clean_line)]
+    for line in parsed_lines:
+        class_, ids, _ = re.findall('([a-z]+)=\[((n\d+,)*n\d+)]', line)[0]
+        dict_class_to_list[class_] = ids.split(',')
+    all_lists = sum(dict_class_to_list.values(), [])  # ' '.join(dict_class_to_list.values())
+​
+    # mapping_file = open(class_to_list, "r").readlines()
+    # labels = re.findall('(n\d+)', ' '.join(mapping_file))
+    # print(len(JPEG_files))
+    def find_label(filename, object_class):
+        label = re.findall('\.(n\d+)\.', filename)[0]
+        if label in dict_class_to_list[object_class]:
+            return True
+        else:
+            x = random.uniform(0, 1)  # x = random()500/(10350 - 150)
+            if x < 100 / (10350 - 150):
+                return True
+            else:
+                return False
+​
+    JPEG_files_car = [f.strip() for f in JPEG_files if re.findall('\.(n\d+)\.', f)[0] in dict_class_to_list['car']]
+    JPEG_files_not_car = random.sample(
+        [f.strip() for f in JPEG_files if re.findall('\.(n\d+)\.', f)[0] not in dict_class_to_list['car']], 500)
+    # print(len(JPEG_files_car))
+    # print(len(JPEG_files_not_car))
+    return JPEG_files_car + JPEG_files_not_car
 
+'''
 
 def filter_image_classes(JPEG_files, object_class):
 	class_to_list = 'MSCOCO_to_ImageNet_category_mapping.txt'
@@ -260,7 +294,7 @@ def filter_image_classes(JPEG_files, object_class):
 	print(len(JPEG_files_car))
 	print(len(JPEG_files_not_car))
 	return JPEG_files_car + JPEG_files_not_car
-
+'''
 
 def gen_bootstrapping(num_batch, orig_path, gen_path, object_class, batch_size=50, transformation='intensity_shift'):
 	if not os.path.exists(gen_path):
