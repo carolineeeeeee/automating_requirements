@@ -783,12 +783,13 @@ def estimate_conf_int(ground_truth, orig_results, transformed_result, a, rq_type
 
     if rq_type == 'abs':
         batch_results_abs = {}
-        for trans_img in transformed_result.keys():
+        for trans_img in transformed_result.keys():  # trans_img is transformed image path
             matches = re.findall('(batch\_\d+).*(ILSVRC2012_val_\d+)', trans_img)
-            orig_img_name = matches[0][1]
-            batch = matches[0][0]
+            orig_img_name = matches[0][1]       # get original_image
+            batch = matches[0][0]               # get batch number
             if batch not in batch_results_abs.keys():
-                batch_results_abs[batch] = []
+                batch_results_abs[batch] = []           # fill batch_results_abs with a empty dict
+            # add original name and transformed prediction pair
             batch_results_abs[batch].append((orig_img_name, transformed_result[trans_img]))
         batch_accuracies = []
         for batch in batch_results_abs.keys():
@@ -946,6 +947,7 @@ def usage():
                         help='the number of images per batch for bootstrapping, must be integer')
     #parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
     args = parser.parse_args()
+
 
     # return usage
 if __name__ == "__main__":

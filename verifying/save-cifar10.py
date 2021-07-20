@@ -1,17 +1,24 @@
 import os
 import torch
 import shutil
+import pathlib2
 import torchvision
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 
+__root__ = pathlib2.Path(__file__).absolute().parent
+static_dir = __root__/'static'
+if not (static_dir).exists():
+    static_dir.mkdir(parents=True, exist_ok=True)
 toPIL = torchvision.transforms.ToPILImage()
 
 
 def save(output_dir: str, train: bool):
-    if os.path.exists(output_dir):
+    output_dir = pathlib2.Path(output_dir)
+    if output_dir.exists():
         shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     labels = []
     dataset = torchvision.datasets.CIFAR10(root="./", train=train, download=True,
                                            transform=torchvision.transforms.ToTensor())

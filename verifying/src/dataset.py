@@ -5,56 +5,13 @@ import pathlib2
 import torchvision
 import numpy as np
 import pandas as pd
+from PIL import Image
 from typing import Union, Dict
 from torchvision import transforms
 from torch.utils.data import Dataset
 
-from .constant import GAUSSIAN_NOISE, \
-    INTENSITY_SHIFT, \
-    GAMMA, \
-    CONTRAST, \
-    UNIFORM_NOISE, \
-    LOWPASS, \
-    HIGHPASS, \
-    PHASE_NOISE
-from src.transformation import gaussian_noise, intensity_shift, adjust_gamma, adjust_contrast, \
-    apply_uniform_noise, low_pass_filter, high_pass_filter, scramble_phases
 
 ToTensor = transforms.ToTensor()
-
-
-def apply_transformation(img: np.ndarray, transformation_type: str, param: float) -> np.ndarray:
-    """apply specified transformation to a given image with given transformation parameters
-
-    :param img: image which transformation will be applied torch
-    :type img: np.ndarray
-    :param transformation_type: type of transformation to performance_df
-    :type transformation_type: str
-    :param param: transformation parameter, a value specifying how much transformation to perform
-    :type param: float
-    :raises ValueError: Wrong transformation type passed intensity_shift
-    :return: transformed images
-    :rtype: np.ndarray
-    """
-    if transformation_type == GAUSSIAN_NOISE:
-        img2 = gaussian_noise(img, param)
-    elif transformation_type == INTENSITY_SHIFT:
-        img2 = intensity_shift(img, param)
-    elif transformation_type == GAMMA:
-        img2 = adjust_gamma(img, param)
-    elif transformation_type == CONTRAST:
-        img2 = adjust_contrast(img, param)
-    elif transformation_type == UNIFORM_NOISE:
-        img2 = apply_uniform_noise(img, 0, param)
-    elif transformation_type == LOWPASS:
-        img2 = low_pass_filter(img, param)
-    elif transformation_type == HIGHPASS:
-        img2 = high_pass_filter(img, param)
-    elif transformation_type == PHASE_NOISE:
-        img2 = scramble_phases(img, param)
-    else:
-        raise ValueError("Invalid transformation type")
-    return img2
 
 
 class ImagenetDataset(Dataset):
@@ -112,3 +69,22 @@ class ImagenetDataset(Dataset):
             'transformation_type': data['transformation_type'],
             'transformation_param': data['transformation_param']
         }
+
+
+class Cifar10Dataset(Dataset):
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.reset_index()
+        self.data = self.df.to_dict('records')
+
+    def __len__(self) -> int:
+        return len(self.df)
+
+    def __getitem__(self, index: int) -> Dict:
+        data = self.data[index]
+        original_image = Image.open(data['original_path'])
+        transformed_image = Image.open(data['transformed_path'])
+        data.update({
+            'original_image': ToTensor(original_image),
+            'transformed_image': ToTensor(transformed_image),
+        })
+        return data
