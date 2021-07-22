@@ -70,13 +70,11 @@ def gen_bootstrap(
             cur_row = row
             image_name = cur_row['filename']
             image_path = cur_row['path']
-            logger.debug(image_name)
-
             # Start transformations
             if transformation in [
                     GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
                     JPEG_COMPRESSION]:
-                img = np.asarray(cv2.imread(image_path), dtype=np.float32)
+                img = Image.open(image_path)
             else:
                 img = np.asarray(cv2.imread(image_path), dtype=np.float32)
             img_g = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)   # greyscale image
@@ -85,82 +83,68 @@ def gen_bootstrap(
                 if transformation == CONTRAST_G:
                     param = random.choice(contrast_params)
                     img2 = adjust_contrast(img, param)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == UNIFORM_NOISE:
                     param = random.choice(uniform_noise_params)
                     img2 = apply_uniform_noise(img, 0, param)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == LOWPASS:
                     param = random.choice(lowpass_params)
                     img2 = low_pass_filter(img, param)
                     img2 = apply_uniform_noise(img, 0, param)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == HIGHPASS:
                     param = random.choice(highpass_params)
                     img2 = high_pass_filter(img, param)
                     img2 = apply_uniform_noise(img, 0, param)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == PHASE_NOISE:
                     param = random.choice(phase_noise_params)
                     img2 = scramble_phases(img, param)
                     img2 = apply_uniform_noise(img, 0, param)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == GAUSSIAN_NOISE:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = gaussian_noise(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == SHOT_NOISE:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = shot_noise(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == IMPULSE_NOISE:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = impulse_noise(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == DEFOCUS_BLUR:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = defocus_blur(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == GLASS_BLUR:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = glass_blur(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == MOTION_BLUR:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2, param = motion_blur(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == SNOW:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
                     img2 = snow(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 elif transformation == FROST:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                    img2 = frost(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
+                    img2, _ = frost(img, param_index)
                 elif transformation == FOG:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                    img2 = fog(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
+                    img2, _ = fog(img, param_index)
                 elif transformation == BRIGHTNESS:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                    img2 = brightness(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
+                    img2, _ = brightness(img, param_index)
                 elif transformation == CONTRAST:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                    img2 = contrast(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
+                    img2, _ = contrast(img, param_index)
                 elif transformation == JPEG_COMPRESSION:
                     param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                    img2 = jpeg_compression(img, param_index)
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
+                    img2, _ = jpeg_compression(img, param_index)
+                    img2 = np.asarray(img2)
                     # ============= different transformation types end =============
+                else:
+                    raise ValueError("Invalid Transformation")
+                img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY)
                 try:
                     IQA_score = eng.vifvec2_layers(
                         matlab.double(np.asarray(img_g).tolist()),
                         matlab.double(np.asarray(img2_g).tolist()))
-                    # logger.debug(IQA_score)
                 except:
-                    # logger.error("failed")
+                    logger.error("failed")
                     cur_row = dataset_df.sample(n=1).iloc[0]
                     continue
                 if 1-IQA_score < t:
@@ -172,7 +156,7 @@ def gen_bootstrap(
                         batch_id, j, cur_row['filename'],
                         new_name, cur_row['path'], transformation,
                         output_path, cur_row['label'],
-                        img, bootstrap_data)
+                        img2, bootstrap_data)
                     break
 
     bootstrap_df = pd.DataFrame(data=bootstrap_data)

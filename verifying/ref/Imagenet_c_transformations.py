@@ -2,6 +2,7 @@
 # to adapt to images with different sizes and random sampling
 
 import cv2
+import logging
 import numpy as np
 import skimage as sk
 from skimage.filters import gaussian
@@ -10,13 +11,27 @@ from scipy.ndimage.interpolation import map_coordinates
 from io import BytesIO
 from PIL import Image
 from wand.image import Image as WandImage
-from wand.api import library as wandlibrary
+import os
+import sys
+import random
+import pathlib2
 import wand.color as WandColor
-import os, random
-from shutil import copy as copy_file
-from scipy.ndimage.filters import gaussian_filter
 from scipy import fftpack as fp
+from shutil import copy as copy_file
+from wand.api import library as wandlibrary
 from skimage.color import rgb2gray, rgb2grey
+from scipy.ndimage.filters import gaussian_filter
+
+from src.constant import __root__
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(formatter)
+logger.addHandler(stdout_handler)
+
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -133,7 +148,7 @@ def low_pass_filter(image, std):
 
 def high_pass_filter(image, std):
     """
-	Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
+        Taken from https://github.com/rgeirhos/generalisation-humans-DNNs/blob/master/code/image_manipulation.py
     """
 
     # set this to mean pixel value over all images
@@ -250,7 +265,7 @@ def save_array(dest, arr):
 
 def gaussian_noise(x, i):
     # c = [.08, .12, 0.18, 0.26, 0.38][severity - 1]
-    c = np.linspace(0.08, 0.9, TRANSFORMATION_LEVEL);
+    c = np.linspace(0.08, 0.9, TRANSFORMATION_LEVEL)
 
     x = np.array(x) / 255.
     return np.clip(x + np.random.normal(size=x.shape, scale=c[i]), 0, 1) * 255, c[i]
@@ -259,7 +274,7 @@ def gaussian_noise(x, i):
 # def shot_noise(x, severity=1):
 def shot_noise(x, i):
     #	c = [60, 25, 12, 5, 3][severity - 1]
-    c = np.linspace(1, 1000, TRANSFORMATION_LEVEL);
+    c = np.linspace(1, 1000, TRANSFORMATION_LEVEL)
 
     x = np.array(x) / 255.
     return np.clip(np.random.poisson(x * c[i]) / c[i], 0, 1) * 255, c[i]
@@ -268,7 +283,7 @@ def shot_noise(x, i):
 # def impulse_noise(x, severity=1):
 def impulse_noise(x, i):
     #	c = [.03, .06, .09, 0.17, 0.27][severity - 1]
-    c = np.linspace(0.0, 0.8, TRANSFORMATION_LEVEL);
+    c = np.linspace(0.0, 0.8, TRANSFORMATION_LEVEL)
 
     x = sk.util.random_noise(np.array(x) / 255., mode='s&p', amount=c[i])
     return np.clip(x, 0, 1) * 255, c[i]
@@ -426,7 +441,7 @@ def plasma_fractal(mapsize=256, wibbledecay=3):
         squareaccum = cornerref + np.roll(cornerref, shift=-1, axis=0)
         squareaccum += np.roll(squareaccum, shift=-1, axis=1)
         maparray[stepsize // 2:mapsize:stepsize,
-        stepsize // 2:mapsize:stepsize] = wibbledmean(squareaccum)
+                 stepsize // 2:mapsize:stepsize] = wibbledmean(squareaccum)
 
     def filldiamonds():
         """For each diamond of points stepsize apart,
@@ -455,6 +470,7 @@ def plasma_fractal(mapsize=256, wibbledecay=3):
 
 # def fog(x, severity=1):
 def fog(x, i):
+
     # c = [(1.5, 2), (2, 2), (2.5, 1.7), (2.5, 1.5), (3, 1.4)][severity - 1]
 
     scale = np.linspace(1, 5, TRANSFORMATION_LEVEL)
@@ -484,7 +500,7 @@ def frost(x, i):
 
     idx = np.random.randint(5)
     filename = ['frost1.png', 'frost2.png', 'frost3.png', 'frost4.jpeg', 'frost5.jpeg', 'frost6.jpeg'][idx]
-    frost = Image.open(filename)
+    frost = Image.open(os.path.join(__root__, 'frost-images', filename))
 
     # print(frost)
     x = np.asarray(x)
@@ -627,7 +643,7 @@ def saturate(x, i):
 
 
 # def jpeg_compression(x, severity=1):
-def jpeg_compression(x, i):
+def jpeg_compression(x, i) -> Image:
     # c = [25, 18, 15, 10, 7][severity - 1]
     # c = [25, 18, 15, 10, 7]
     c = list(range(1, (TRANSFORMATION_LEVEL + 1)))
@@ -681,4 +697,3 @@ def elastic_transform(image, severity=1):
     x, y, z = np.meshgrid(np.arange(shape[1]), np.arange(shape[0]), np.arange(shape[2]))
     indices = np.reshape(y + dy, (-1, 1)), np.reshape(x + dx, (-1, 1)), np.reshape(z, (-1, 1))
     return np.clip(map_coordinates(image, indices, order=1, mode='reflect').reshape(shape), 0, 1) * 255
-

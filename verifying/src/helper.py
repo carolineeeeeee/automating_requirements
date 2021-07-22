@@ -102,3 +102,12 @@ def read_cifar10_ground_truth(filepath: str, use_filename: bool = True):
     else:
         ground_truth = {i: val for i, val in enumerate(loaded_file)}
     return ground_truth
+
+
+def read_cifar10_c_ground_truth(filepath: str, use_filename: bool = True):
+    loaded_file = np.load(filepath).astype(int)
+    if use_filename:
+        ground_truth = {f"{i}.png": val for i, val in enumerate(loaded_file)}
+    else:
+        ground_truth = {i: val for i, val in enumerate(loaded_file)}
+    return ground_truth

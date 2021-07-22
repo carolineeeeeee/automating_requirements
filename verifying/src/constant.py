@@ -1,4 +1,7 @@
+import pathlib2
 from torchvision import transforms
+__root__ = pathlib2.Path(__file__).absolute().parent.parent
+
 
 OBJECT_CLASSES = ["airplane", "bicycle", "boat", "car", "chair", "dog", "keyboard", "oven", "bear", "bird",
                   "bottle", "cat", "clock", "elephant", "knife", "truck"]
@@ -24,8 +27,8 @@ FOG = "fog"
 BRIGHTNESS = "brightness"
 CONTRAST = "contrast"
 JPEG_COMPRESSION = "jpeg_compression"
-TRANSFORMATIONS = [CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GAUSSIAN_NOISE, SHOT_NOISE,
-                   IMPULSE_NOISE, DEFOCUS_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST]
+TRANSFORMATIONS = [CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE,
+                   DEFOCUS_BLUR, GLASS_BLUR, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION]
 
 TRANSFORMATION_LEVEL = 1000
 
