@@ -1,26 +1,34 @@
 import os
 import cv2
+import argparse
+import pathlib2
 import numpy as np
 from tqdm import tqdm
 from shutil import copyfile
 
+__root__ = pathlib2.Path(__file__).absolute().parent
 
 if __name__ == '__main__':
-    original_data_path = "/home/huakun/Downloads/CIFAR-10-C"
-    save_dir = "/home/huakun/Documents/summer-research/automating_requirements/verifying/cifar10_c_data"
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    parser = argparse.ArgumentParser("Save Cifar10-C")
+    parser.add_argument("--original_dataset_path", help="path to origianl dataset, in .npy format")
+    parser.add_argument("--save_dir", default=os.path.join(__root__, "cifar10_c_data"), help="path to save images")
+    args = parser.parse_args()
 
-    original_files = os.listdir(original_data_path)
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
+
+    original_files = os.listdir(args.original_dataset_path)
     original_files.remove("labels.npy")
     print(original_files)
-    copyfile(os.path.join(original_data_path, "labels.npy"), os.path.join(save_dir, "labels.npy"))
+    label_path = os.path.join(args.original_dataset_path, "labels.npy")
+    copyfile(label_path, os.path.join(args.save_dir, "labels.npy"))
+    labels = np.load(label_path)
     for npy_file in tqdm(original_files):
         folder_name = npy_file.split('.')[0]
-        folder_path = os.path.join(save_dir, folder_name)
+        folder_path = os.path.join(args.save_dir, folder_name)
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
-        data_file_path = os.path.join(original_data_path, npy_file)
+        data_file_path = os.path.join(args.original_dataset_path, npy_file)
         data = np.load(data_file_path)
         for i, img in enumerate(data):
             save_path = os.path.join(folder_path, f"{i}.png")
@@ -30,3 +38,4 @@ if __name__ == '__main__':
                 print(e)
                 print(npy_file)
                 print(img)
+        np.savetxt(os.path.join(folder_path, "labels.txt"), labels)

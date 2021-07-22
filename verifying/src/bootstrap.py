@@ -8,17 +8,18 @@ import pathlib2
 import numpy as np
 import pandas as pd
 import matlab.engine
-from src.helper import dir_is_empty, load_image_data, bootstrap_save_record
+from tqdm import tqdm
+from src.helper import dir_is_empty, load_image_data, bootstrap_save_record, load_cifar10c_image_data
 from ref.Imagenet_c_transformations import *
 from .constant import CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, DEFOCUS_BLUR, GLASS_BLUR, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, TRANSFORMATION_LEVEL
 
 __root__ = pathlib2.Path(__file__).absolute().parent.parent
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')
 stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setLevel(logging.WARNING)
 stdout_handler.setFormatter(formatter)
 logger.addHandler(stdout_handler)
 
@@ -28,7 +29,7 @@ matlabPyrToolsPath = os.path.join(IQA_PATH, "matlabPyrTools")
 
 
 def gen_bootstrap(
-        num_batch: int, orig_path: str, gen_path: str, t: float, save_name, batch_size: int = 50,
+        num_batch: int, orig_path: str, gen_path: str, t: float, batch_size: int = 50,
         transformation=GAUSSIAN_NOISE, dataset_type: str = 'val') -> pd.DataFrame:
     logger.debug("transformation")
     gen_path = pathlib2.Path(gen_path).absolute()
@@ -58,7 +59,7 @@ def gen_bootstrap(
         'label': [],
         'transformation': []
     }
-    for batch_id in range(num_batch):
+    for batch_id in tqdm(range(num_batch)):
         logger.debug("batch " + str(batch_id))
         sample_batch = dataset_df.sample(n=batch_size, replace=False)
         batch_path = gen_path / f'batch_{batch_id}'
@@ -158,6 +159,55 @@ def gen_bootstrap(
                         output_path, cur_row['label'],
                         img2, bootstrap_data)
                     break
+
+    bootstrap_df = pd.DataFrame(data=bootstrap_data)
+    return bootstrap_df
+
+
+def gen_cifar10c_bootstrap(num_batch: int, gen_path: str, corruption_type: str, batch_size: int = 50) -> pd.DataFrame:
+    gen_path = pathlib2.Path(gen_path).absolute()
+    if gen_path.exists() and not dir_is_empty(gen_path):
+        shutil.rmtree(gen_path)
+    logger.info("recreate output directory")
+    gen_path.mkdir(parents=True, exist_ok=True)
+
+    logger.info("load ground truth")
+    dataset_df = load_cifar10c_image_data(__root__, corruption_type)
+
+    logger.info("start bootstrapping")
+    bootstrap_data = {
+        'batch_id': [],
+        'within_batch_id': [],
+        'filename': [],
+        'original_filename': [],
+        'original_path': [],
+        'transformed_path': [],
+        'label': [],
+        'transformation': []
+    }
+    for batch_id in tqdm(range(num_batch)):
+        logger.debug("batch " + str(batch_id))
+        sample_batch = dataset_df.sample(n=batch_size, replace=False)
+        batch_path = gen_path / f'batch_{batch_id}'
+        if not batch_path.exists():
+            batch_path.mkdir(parents=True, exist_ok=True)
+        j = 0
+        for i, row in sample_batch.iterrows():
+            j += 1
+            cur_row = row
+            image_name = cur_row['filename']
+            image_path = cur_row['path']
+            output_path = str(batch_path/image_name)
+            # shutil.copyfile(image_path, output_path)
+            os.symlink(image_path, output_path)
+            bootstrap_data['batch_id'].append(batch_id)
+            bootstrap_data['within_batch_id'].append(j)
+            bootstrap_data['original_filename'].append(image_name)
+            bootstrap_data['filename'].append(image_name)
+            bootstrap_data['original_path'].append(image_path)
+            bootstrap_data['transformation'].append(corruption_type)
+            bootstrap_data['transformed_path'].append(output_path)
+            bootstrap_data['label'].append(cur_row['label'])
 
     bootstrap_df = pd.DataFrame(data=bootstrap_data)
     return bootstrap_df

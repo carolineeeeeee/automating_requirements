@@ -1,1 +1,11 @@
 .idea/
+cifar10_data
+cifar10_c_data
+cifar-10-batches-py
+cifar-10-python.tar.gz
+.vscode
+verifying/bootstrap_output/
+*.pyc
+verifying/cifar-10-python.tar.gz
+verifying/cifar10c_bootstrap_output
+*.pt

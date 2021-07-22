@@ -34,6 +34,7 @@ logger.addHandler(stdout_handler)
 def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
     model = get_model(model_name, pretrained=True, val=True)
     device = torch.device('cuda' if torch.cuda.is_available() and not cpu else 'cpu')
+    logger.info(f"Device: {str(device)}")
     model.to(device)
     batches = img_df['batch_id'].unique()
     pbar = tqdm(total=len(img_df))
@@ -44,7 +45,7 @@ def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
     for batch_id in batches:
         df = img_df[img_df['batch_id'] == batch_id]
         dataset = Cifar10Dataset(df)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=5, shuffle=False, num_workers=2)
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=20, shuffle=False, num_workers=mp.cpu_count())
 
         for i, data in enumerate(dataloader):
             original_images = data['original_image'].to(device)
@@ -101,10 +102,10 @@ def calculate_confidence(acc_list, base_acc, req_acc):
         print("requirement SATISFIED")
     else:
         print("requirement NOT SATISFIED")
-    return result
+    return result, mu, sigma, result >= 0.5
 
 
-def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int, ground_truth: Dict, a: float=0.95):
+def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int, ground_truth: Dict, a: float = 0.95):
     """
     model_df should have the following columns:
     - model_name
@@ -135,10 +136,9 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
                        == (ground_truth[x] == target_label_id)])/len(orig_results.keys())
         print("--------------------------------------------")
         print("Verifying Absolute Requirement: ")
-        conf_abs = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
+        conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
         print("--------------------------------------------")
-
-        return conf_abs
+        return conf_abs, mu, sigma, satisfied
     elif rq_type == 'rel':
         batch_preserved = []
         for batch in batch_results.keys():
@@ -149,9 +149,9 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
                        == (ground_truth[x] == target_label_id)])/len(orig_results.keys())
         print("--------------------------------------------")
         print(" Verifying Relative Requirement:")
-        conf_rel = calculate_confidence(batch_preserved, base_acc, a)  # rel
+        conf_rel, mu, sigma, satisfied = calculate_confidence(batch_preserved, base_acc, a)  # rel
         print("--------------------------------------------")
 
-        return conf_rel
+        return conf_rel, mu, sigma, satisfied
     else:
         raise ValueError("Invalid rq_type")
