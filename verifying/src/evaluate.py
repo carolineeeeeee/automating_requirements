@@ -45,7 +45,7 @@ def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
     for batch_id in batches:
         df = img_df[img_df['batch_id'] == batch_id]
         dataset = Cifar10Dataset(df)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=20, shuffle=False, num_workers=mp.cpu_count())
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=10, shuffle=False, num_workers=mp.cpu_count())
 
         for i, data in enumerate(dataloader):
             original_images = data['original_image'].to(device)

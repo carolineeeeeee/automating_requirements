@@ -11,7 +11,10 @@ from .constant import ALEXNET, \
     RESNET50, \
     RESNEXT50, \
     VGG_16, \
-    TRANSFORMATIONS
+    TRANSFORMATIONS, \
+    THRESHOLD_MAP, \
+    ROBUSTBENCH_CIFAR10_MODEL_NAMES, \
+    GENERALIZED
 # TRANSFORMATION_PARAM_MAP_DOMAIN
 import torchvision.models as models
 from robustbench.utils import load_model
@@ -41,10 +44,10 @@ def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.
         model = models.resnext50_32x4d(pretrained=pretrained)
     elif model_name == VGG_16:
         model = models.vgg16(pretrained=pretrained)
-    elif model_name in ['Standard', 'Engstrom2019Robustness', 'Rice2020Overfitting', 'Carmon2019Unlabeled']:
+    elif model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES:
         model = load_model(model_name)
     else:
-        raise ValueError("Invalid Model Name")
+        raise ValueError(f"Invalid Model Name: {model_name}")
     if val:
         model.eval()
     return model
@@ -81,6 +84,16 @@ def load_image_data(root: pathlib2.Path, category: str):
     return df.drop(columns='index')
 
 
+def load_cifar10c_image_data(root: pathlib2.Path, corruption_type: str):
+    data_dir = root / 'cifar10_c_data' / corruption_type
+    labels = np.loadtxt(data_dir/'labels.txt').astype(int)
+    indices = list(range(len(labels)))
+    df = pd.DataFrame(data={"index": indices, "label": labels})
+    df['filename'] = df['index'].apply(lambda i: f"{i}.png")
+    df['path'] = df['filename'].apply(lambda filename: os.path.join(data_dir, filename))
+    return df.drop(columns='index')
+
+
 def bootstrap_save_record(
         batch_id: int, within_batch_id: int, original_filename: str, filename: str, original_path: str,
         transformation: str, transformed_path: str, label: int, img: np.ndarray, bootstrap_data: Dict):
@@ -105,9 +118,14 @@ def read_cifar10_ground_truth(filepath: str, use_filename: bool = True):
 
 
 def read_cifar10_c_ground_truth(filepath: str, use_filename: bool = True):
-    loaded_file = np.load(filepath).astype(int)
+    loaded_file = np.loadtxt(filepath).astype(int)
     if use_filename:
         ground_truth = {f"{i}.png": val for i, val in enumerate(loaded_file)}
     else:
         ground_truth = {i: val for i, val in enumerate(loaded_file)}
     return ground_truth
+
+
+def get_transformation_threshold(transformation: str, rq_type: str):
+    return THRESHOLD_MAP[transformation][rq_type] if transformation in THRESHOLD_MAP else THRESHOLD_MAP[GENERALIZED][
+        rq_type]
