@@ -21,6 +21,7 @@ from robustbench.utils import load_model
 
 from src.dataset import Cifar10Dataset
 from src.helper import get_model
+from src.constant import *
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -79,6 +80,7 @@ def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
                     'transformed_filename': data['filename'][k],
                     'original_path': data['original_path'][k],
                     'transformed_path': data['transformed_path'][k],
+                    'vd_score': float(data['vd_score'][k]),
                 })
             pbar.set_postfix({f'batch': batch_id})
             pbar.update(actual_batch_size)
@@ -145,7 +147,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     elif rq_type == 'rel':
         batch_preserved = []
         for batch in batch_results.keys():
-            print(batch_results[batch])
+            #print(batch_results[batch])
             batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
                 orig_results[x[0]] == target_label_id)])/len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
@@ -158,3 +160,10 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         return conf_rel, mu, sigma, satisfied
     else:
         raise ValueError("Invalid rq_type")
+
+def obtain_preserved_min_degradation(record_df):
+    # compare boot_df filename and record_df transformed_filename
+    # find percenrage preserved within minimum IQA range, return it
+    min_range_predictions = record_df.loc[record_df['vd_score'] <= MIN_IQA_RANGE]
+    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['transformed_prediction']) & (record_df['vd_score'] <= MIN_IQA_RANGE)]
+    return len(predictions_preserved) / float(len(min_range_predictions))

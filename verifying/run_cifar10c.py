@@ -21,16 +21,24 @@ from robustbench.utils import load_model
 
 from src.constant import *
 from src.bootstrap import gen_bootstrap, gen_cifar10c_bootstrap
-from src.evaluate import run_model, estimate_conf_int
+from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 from src.helper import read_cifar10_c_ground_truth
 
-
-def run(num_batch: int, batch_size: int, data_path: str, gen_path: str, rq_type: str, model_name: str, corruption_type: str):
+def preparation_and_bootstrap(num_batch: int, batch_size: int, data_path: str, gen_path: str, corruption_type: str):
     ground_truth = read_cifar10_c_ground_truth(os.path.join(ROOT_PATH, data_path, corruption_type, "labels.txt"))
     df = gen_cifar10c_bootstrap(num_batch, gen_path, corruption_type, batch_size)
     df.to_csv(os.path.join(ROOT_PATH, "tmp1.csv"))
+    return ground_truth, df
+
+def run(ground_truth, df, rq_type: str, model_name: str):
     record_df = run_model(model_name, df, cpu=False)
-    conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, 0.95)
+    if rq_type == 'rel':
+        a = obtain_preserved_min_degradation(record_df)
+        conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, a)
+    elif rq_type == 'abs':
+        conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, 0.95)
+    else:
+        raise ValueError("Invalid rq_type")
     return conf, mu, sigma, satisfied
 
 

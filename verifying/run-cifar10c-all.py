@@ -1,7 +1,8 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-from run import run
+import sys
+sys.path.insert(1, '/u/boyue/ICSE2022-resubmission/lib')
 import pandas as pd
 from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES
 from run_cifar10c import run, preparation_and_bootstrap

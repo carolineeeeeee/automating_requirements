@@ -100,7 +100,7 @@ def load_cifar10c_image_data(root: pathlib2.Path, corruption_type: str):
 
 def bootstrap_save_record(
         batch_id: int, within_batch_id: int, original_filename: str, filename: str, original_path: str,
-        transformation: str, transformed_path: str, label: int, img: np.ndarray, bootstrap_data: Dict):
+        transformation: str, transformed_path: str, label: int, IQA_value: float, img: np.ndarray, bootstrap_data: Dict):
     cv2.imwrite(transformed_path, img)
     bootstrap_data['batch_id'].append(batch_id)
     bootstrap_data['within_batch_id'].append(within_batch_id)
@@ -110,6 +110,7 @@ def bootstrap_save_record(
     bootstrap_data['transformation'].append(transformation)
     bootstrap_data['transformed_path'].append(transformed_path)
     bootstrap_data['label'].append(label)
+    bootstrap_data['vd_score'].append(IQA_value)
 
 
 def read_cifar10_ground_truth(filepath: str, use_filename: bool = True):

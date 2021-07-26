@@ -1,6 +1,8 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
+import sys
+sys.path.insert(1, '/u/boyue/ICSE2022-resubmission/lib')
 from run import run, preparation_and_bootstrap
 import pandas as pd
 from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, CONTRAST
@@ -9,8 +11,8 @@ from src.helper import get_transformation_threshold
 
 # %%
 cifar10_results = []
-num_batch = 200
-batch_size = 200
+num_batch = 1
+batch_size = 100
 
 for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE]:
     for rq_type in ["abs", "rel"]:
@@ -18,7 +20,7 @@ for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, P
         threshold = get_transformation_threshold(transformation, rq_type)
         ground_truth, boot_df = preparation_and_bootstrap(num_batch, batch_size,
                                              "cifar10_data/val", "./bootstrap_output", rq_type, transformation, threshold)
-        for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
+        for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES:
             record = {
                 "dataset": "cifar10",
                 "num_batch": num_batch,
