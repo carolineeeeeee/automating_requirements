@@ -17,7 +17,7 @@ from .constant import ALEXNET, \
     GENERALIZED
 # TRANSFORMATION_PARAM_MAP_DOMAIN
 import torchvision.models as models
-from robustbench.utils import load_model
+from robustbench import load_model
 
 
 def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.Module:
@@ -45,7 +45,11 @@ def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.
     elif model_name == VGG_16:
         model = models.vgg16(pretrained=pretrained)
     elif model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES:
-        model = load_model(model_name)
+        if 'L2' in model_name:
+            model = load_model(model_name=model_name, dataset='cifar10', threat_model="L2")
+        elif 'Linf' in model_name:
+            model = load_model(model_name=model_name, dataset='cifar10', threat_model="Linf")
+        model = load_model(model_name=model_name, dataset='cifar10', threat_model="corruptions")
     else:
         raise ValueError(f"Invalid Model Name: {model_name}")
     if val:

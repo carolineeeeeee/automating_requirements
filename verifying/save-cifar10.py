@@ -6,6 +6,9 @@ import torchvision
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import torch.multiprocessing
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 
 __root__ = pathlib2.Path(__file__).absolute().parent
 static_dir = __root__/'static'

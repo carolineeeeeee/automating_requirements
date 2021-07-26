@@ -24,15 +24,16 @@ from src.bootstrap import gen_bootstrap
 from src.evaluate import run_model, estimate_conf_int
 from src.helper import read_cifar10_ground_truth, get_transformation_threshold
 
-
-def run(num_batch: int, batch_size: int, transformation: str, data_path: str, gen_path: str, rq_type: str,
-        model_name: str, threshold: float = None):
+def preparation_and_bootstrap(num_batch: int, batch_size: int, data_path: str, gen_path: str, rq_type: str, transformation: str, threshold: float = None):
     ground_truth = read_cifar10_ground_truth(os.path.join(ROOT_PATH, data_path, "labels.txt"))
     if threshold is None:
         threshold = get_transformation_threshold(transformation, rq_type)
     df = gen_bootstrap(num_batch=num_batch, orig_path=data_path, gen_path=gen_path, t=threshold,
                        batch_size=batch_size, transformation=transformation)
     df.to_csv(os.path.join(ROOT_PATH, "tmp.csv"))
+    return ground_truth, df
+
+def run(ground_truth, df, rq_type: str, model_name: str):
     record_df = run_model(model_name, df)
     conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, 0.95)
     return conf, mu, sigma, satisfied

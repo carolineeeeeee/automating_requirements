@@ -1,7 +1,7 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-from run import run
+from run import run, preparation_and_bootstrap
 import pandas as pd
 from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, CONTRAST
 from src.helper import get_transformation_threshold
@@ -15,9 +15,10 @@ batch_size = 200
 for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE]:
     for rq_type in ["abs", "rel"]:
         # bootstrap
-        
+        threshold = get_transformation_threshold(transformation, rq_type)
+        ground_truth, df = preparation_and_bootstrap(num_batch, batch_size,
+                                             "cifar10_data/val", "./bootstrap_output", rq_type, transformation, threshold)
         for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
-            threshold = get_transformation_threshold(transformation, rq_type)
             record = {
                 "dataset": "cifar10",
                 "num_batch": num_batch,
@@ -29,8 +30,7 @@ for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, P
             }
             print(record)
             # try:
-            conf, mu, sigma, satisfied = run(num_batch, batch_size, transformation,
-                                             "cifar10_data/val", "./bootstrap_output", rq_type, model_name, threshold)
+            conf, mu, sigma, satisfied = run(ground_truth, df, rq_type, model_name)
             record.update({
                 "conf": conf,
                 "mu": mu,
