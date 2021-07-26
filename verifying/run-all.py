@@ -16,7 +16,7 @@ for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, P
     for rq_type in ["abs", "rel"]:
         # bootstrap
         threshold = get_transformation_threshold(transformation, rq_type)
-        ground_truth, df = preparation_and_bootstrap(num_batch, batch_size,
+        ground_truth, boot_df = preparation_and_bootstrap(num_batch, batch_size,
                                              "cifar10_data/val", "./bootstrap_output", rq_type, transformation, threshold)
         for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
             record = {
@@ -30,7 +30,7 @@ for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, P
             }
             print(record)
             # try:
-            conf, mu, sigma, satisfied = run(ground_truth, df, rq_type, model_name)
+            conf, mu, sigma, satisfied = run(ground_truth, boot_df, rq_type, model_name)
             record.update({
                 "conf": conf,
                 "mu": mu,
