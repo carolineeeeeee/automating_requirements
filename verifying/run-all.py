@@ -5,16 +5,16 @@ import sys
 sys.path.insert(1, '/u/boyue/ICSE2022-resubmission/lib')
 from run import run, preparation_and_bootstrap
 import pandas as pd
-from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, CONTRAST
+from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR
 from src.helper import get_transformation_threshold
 
 
 # %%
 cifar10_results = []
-num_batch = 1
+num_batch = 200
 batch_size = 100
 
-for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE]:
+for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR]:
     for rq_type in ["abs", "rel"]:
         # bootstrap
         threshold = get_transformation_threshold(transformation, rq_type)

@@ -10,7 +10,7 @@ from run_cifar10c import run, preparation_and_bootstrap
 
 # %%
 cifar10_c_results = []
-num_batch = 100
+num_batch = 200
 batch_size = 100
 
 for transformation in [
