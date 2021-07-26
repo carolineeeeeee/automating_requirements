@@ -4,17 +4,21 @@
 from run import run
 import pandas as pd
 from src.constant import ROBUSTBENCH_CIFAR10_MODEL_NAMES
-from run_cifar10c import run
+from run_cifar10c import run, preparation_and_bootstrap
 
 
 # %%
 cifar10_c_results = []
-num_batch = 200
-batch_size = 200
-for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
-    for transformation in [
-            "brightness", "contrast", "fog", "frost", "gaussian_blur", "gaussian_noise", "jpeg_compression", "snow"]:
-        for rq_type in ["abs", "rel"]:
+num_batch = 100
+batch_size = 100
+
+for transformation in [
+        "brightness", "contrast", "fog", "frost", "gaussian_blur", "gaussian_noise", "jpeg_compression", "snow"]:
+    for rq_type in ["abs", "rel"]:
+        # bootstrap
+        ground_truth, image_df = preparation_and_bootstrap(num_batch, batch_size, "./cifar10_c_data",
+                                             "./cifar10c_bootstrap_output", transformation)
+        for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
             record = {
                 "num_batch": num_batch,
                 "batch_size": batch_size,
@@ -24,8 +28,7 @@ for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
             }
             print(record)
             # try:
-            conf, mu, sigma, satisfied = run(num_batch, batch_size, "./cifar10_c_data",
-                                             "./cifar10c_bootstrap_output", rq_type, model_name, transformation)
+            conf, mu, sigma, satisfied = run(ground_truth, image_df, rq_type, model_name)
             record.update({
                 "conf": conf,
                 "mu": mu,

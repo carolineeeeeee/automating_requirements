@@ -86,6 +86,9 @@ def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
     records_df.to_csv("records.csv")
     return records_df
 
+def obtain_cifar_10_c_accuracy_per_transformation(transformation: str, model_name: str):
+    
+    return 0
 
 def calculate_confidence(acc_list, base_acc, req_acc):
     # fitting a normal distribution

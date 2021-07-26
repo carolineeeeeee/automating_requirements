@@ -7,11 +7,16 @@ ROOT_PATH = __root__
 OBJECT_CLASSES = ["airplane", "bicycle", "boat", "car", "chair", "dog", "keyboard", "oven", "bear", "bird",
                   "bottle", "cat", "clock", "elephant", "knife", "truck"]
 CIFAR10_CLASSES = ['cat', 'ship', 'plane', 'frog', 'car', 'truck', 'dog', 'horse', 'deer', 'bird']
-ROBUSTBENCH_CIFAR10_MODEL_NAMES = [
-    "Carmon2019Unlabeled", "Chen2020Adversarial", "Chen2020Efficient", "Cui2020Learnable_34_10",
-    "Cui2020Learnable_34_20", "Ding2020MMA", "Engstrom2019Robustness", "Gowal2020Uncovering_28_10_extra",
-    "Gowal2020Uncovering_34_20", "Sehwag2020Hydra", "Sehwag2021Proxy_R18", "Standard", "Wu2020Adversarial",
-    "Wu2020Adversarial_extra", "Zhang2019You", "Zhang2020Attacks"]
+#ROBUSTBENCH_CIFAR10_MODEL_NAMES = [
+#    "Carmon2019Unlabeled", "Chen2020Adversarial", "Chen2020Efficient", "Cui2020Learnable_34_10",
+#    "Cui2020Learnable_34_20", "Ding2020MMA", "Engstrom2019Robustness", "Gowal2020Uncovering_28_10_extra",
+#    "Gowal2020Uncovering_34_20", "Sehwag2020Hydra", "Sehwag2021Proxy_R18", "Standard", "Wu2020Adversarial",
+#    "Wu2020Adversarial_extra", "Zhang2019You", "Zhang2020Attacks"]
+ROBUSTBENCH_CIFAR10_MODEL_NAMES = ["Hendrycks2020AugMix_WRN", "Gowal2020Uncovering_L2_70_16_extra", 
+    "Hendrycks2020AugMix_ResNeXt", "Gowal2020Uncovering_Linf_70_16_extra","Kireev2021Effectiveness_Gauss50percent",
+    "Kireev2021Effectiveness_RLATAugMixNoJSD", "Kireev2021Effectiveness_AugMixNoJSD", "Gowal2020Uncovering_Linf_70_16",
+    "Gowal2020Uncovering_L2_70_16", "Calian2021Defending", "Kireev2021Effectiveness_RLAT", "Standard"]
+    
 CIFAR10_INDEX_TO_CLASS = {i: category for i, category in enumerate(CIFAR10_CLASSES)}
 CIFAR10_CLASS_to_INDEX = {category: i for i, category in enumerate(CIFAR10_CLASSES)}
 

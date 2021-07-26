@@ -24,4 +24,4 @@ def save(output_dir: str, train: bool):
 
 if __name__ == "__main__":
     save("./cifar10_data/val", False)
-    save("./cifar10_data/train", True)
+    #save("./cifar10_data/train", True)

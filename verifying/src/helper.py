@@ -129,3 +129,4 @@ def read_cifar10_c_ground_truth(filepath: str, use_filename: bool = True):
 def get_transformation_threshold(transformation: str, rq_type: str):
     return THRESHOLD_MAP[transformation][rq_type] if transformation in THRESHOLD_MAP else THRESHOLD_MAP[GENERALIZED][
         rq_type]
+

@@ -11,9 +11,12 @@ from src.helper import get_transformation_threshold
 cifar10_results = []
 num_batch = 200
 batch_size = 200
-for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
-    for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE]:
-        for rq_type in ["abs", "rel"]:
+
+for transformation in [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE]:
+    for rq_type in ["abs", "rel"]:
+        # bootstrap
+        
+        for model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES[:3]:
             threshold = get_transformation_threshold(transformation, rq_type)
             record = {
                 "dataset": "cifar10",
