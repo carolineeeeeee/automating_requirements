@@ -7,3 +7,15 @@ download_cifar10_c:
 
 preprocess_cifar10_pytorch:
 	python ./prepare/preprocess_cifar10_pytorch.py
+
+preprocess_cifar10c:
+	python ./prepare/preprocess_cifar10_c.py
+
+download: download_cifar10 download_cifar10_c
+
+preprocess: preprocess_cifar10_pytorch preprocess_cifar10c
+
+all: download preprocess
+
+clean:
+	bash ./utils/clean.sh
