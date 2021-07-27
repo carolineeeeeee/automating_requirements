@@ -9,3 +9,4 @@ verifying/bootstrap_output/
 verifying/cifar-10-python.tar.gz
 verifying/cifar10c_bootstrap_output
 *.pt
+
