@@ -22,23 +22,24 @@ data_dir = __dir__.parent / 'data'  # directory containing all datasets and proc
 dataset_dir = data_dir / 'CIFAR-10-C'  # directory containing original cifar-10-c npy files
 output_dir = data_dir / 'cifar-10-c-images'  # directory containing processed cifar-10-c images
 
-if __name__ == '__main__':
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
 
-    cifar_10_c_files = os.listdir(dataset_dir)
+def main(original_dataset: pathlib2.Path, output_path: pathlib2.Path):
+    if output_path.exists():
+        shutil.rmtree(output_path)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    cifar_10_c_files = os.listdir(original_dataset)
     cifar_10_c_files.remove("labels.npy")
     logger.info("Corruption files:\n" + str(cifar_10_c_files))
-    label_path = dataset_dir / "labels.npy"
-    copyfile(label_path, output_dir / "labels.npy")
+    label_path = original_dataset / "labels.npy"
+    copyfile(label_path, output_path / "labels.npy")
     labels = np.load(label_path)
     for npy_file in tqdm(cifar_10_c_files):
         corruption_type = npy_file.split('.')[0]
-        folder_path = output_dir / corruption_type
+        folder_path = output_path / corruption_type
         if not folder_path.exists():
             folder_path.mkdir(parents=True, exist_ok=True)
-        data_file_path = dataset_dir / npy_file
+        data_file_path = original_dataset / npy_file
         data = np.load(data_file_path)
         for i, img in enumerate(data):
             save_path = os.path.join(folder_path, f"{i}.png")
@@ -49,3 +50,7 @@ if __name__ == '__main__':
                 logger.error(npy_file)
                 logger.error(img)
         np.savetxt(folder_path / "labels.txt", labels)
+
+
+if __name__ == '__main__':
+    main(dataset_dir, output_dir)

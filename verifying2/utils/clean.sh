@@ -1,5 +1,5 @@
 script_dir=$(dirname $0)
-for f in $(ls $script_dir/../data | grep -v README.md);
+for f in $(ls $script_dir/../data | grep -v README.md | grep -v frost-images);
 do
   to_remove="$script_dir/../data/$f"
   echo "Removing $to_remove"

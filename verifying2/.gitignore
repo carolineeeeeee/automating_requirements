@@ -3,3 +3,5 @@ data/CIFAR-10-C
 data/cifar10_pytorch
 data/CIFAR-10-C.tar
 data/cifar-10-python.tar.gz
+data/cifar-10-c-images
+models
