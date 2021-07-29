@@ -4,6 +4,8 @@ from collections import defaultdict
 __root__ = pathlib2.Path(__file__).absolute().parent.parent
 ROOT_PATH = __root__
 
+MIN_IQA_RANGE = 0.5
+
 OBJECT_CLASSES = ["airplane", "bicycle", "boat", "car", "chair", "dog", "keyboard", "oven", "bear", "bird",
                   "bottle", "cat", "clock", "elephant", "knife", "truck"]
 CIFAR10_CLASSES = ['cat', 'ship', 'plane', 'frog', 'car', 'truck', 'dog', 'horse', 'deer', 'bird']
@@ -47,7 +49,7 @@ CIFAR10_C_CORRUPTION = [
 
 
 THRESHOLD_MAP = {}
-for tran in [CONTRAST_G, CONTRAST, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GENERALIZED]:
+for tran in [CONTRAST_G, CONTRAST, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR, GENERALIZED]:
     THRESHOLD_MAP[tran] = {}
 THRESHOLD_MAP[CONTRAST_G]['abs'] = 0.89
 THRESHOLD_MAP[CONTRAST]['abs'] = 0.89
@@ -55,6 +57,9 @@ THRESHOLD_MAP[UNIFORM_NOISE]['abs'] = 0.85
 THRESHOLD_MAP[LOWPASS]['abs'] = 0.92
 THRESHOLD_MAP[HIGHPASS]['abs'] = 0.86
 THRESHOLD_MAP[PHASE_NOISE]['abs'] = 0.88
+THRESHOLD_MAP[DEFOCUS_BLUR]['abs'] = 0.9
+THRESHOLD_MAP[MOTION_BLUR]['abs'] = 0.9
+THRESHOLD_MAP[GLASS_BLUR]['abs'] = 0.8
 THRESHOLD_MAP[GENERALIZED]['abs'] = 0.85
 
 THRESHOLD_MAP[CONTRAST_G]['rel'] = 0.99
@@ -63,6 +68,9 @@ THRESHOLD_MAP[UNIFORM_NOISE]['rel'] = 0.83
 THRESHOLD_MAP[LOWPASS]['rel'] = 0.91
 THRESHOLD_MAP[HIGHPASS]['rel'] = 0.98
 THRESHOLD_MAP[PHASE_NOISE]['rel'] = 0.86
+THRESHOLD_MAP[DEFOCUS_BLUR]['rel'] = 1
+THRESHOLD_MAP[MOTION_BLUR]['rel'] = 0.85
+THRESHOLD_MAP[GLASS_BLUR]['rel'] = 0.8
 THRESHOLD_MAP[GENERALIZED]['rel'] = 0.83
 
 TRANSFORMATION_LEVEL = 1000
@@ -76,7 +84,6 @@ uniform_noise_params = [x / 10 for x in list(range(0, 7))]
 lowpass_params = [x / 10 for x in list(range(0, 30))]
 highpass_params = [x / 100 for x in list(range(0, 150))]
 phase_noise_params = [x / 100 for x in list(range(0, 200))]
-
 
 # models
 ALEXNET = 'alexnet'

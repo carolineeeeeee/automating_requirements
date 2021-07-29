@@ -57,7 +57,8 @@ def gen_bootstrap(
         'original_path': [],
         'transformed_path': [],
         'label': [],
-        'transformation': []
+        'transformation': [],
+        'vd_score': []
     }
     for batch_id in tqdm(range(num_batch)):
         logger.debug("batch " + str(batch_id))
@@ -156,7 +157,7 @@ def gen_bootstrap(
                     bootstrap_save_record(
                         batch_id, j, cur_row['filename'],
                         new_name, cur_row['path'], transformation,
-                        output_path, cur_row['label'],
+                        output_path, cur_row['label'], 1-IQA_score,
                         img2, bootstrap_data)
                     break
 

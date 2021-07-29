@@ -18,10 +18,11 @@ from typing import List, Set, Dict, Tuple
 from collections import defaultdict
 from torch.utils.data import DataLoader
 from robustbench.utils import load_model
+import matlab.engine
 
 from src.constant import *
 from src.bootstrap import gen_bootstrap
-from src.evaluate import run_model, estimate_conf_int
+from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 from src.helper import read_cifar10_ground_truth, get_transformation_threshold
 
 def preparation_and_bootstrap(num_batch: int, batch_size: int, data_path: str, gen_path: str, rq_type: str, transformation: str, threshold: float = None):
@@ -33,9 +34,15 @@ def preparation_and_bootstrap(num_batch: int, batch_size: int, data_path: str, g
     df.to_csv(os.path.join(ROOT_PATH, "tmp.csv"))
     return ground_truth, df
 
-def run(ground_truth, df, rq_type: str, model_name: str):
-    record_df = run_model(model_name, df)
-    conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, 0.95)
+def run(ground_truth, boot_df, rq_type: str, model_name: str):
+    record_df = run_model(model_name, boot_df)
+    if rq_type == 'rel':
+        a = obtain_preserved_min_degradation(record_df)
+        conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, a)
+    elif rq_type == 'abs':
+        conf, mu, sigma, satisfied = estimate_conf_int(record_df, rq_type, 1, ground_truth, 0.95)
+    else:
+        raise ValueError("Invalid rq_type")
     return conf, mu, sigma, satisfied
 
 
