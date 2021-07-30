@@ -49,6 +49,14 @@ lowpass_params = [x / 10 for x in list(range(0, 30))]
 highpass_params = [x / 100 for x in list(range(0, 150))]
 phase_noise_params = [x / 100 for x in list(range(0, 200))]
 
+# array transformation
+
+def power_transform(arr, p=1/2):
+	min_v, max_v = arr.min(), arr.max()
+	range_v = max_v - min_v
+	base_transform = ((arr - min_v) / range_v) ** p
+	return base_transform * range_v + min_v
+
 
 # transformations
 def intensity_shift(img, degree, precision=0):
@@ -325,8 +333,8 @@ def glass_blur(x, i):
     # sigma, max_delta, iterations
     #	c = [(0.7, 1, 2), (0.9, 2, 1), (1, 2, 3), (1.1, 3, 2), (1.5, 4, 2)][severity - 1]
 
-    sigma = np.linspace(0, 5, TRANSFORMATION_LEVEL)
-    max_delta = np.random.randint(1, 4, TRANSFORMATION_LEVEL)
+    sigma = power_transform(np.linspace(0, 20, TRANSFORMATION_LEVEL), 1/3)
+	max_delta = (power_transform(np.random.randint(1,10,TRANSFORMATION_LEVEL))).astype('int')
     iterations = 2
     c = np.stack([sigma, max_delta], 1)
 
@@ -362,8 +370,8 @@ def disk(radius, alias_blur=0.1, dtype=np.float32):
 # def defocus_blur(x, severity=1):
 def defocus_blur(x, i):
     #	c = [(3, 0.1), (4, 0.5), (6, 0.5), (8, 0.5), (10, 0.5)][severity - 1]
-    radius = np.linspace(1, 10, TRANSFORMATION_LEVEL)
-    alias_blur = np.linspace(0, 1, TRANSFORMATION_LEVEL)
+    radius = power_transform(np.linspace(1, 20, TRANSFORMATION_LEVEL))
+	alias_blur = power_transform(np.linspace(0, 1, TRANSFORMATION_LEVEL))
     c = np.stack([radius, alias_blur], 1)
 
     x = np.array(x) / 255.
@@ -386,8 +394,8 @@ class MotionImage(WandImage):
 def motion_blur(x, i):
     #	c = [(10, 3), (15, 5), (15, 8), (15, 12), (20, 15)][severity - 1]
 
-    radius = np.linspace(1, 20, TRANSFORMATION_LEVEL)
-    sigma = np.linspace(1, 20, TRANSFORMATION_LEVEL)
+    radius = power_transform(np.linspace(1, 20, TRANSFORMATION_LEVEL))
+    sigma = power_transform(np.linspace(1, 20, TRANSFORMATION_LEVEL))
     c = np.stack([radius, sigma], 1)
 
     output = BytesIO()
