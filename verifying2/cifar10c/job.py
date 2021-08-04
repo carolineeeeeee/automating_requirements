@@ -12,9 +12,10 @@ from src.job import Job
 
 class Cifar10CJob(Job):
     def __init__(self, source: str, destination: str, num_sample_iter: int, sample_size: int, corruption: str,
-                model_name: str, rq_type: str):
+                 model_name: str, rq_type: str):
         super(Cifar10CJob, self).__init__(source, destination, num_sample_iter, sample_size)
         self.rq_type = rq_type
+        self.model_name = model_name
         dataset_info_df = load_cifar10_data(pathlib2.Path(self.source))
         self.bootstrapper = Cifar10CBootstrapper(num_sample_iter=self.num_sample_iter, sample_size=self.sample_size,
                                                  source=source, destination=destination,

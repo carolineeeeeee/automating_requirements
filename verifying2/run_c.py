@@ -1,10 +1,33 @@
-from cifar10c.bootstrap import Cifar10CBootstrapper
-from src.constant import ROOT
-from src.utils import load_cifar10_data
-source = ROOT / 'data' / 'cifar-10-c-images' / 'gaussian_blur'
-destination = ROOT / 'bootstrap_data_c'
-dataset_info_df = load_cifar10_data(source)
-print(dataset_info_df)
-b = Cifar10CBootstrapper(num_sample_iter=2, sample_size=10, source=source, destination=destination, dataset_info_df=dataset_info_df, corruption='gaussian_blur')
-df = b.run()
-print(df)
+import argparse
+
+from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS
+from cifar10c.job import Cifar10CJob
+
+
+def run(source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
+        model_name: str, rq_type: str, batch_size: int, cpu: bool = True):
+    job = Cifar10CJob(source, destination, num_sample_iter, sample_size, transformation,
+                      model_name, rq_type, batch_size, cpu)
+    job.run()
+    return job
+
+
+if __name__ == '__main__':
+    DEFAULT_SOURCE = str(ROOT / 'data' / 'cifar-10-c-images' / 'gaussian_blur')
+    DEFAULT_DESTINATION = str(ROOT / 'bootstrap_data_c')
+    parser = argparse.ArgumentParser("Run Cifar10 C")
+    parser.add_argument("--source", default=DEFAULT_SOURCE, help="source of dataset")
+    parser.add_argument("--destination", default=DEFAULT_DESTINATION, help="location to save bootstrapping images")
+    parser.add_argument("--num_sample_iter", required=True, help="Number of bootstrap iterations")
+    parser.add_argument("--sample_size", required=True, help="Number of unique images per bootstrap iteration")
+    parser.add_argument("--transformation", choices=TRANSFORMATIONS,
+                        default=GAUSSIAN_NOISE, help="transformation to apply to images")
+    parser.add_argument("--rq_type", choices=["abs", "rel"], required=True, help="requirement type")
+    parser.add_argument("--model_name", required=True, help="name of model to run")
+    parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")
+    parser.add_argument(
+        "--cpu", action="store_true", default=False,
+        help="use CPU only while having GPU, will verify if GPU is available if this argument is set to False")
+    args = parser.parse_args()
+    run(args.source, args.destination, args.num_sample_iter, args.sample_size, args.model_name,
+        args.transformation, args.rq_type, args.batch_size, args.cpu)

@@ -1,23 +1,12 @@
-import os
 import sys
-import json
 import scipy
 import torch
 import logging
-import argparse
-import pathlib2
-import torchvision
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import multiprocessing as mp
-from tabulate import tabulate
 import matplotlib.pyplot as plt
-from scipy.stats import pearsonr
-from typing import List, Set, Dict, Tuple
-from collections import defaultdict
-from torch.utils.data import DataLoader
-from robustbench.utils import load_model
+from typing import Dict
+from .constant import MIN_IQA_RANGE
 from .dataset import Cifar10Dataset
 from .utils import get_model
 
@@ -80,6 +69,7 @@ def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, ba
                     'new_filename': data['new_filename'][k],
                     'original_path': data['original_path'][k],
                     'new_path': data['new_path'][k],
+                    'vd_score': float(data['vd_score'][k]),
                 })
             pbar.set_postfix({f'Iteration': bootstrap_iter_id})
             pbar.update(actual_batch_size)
@@ -132,7 +122,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     if rq_type == 'abs':
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                    ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -145,7 +135,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         for batch in batch_results.keys():
             print(batch_results[batch])
             batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                    orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -156,3 +146,12 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         return conf_rel, mu, sigma, satisfied
     else:
         raise ValueError("Invalid rq_type")
+
+
+def obtain_preserved_min_degradation(record_df):
+    # compare boot_df filename and record_df transformed_filename
+    # find percenrage preserved within minimum IQA range, return it
+    min_range_predictions = record_df.loc[record_df['vd_score'] <= MIN_IQA_RANGE]
+    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['transformed_prediction']) & (
+        record_df['vd_score'] <= MIN_IQA_RANGE)]
+    return len(predictions_preserved) / float(len(min_range_predictions))

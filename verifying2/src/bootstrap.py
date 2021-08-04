@@ -37,8 +37,10 @@ class Bootstrapper(ABC):
 
 
 class Cifar10Bootstrapper(Bootstrapper):
-    def __init__(self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
-                 destination: Union[str, pathlib2.Path], threshold: float, dataset_info_df: pd.DataFrame, transformation: str):
+    def __init__(
+            self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
+            destination: Union[str, pathlib2.Path],
+            threshold: float, dataset_info_df: pd.DataFrame, transformation: str):
         super(Cifar10Bootstrapper, self).__init__(num_sample_iter, sample_size, source, destination)
         self.threshold = threshold
         self.dataset_info_df = dataset_info_df
@@ -51,7 +53,14 @@ class Cifar10Bootstrapper(Bootstrapper):
             shutil.rmtree(self.destination)
         self.destination.mkdir(parents=True, exist_ok=True)
 
-    def run(self, matlab_engine):
+    def run(self, matlab_engine) -> pd.DataFrame:
+        """run bootstrapping process to generate and save transformed images
+
+        :param matlab_engine: matlab engine object, can be created useing matlab.start_matlab()
+        :raises ValueError: Invalid transformation type
+        :return: info of generated bootstrapping images
+        :rtype: pd.DataFrame
+        """
         self._prepare()
         logger.info("bootstrapping")
         self.data = []
@@ -65,8 +74,8 @@ class Cifar10Bootstrapper(Bootstrapper):
                 image_name = cur_row['original_filename']
                 image_path = cur_row['original_path']
                 if self.transformation in [
-                    GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
-                    JPEG_COMPRESSION]:
+                        GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
+                        JPEG_COMPRESSION]:
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)
@@ -82,15 +91,12 @@ class Cifar10Bootstrapper(Bootstrapper):
                     elif self.transformation == LOWPASS:
                         param = random.choice(lowpass_params)
                         img2 = low_pass_filter(img, param)
-                        img2 = apply_uniform_noise(img, 0, param)
                     elif self.transformation == HIGHPASS:
                         param = random.choice(highpass_params)
                         img2 = high_pass_filter(img, param)
-                        img2 = apply_uniform_noise(img, 0, param)
                     elif self.transformation == PHASE_NOISE:
                         param = random.choice(phase_noise_params)
                         img2 = scramble_phases(img, param)
-                        img2 = apply_uniform_noise(img, 0, param)
                     elif self.transformation == GAUSSIAN_NOISE:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, param = gaussian_noise(img, param_index)
@@ -153,7 +159,8 @@ class Cifar10Bootstrapper(Bootstrapper):
                             "original_path": cur_row['original_path'],
                             "transformation": self.transformation,
                             "new_path": output_path,
-                            "label": cur_row['label']
+                            "label": cur_row['label'],
+                            "vd_score": 1 - IQA_score
                         })
                         break
                 k += 1

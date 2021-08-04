@@ -1,12 +1,12 @@
 import os
 import pickle
-from typing import Dict
+from typing import Dict, Union
 import pathlib2
 from abc import ABC, abstractmethod
-from src.bootstrap import Cifar10Bootstrapper
+from src.bootstrap import Cifar10Bootstrapper, Bootstrapper
 from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath
 from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth
-from src.evaluate import run_model, estimate_conf_int
+from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 
 
 class Job(ABC):
@@ -46,7 +46,7 @@ class Job(ABC):
 
 class Cifar10Job(Job):
     def __init__(self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
-                model_name: str, rq_type: str, batch_size: int=10, cpu: bool=True):
+                 model_name: str, rq_type: str, batch_size: int = 10, cpu: bool = True):
         super(Cifar10Job, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size)
         self.transformation = transformation
         self.model_name = model_name
@@ -59,13 +59,29 @@ class Cifar10Job(Job):
                                                 dataset_info_df=dataset_info_df,
                                                 transformation=transformation)
 
-    def run(self):
-        matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
-        bootstrap_df = self.bootstrapper.run(matlab_eng)
-        record_df = run_model(self.model_name, bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
+    def run(self, bootstrapper: Union[Bootstrapper, None]):
+        """[summary]
+
+        :param bootstrapper: optional bootstrapper object, in case you need to reuse a bootstrapper object and images for multiple jobs
+        :type bootstrapper: Union[Bootstrapper, None]
+        :raises ValueError: [description]
+        """
+        if bootstrapper is None:
+            matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
+            bootstrap_df = self.bootstrapper.run(matlab_eng)
+            record_df = run_model(self.model_name, bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
+        else:
+            record_df = bootstrapper.dataset_info_df
         ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
-        self.conf, self.mu, self.sigma, self.satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth,
-                                                                           0.95)
+        if self.rq_type == 'rel':
+            a = obtain_preserved_min_degradation(record_df)
+            self.conf, self.mu, self.sigma, self.satisfied = estimate_conf_int(
+                record_df, self.rq_type, 1, ground_truth, a)
+        elif self.rq_type == 'abs':
+            self.conf, self.mu, self.sigma, self.satisfied = estimate_conf_int(
+                record_df, self.rq_type, 1, ground_truth, 0.95)
+        else:
+            raise ValueError("Invalid rq_type")
         self.done = True
         self.success = True
 
@@ -85,7 +101,6 @@ class Cifar10Job(Job):
             'sigma': self.sigma,
             'satisfied': self.satisfied
         }
-
 
     def __str__(self) -> str:
         return f"""

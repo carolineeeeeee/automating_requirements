@@ -10,7 +10,6 @@ import torch.nn as nn
 from typing import Union
 
 import torchvision.models as models
-from robustbench import load_model
 
 from .constant import ALEXNET, \
     GOOGLENET, \
@@ -51,12 +50,11 @@ def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.
     elif model_name == VGG_16:
         model = models.vgg16(pretrained=pretrained)
     elif model_name in ROBUSTBENCH_CIFAR10_MODEL_NAMES:
-        # if 'L2' in model_name:
-        #     model = load_model(model_name=model_name, dataset='cifar10', threat_model="L2")
-        # elif 'Linf' in model_name:
-        #     model = load_model(model_name=model_name, dataset='cifar10', threat_model="Linf")
-        # model = load_model(model_name=model_name, dataset='cifar10', threat_model="corruptions")
-        model = load_model(model_name=model_name)
+        if 'L2' in model_name:
+            model = load_model(model_name=model_name, dataset='cifar10', threat_model="L2")
+        elif 'Linf' in model_name:
+            model = load_model(model_name=model_name, dataset='cifar10', threat_model="Linf")
+        model = load_model(model_name=model_name, dataset='cifar10', threat_model="corruptions")
     else:
         raise ValueError(f"Invalid Model Name: {model_name}")
     if val:
