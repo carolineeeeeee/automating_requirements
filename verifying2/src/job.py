@@ -1,29 +1,28 @@
 import os
 import pickle
-from typing import Dict, Union
+
+import pandas as pd
 import pathlib2
+from typing import Dict, Union, List
 from abc import ABC, abstractmethod
+
 from src.bootstrap import Cifar10Bootstrapper, Bootstrapper
 from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath
-from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth
+from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str
 from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 
 
 class Job(ABC):
-    def __init__(self, source: str, destination: str, num_sample_iter: int, sample_size: int, cpu: bool, batch_size: int):
+    def __init__(self, source: str, destination: str, num_sample_iter: int, sample_size: int, cpu: bool,
+                 batch_size: int, model_names: List[str]):
         self.source = source
         self.destination = destination
         self.num_sample_iter = num_sample_iter
         self.sample_size = sample_size
         self.done = False
-        self.success = False
         self.cpu = cpu
         self.batch_size = batch_size
-
-        self.conf = None
-        self.mu = None
-        self.sigma = None
-        self.satisfied = None
+        self.model_names = model_names
 
     @abstractmethod
     def run(self):
@@ -36,54 +35,68 @@ class Job(ABC):
         num_sample_iter: {self.num_sample_iter}
         sample_size: {self.sample_size}
         done: {self.done}
-        success: {self.success}
-        conf: {self.conf}
-        mu: {self.mu}
-        sigma: {self.sigma}
-        satisfied: {self.satisfied}
+        model names: {self.model_names}
         """
 
 
 class Cifar10Job(Job):
-    def __init__(self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
-                 model_name: str, rq_type: str, batch_size: int = 10, cpu: bool = True):
-        super(Cifar10Job, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size)
+    def __init__(
+            self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
+            rq_type: str, model_names: List[str], threshold: float = 0.95,
+            batch_size: int = 10, cpu: bool = True, bootstrapper: Cifar10Bootstrapper = None):
+        super(Cifar10Job, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
+                                         model_names)
         self.transformation = transformation
-        self.model_name = model_name
         self.rq_type = rq_type
-        dataset_info_df = load_cifar10_data(pathlib2.Path(self.source))
-        self.bootstrapper = Cifar10Bootstrapper(num_sample_iter=self.num_sample_iter, sample_size=self.sample_size,
-                                                source=self.source,
-                                                destination=self.destination,
-                                                threshold=0.95,
-                                                dataset_info_df=dataset_info_df,
-                                                transformation=transformation)
+        self.threshold = threshold
+        self.dataset_info_df = load_cifar10_data(pathlib2.Path(self.source))
+        self.bootstrapper = self.gen_bootstrapper() if bootstrapper is None else bootstrapper
+        self.job_df = None
 
-    def run(self, bootstrapper: Union[Bootstrapper, None]):
+    def gen_bootstrapper(self) -> Cifar10Bootstrapper:
+        return Cifar10Bootstrapper(num_sample_iter=self.num_sample_iter, sample_size=self.sample_size,
+                                   source=self.source,
+                                   destination=self.destination,
+                                   threshold=self.threshold,
+                                   dataset_info_df=self.dataset_info_df,
+                                   transformation=self.transformation)
+
+    def run(self) -> pd.DataFrame:
         """[summary]
 
         :param bootstrapper: optional bootstrapper object, in case you need to reuse a bootstrapper object and images for multiple jobs
         :type bootstrapper: Union[Bootstrapper, None]
         :raises ValueError: [description]
         """
-        if bootstrapper is None:
-            matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
-            bootstrap_df = self.bootstrapper.run(matlab_eng)
-            record_df = run_model(self.model_name, bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
-        else:
-            record_df = bootstrapper.dataset_info_df
-        ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
-        if self.rq_type == 'rel':
-            a = obtain_preserved_min_degradation(record_df)
-            self.conf, self.mu, self.sigma, self.satisfied = estimate_conf_int(
-                record_df, self.rq_type, 1, ground_truth, a)
-        elif self.rq_type == 'abs':
-            self.conf, self.mu, self.sigma, self.satisfied = estimate_conf_int(
-                record_df, self.rq_type, 1, ground_truth, 0.95)
-        else:
-            raise ValueError("Invalid rq_type")
+        matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
+        self.bootstrapper.run(matlab_eng)
+        results = []
+        for model_name in self.model_names:
+            record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
+            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
+            if self.rq_type == 'rel':
+                a = obtain_preserved_min_degradation(record_df)
+                conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
+            elif self.rq_type == 'abs':
+                conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
+            else:
+                raise ValueError("Invalid rq_type")
+            results.append({
+                "conf": conf,
+                "mu": mu,
+                "sigma": sigma,
+                "satisfied": satisfied,
+                "dataset": "cifar10",
+                "num_sample_iter": self.num_sample_iter,
+                "threshold": self.threshold,
+                "batch_size": self.batch_size,
+                "transformation": self.transformation,
+                "rq_type": self.rq_type,
+                "model_name": model_name,
+            })
+        self.job_df = pd.DataFrame(data=results)
         self.done = True
-        self.success = True
+        return self.job_df
 
     def to_dict(self) -> Dict:
         return {
@@ -92,29 +105,10 @@ class Cifar10Job(Job):
             'num_sample_iter': self.num_sample_iter,
             'sample_size': self.sample_size,
             'done': self.done,
-            'success': self.success,
-            'model_name': self.model_name,
+            'model_names': self.model_names,
             'rq_type': self.rq_type,
             'transformation': self.transformation,
-            'conf': self.conf,
-            'mu': self.mu,
-            'sigma': self.sigma,
-            'satisfied': self.satisfied
         }
 
     def __str__(self) -> str:
-        return f"""
-        source: {self.source}
-        destination: {self.destination}
-        num_sample_iter: {self.num_sample_iter}
-        sample_size: {self.sample_size}
-        done: {self.done}
-        success: {self.success}
-        model_name: {self.model_name}
-        rq_type: {self.rq_type}
-        transformation: {self.transformation}
-        conf: {self.conf}
-        mu: {self.mu}
-        sigma: {self.sigma}
-        satisfied: {self.satisfied}
-        """
+        return dict_to_str(self.to_dict())

@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import matlab.engine
 import torch.nn as nn
-from typing import Union
+from typing import Union, Dict
 
 import torchvision.models as models
 
@@ -116,3 +116,7 @@ def clean_dir(path: Union[str, pathlib2.Path]):
     if path.exists():
         shutil.rmtree(path)
     path.mkdir(parents=True, exist_ok=True)
+
+
+def dict_to_str(d: Dict) -> str:
+    return "\n".join([f"{key}: {value}" for key, value in d.items()])

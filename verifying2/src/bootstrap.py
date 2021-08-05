@@ -29,7 +29,7 @@ class Bootstrapper(ABC):
         self.source = pathlib2.Path(source)
         self.destination = pathlib2.Path(destination)
         self.data = None
-        self.df = None
+        self.bootstrap_df = None
 
     @abstractmethod
     def _prepare(self):
@@ -165,5 +165,5 @@ class Cifar10Bootstrapper(Bootstrapper):
                         break
                 k += 1
 
-        self.df = pd.DataFrame(data=self.data)
-        return self.df
+        self.bootstrap_df = pd.DataFrame(data=self.data)
+        return self.bootstrap_df
