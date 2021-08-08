@@ -152,6 +152,6 @@ def obtain_preserved_min_degradation(record_df):
     # compare boot_df filename and record_df transformed_filename
     # find percenrage preserved within minimum IQA range, return it
     min_range_predictions = record_df.loc[record_df['vd_score'] <= MIN_IQA_RANGE]
-    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['transformed_prediction']) & (
+    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['new_prediction']) & (
         record_df['vd_score'] <= MIN_IQA_RANGE)]
     return len(predictions_preserved) / float(len(min_range_predictions))

@@ -1,10 +1,10 @@
 import os
 import pickle
-
-import pandas as pd
 import pathlib2
-from typing import Dict, Union, List
+import pandas as pd
+from tabulate import tabulate
 from abc import ABC, abstractmethod
+from typing import Dict, Union, List
 
 from src.bootstrap import Cifar10Bootstrapper, Bootstrapper
 from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath, CIFAR10
@@ -98,12 +98,12 @@ class Cifar10Job(Job):
         self.done = True
         return self.job_df
 
-    def save(self, path: str) -> None:
+    def save(self, path: Union[pathlib2.Path, str]) -> None:
         f = open(path, 'wb')
         pickle.dump(self, f)
 
     @staticmethod
-    def load(path: str):
+    def load(path: Union[pathlib2.Path, str]):
         f = open(path, 'rb')
         return pickle.load(f)
 
