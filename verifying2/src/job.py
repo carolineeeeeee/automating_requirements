@@ -7,7 +7,7 @@ from typing import Dict, Union, List
 from abc import ABC, abstractmethod
 
 from src.bootstrap import Cifar10Bootstrapper, Bootstrapper
-from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath
+from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath, CIFAR10
 from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str
 from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 
@@ -86,7 +86,7 @@ class Cifar10Job(Job):
                 "mu": mu,
                 "sigma": sigma,
                 "satisfied": satisfied,
-                "dataset": "cifar10",
+                "dataset": CIFAR10,
                 "num_sample_iter": self.num_sample_iter,
                 "threshold": self.threshold,
                 "batch_size": self.batch_size,
@@ -97,6 +97,15 @@ class Cifar10Job(Job):
         self.job_df = pd.DataFrame(data=results)
         self.done = True
         return self.job_df
+
+    def save(self, path: str) -> None:
+        f = open(path, 'wb')
+        pickle.dump(self, f)
+
+    @staticmethod
+    def load(path: str):
+        f = open(path, 'rb')
+        return pickle.load(f)
 
     def to_dict(self) -> Dict:
         return {

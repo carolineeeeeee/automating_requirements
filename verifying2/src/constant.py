@@ -14,7 +14,9 @@ ROBUSTBENCH_CIFAR10_MODEL_NAMES = [
     "Gowal2020Uncovering_Linf_70_16_extra", "Kireev2021Effectiveness_Gauss50percent",
     "Kireev2021Effectiveness_RLATAugMixNoJSD", "Kireev2021Effectiveness_AugMixNoJSD", "Gowal2020Uncovering_Linf_70_16",
     "Gowal2020Uncovering_L2_70_16", "Calian2021Defending", "Kireev2021Effectiveness_RLAT", "Standard"]
-
+# dataset
+CIFAR10 = 'cifar10'
+CIFAR10C = 'cifar10c'
 # transformations
 CONTRAST_G = "contrast_G"
 UNIFORM_NOISE = "uniform_noise"

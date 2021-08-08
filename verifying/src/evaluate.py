@@ -88,9 +88,11 @@ def run_model(model_name: str, img_df: pd.DataFrame, cpu: bool = False):
     records_df.to_csv("records.csv")
     return records_df
 
+
 def obtain_cifar_10_c_accuracy_per_transformation(transformation: str, model_name: str):
-    
+
     return 0
+
 
 def calculate_confidence(acc_list, base_acc, req_acc):
     # fitting a normal distribution
@@ -147,7 +149,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     elif rq_type == 'rel':
         batch_preserved = []
         for batch in batch_results.keys():
-            #print(batch_results[batch])
+            # print(batch_results[batch])
             batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
                 orig_results[x[0]] == target_label_id)])/len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
@@ -161,9 +163,11 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     else:
         raise ValueError("Invalid rq_type")
 
+
 def obtain_preserved_min_degradation(record_df):
     # compare boot_df filename and record_df transformed_filename
     # find percenrage preserved within minimum IQA range, return it
     min_range_predictions = record_df.loc[record_df['vd_score'] <= MIN_IQA_RANGE]
-    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['transformed_prediction']) & (record_df['vd_score'] <= MIN_IQA_RANGE)]
+    predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['transformed_prediction']) & (
+        record_df['vd_score'] <= MIN_IQA_RANGE)]
     return len(predictions_preserved) / float(len(min_range_predictions))
