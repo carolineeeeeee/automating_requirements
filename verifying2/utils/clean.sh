@@ -15,3 +15,5 @@ echo "remove all jobs in queue and finished jobs"
 rm -rf $script_dir/../jobs
 rm -rf $script_dir/../finished_jobs
 
+echo "remote data/imagenet"
+if [ -e $script_dir/../data/imagenet ]; then rm -rf $script_dir/../data/imagenet; fi
