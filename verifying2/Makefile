@@ -36,9 +36,9 @@ preprocess_cifar10_pytorch:
 preprocess_cifar10c:
 	python ./prepare/preprocess_cifar10_c.py
 
-download: download_cifar10 download_cifar10_c download_imagenet_mapping download_imagenet_bboxls download_imagenet_val_img
+download: download_cifar10 download_cifar10_c download_imagenet_mapping download_imagenet_bbox download_imagenet_val_img
 
-preprocess: preprocess_cifar10_pytorch preprocess_cifar10c
+preprocess: preprocess_cifar10_pytorch preprocess_cifar10c produce_imagenet_label
 
 all: download preprocess
 
