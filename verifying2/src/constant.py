@@ -3,6 +3,11 @@ import pathlib2
 from torchvision import transforms
 
 ROOT = pathlib2.Path(__file__).parent.parent
+DATA_DIR = ROOT / 'data'
+IMAGENET_DATA_DIR = DATA_DIR / 'imagenet'
+# ImageNet info path
+IMAGE_2_LABEL_PATH = IMAGENET_DATA_DIR / 'info' / 'image_to_label_id.csv'
+
 
 MIN_IQA_RANGE = 0.5
 IQA = 'vif/vifvec_release'

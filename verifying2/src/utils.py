@@ -103,6 +103,17 @@ def load_cifar10_data(data_path: pathlib2.Path):
     return df.drop(columns='index')
 
 
+def load_imagenet_data(data_path: pathlib2.Path, image_to_label_id_csv_path: pathlib2.Path):
+    image_to_label_id_df = pd.read_csv(image_to_label_id_csv_path, index_col=0)
+    label_map_dict = image_to_label_id_df.to_dict('index')
+    lst = [{
+            'original_path': str(path),
+            'original_filename': path.name,
+            'label': label_map_dict[path.name.split('.')[0]]['label_index']
+        } for path in data_path.iterdir()]
+    return pd.DataFrame(data=lst)
+
+
 def start_matlab(IQA_PATH: str, matlabPyrToolsPath: str):
     eng = matlab.engine.start_matlab()
     eng.addpath(IQA_PATH, nargout=0)

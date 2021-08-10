@@ -22,7 +22,7 @@ from wand.api import library as wandlibrary
 from skimage.color import rgb2gray, rgb2grey
 from scipy.ndimage.filters import gaussian_filter
 
-from .constant import ROOT
+from .constant import ROOT, DATA_DIR
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -500,7 +500,7 @@ def frost(x, i):
 
     idx = np.random.randint(5)
     filename = ['frost1.png', 'frost2.png', 'frost3.png', 'frost4.jpeg', 'frost5.jpeg', 'frost6.jpeg'][idx]
-    frost = Image.open(os.path.join(ROOT, 'frost-images', filename))
+    frost = Image.open(os.path.join(DATA_DIR,  'frost-images', filename))
 
     # print(frost)
     x = np.asarray(x)
