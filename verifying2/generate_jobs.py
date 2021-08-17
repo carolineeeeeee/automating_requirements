@@ -12,8 +12,8 @@ DEFAULT_SOURCE = str(ROOT / 'transformed_data' / 'val')
 DEFAULT_DESTINATION = str(ROOT / 'finetune_bootstrap')
 
 cifar10_results = []
-num_sample_iter = 2
-sample_size = 10
+num_sample_iter = 50
+sample_size = 100
 jobs_queue_path = ROOT / 'jobs'
 finished_job_path = ROOT / 'finished_jobs'
 transformations = [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR,
