@@ -36,7 +36,6 @@ class Bootstrapper(ABC):
         raise NotImplementedError
 
 
-
 class ImagenetBootstrapper(Bootstrapper):
     def __init__(
             self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
@@ -168,8 +167,6 @@ class ImagenetBootstrapper(Bootstrapper):
 
         self.bootstrap_df = pd.DataFrame(data=self.data)
         return self.bootstrap_df
-
-
 
 
 class Cifar10Bootstrapper(Bootstrapper):
