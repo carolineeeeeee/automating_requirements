@@ -47,14 +47,15 @@ class Job(ABC):
         model names: {self.model_names}
         """
 
+
 class ImagenetJob(Job):
     def __init__(
             self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
             rq_type: str, model_names: List[str], threshold: float = 0.95,
-            batch_size: int = 10, cpu: bool = True, bootstrapper: ImagenetBootstrapper = None, 
-            image_to_label_id_csv_path: pathlib2.Path=IMAGE_2_LABEL_PATH):
+            batch_size: int = 10, cpu: bool = True, bootstrapper: ImagenetBootstrapper = None,
+            image_to_label_id_csv_path: pathlib2.Path = IMAGE_2_LABEL_PATH):
         super(ImagenetJob, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
-                                         model_names)
+                                          model_names)
         self.transformation = transformation
         self.rq_type = rq_type
         self.threshold = threshold
@@ -64,11 +65,11 @@ class ImagenetJob(Job):
 
     def gen_bootstrapper(self) -> ImagenetBootstrapper:
         return ImagenetBootstrapper(num_sample_iter=self.num_sample_iter, sample_size=self.sample_size,
-                                   source=self.source,
-                                   destination=self.destination,
-                                   threshold=self.threshold,
-                                   dataset_info_df=self.dataset_info_df,
-                                   transformation=self.transformation)
+                                    source=self.source,
+                                    destination=self.destination,
+                                    threshold=self.threshold,
+                                    dataset_info_df=self.dataset_info_df,
+                                    transformation=self.transformation)
 
     def run(self) -> pd.DataFrame:
         """[summary]
@@ -82,7 +83,7 @@ class ImagenetJob(Job):
         results = []
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
-            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
+            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
             if self.rq_type == 'rel':
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
@@ -106,7 +107,7 @@ class ImagenetJob(Job):
         self.job_df = pd.DataFrame(data=results)
         self.done = True
         return self.job_df
-        
+
     def to_dict(self) -> Dict:
         return {
             'source': self.source,
@@ -121,7 +122,6 @@ class ImagenetJob(Job):
 
     def __str__(self) -> str:
         return dict_to_str(self.to_dict())
-
 
 
 class Cifar10Job(Job):
@@ -158,7 +158,7 @@ class Cifar10Job(Job):
         results = []
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
-            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
+            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
             if self.rq_type == 'rel':
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)

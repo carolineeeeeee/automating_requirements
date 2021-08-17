@@ -28,7 +28,7 @@ class Cifar10CJob(Job):
         results = []
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
-            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.txt"))
+            ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
             if self.rq_type == 'rel':
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)

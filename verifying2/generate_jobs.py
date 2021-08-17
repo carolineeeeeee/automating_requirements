@@ -6,8 +6,10 @@ from src.constant import ROOT, ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIF
 from src.job import Cifar10Job, ImagenetJob
 from cifar10c.job import Cifar10CJob
 
-DEFAULT_SOURCE = str(ROOT / 'data' / 'cifar10_pytorch' / 'val')
-DEFAULT_DESTINATION = str(ROOT / 'bootstrap_data' / 'cifar10_pytorch')
+# DEFAULT_SOURCE = str(ROOT / 'data' / 'cifar10_pytorch' / 'val')
+DEFAULT_SOURCE = str(ROOT / 'transformed_data' / 'val')
+# DEFAULT_DESTINATION = str(ROOT / 'bootstrap_data' / 'cifar10_pytorch')
+DEFAULT_DESTINATION = str(ROOT / 'finetune_bootstrap')
 
 cifar10_results = []
 num_sample_iter = 2
@@ -16,16 +18,18 @@ jobs_queue_path = ROOT / 'jobs'
 finished_job_path = ROOT / 'finished_jobs'
 transformations = [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR,
                    GLASS_BLUR]
+transformations = [CONTRAST]
+
 clean_dir(jobs_queue_path)
 clean_dir(finished_job_path)
 
 model_names = ['Hendrycks2020AugMix_WRN',
-                'Hendrycks2020AugMix_ResNeXt',
-                'Kireev2021Effectiveness_Gauss50percent',
-                'Kireev2021Effectiveness_RLATAugMixNoJSD',
-                'Kireev2021Effectiveness_AugMixNoJSD',
-                'Kireev2021Effectiveness_RLAT',
-                'Standard']
+               'Hendrycks2020AugMix_ResNeXt',
+               'Kireev2021Effectiveness_Gauss50percent',
+               'Kireev2021Effectiveness_RLATAugMixNoJSD',
+               'Kireev2021Effectiveness_AugMixNoJSD',
+               'Kireev2021Effectiveness_RLAT',
+               'Standard']
 
 counter = 0
 pbar = tqdm(total=len(transformations) * 2)
@@ -39,10 +43,9 @@ for transformation in transformations:
                          model_names=model_names,
                          threshold=threshold, batch_size=5, cpu=False, bootstrapper=None)
         # imagenet job
-        # job = ImagenetJob(source=IMAGENET_DATA_DIR / 'imgs', destination="./bootstrap_imagenet", num_sample_iter=num_sample_iter, 
+        # job = ImagenetJob(source=IMAGENET_DATA_DIR / 'imgs', destination="./bootstrap_imagenet", num_sample_iter=num_sample_iter,
         #                     sample_size=sample_size, transformation=transformation, rq_type=rq_type,
         #                     model_names=model_names, threshold=threshold, batch_size=5, cpu=True)
-
 
         job.save(jobs_queue_path / f'{counter}.pickle')
         counter += 1
@@ -52,7 +55,7 @@ for transformation in transformations:
 # for corruption in CIFAR10_C_CORRUPTION:
 #     for rq_type in ["abs", "rel"]:
 #         # cifar10c job
-#         job = Cifar10CJob(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION, num_sample_iter=num_sample_iter, 
+#         job = Cifar10CJob(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION, num_sample_iter=num_sample_iter,
 #                             sample_size=sample_size, corruption=corruption,
 #                             rq_type=rq_type, cpu=True, batch_size=5, model_names=model_names)
 #         job.save(jobs_queue_path / f'{counter}.pickle')

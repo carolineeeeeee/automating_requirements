@@ -5,7 +5,7 @@ import shutil
 import logging
 import pathlib2
 import torchvision
-import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from typing import Union
 import torch.multiprocessing
@@ -35,20 +35,28 @@ def save(dataset_root: Union[pathlib2.Path, str], output_dir: Union[pathlib2.Pat
     if output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    labels = []
+    filenames, labels = [], []
     dataset = torchvision.datasets.CIFAR10(root=dataset_root, train=train, download=True,
                                            transform=torchvision.transforms.ToTensor())
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=1)
     logger.info(f"Saving images to {output_dir}")
-    for i, data in enumerate(tqdm(dataloader)):
-        img = toPIL(data[0][0])
-        img.save(os.path.join(output_dir, f'{i}.png'))
-        img.close()
-        labels.append(data[1][0])
-    label_path = output_dir / 'labels.txt'
-
+    pbar = tqdm(total=len(dataset))
+    for i, data in enumerate(dataloader):
+        for j in range(len(data[0])):
+            img = toPIL(data[0][j])
+            filename = f'{i}.png'
+            img.save(os.path.join(output_dir, filename))
+            img.close()
+            labels.append(int(data[1][0]))
+            filenames.append(filename)
+            pbar.update()
+    label_path = output_dir / 'labels.csv'
+    label_df = pd.DataFrame(data={
+        'filename': filenames,
+        'label': labels
+    })
+    label_df.to_csv(label_path)
     logger.info(f"Saving labelex. to {label_path}")
-    np.savetxt(str(label_path), np.asarray(labels))
 
 
 if __name__ == "__main__":

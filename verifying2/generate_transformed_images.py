@@ -1,13 +1,9 @@
-import os
 import torch
 import pathlib2
-import numpy as np
 import torchvision
 from src import constant
 from src.utils import get_transformation_threshold, transform_image_dir
 from src.utils import start_matlab
-print("PyTorch Version: ", torch.__version__)
-print("Torchvision Version: ", torchvision.__version__)
 
 transformation_type = constant.CONTRAST
 

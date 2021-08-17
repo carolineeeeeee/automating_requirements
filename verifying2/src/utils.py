@@ -84,45 +84,30 @@ def get_transformation_threshold(transformation: str, rq_type: str):
         rq_type]
 
 
-def read_cifar10_ground_truth(label_path: str, use_filename: bool = True):
+def read_cifar10_ground_truth(label_path: str):
     """
     :param label_path:
     :param use_filename: whether using filename as the key or number as the key
     :return:
     """
-    loaded_file = np.loadtxt(label_path).astype(int)
-    if use_filename:
-        # use filename as the key
-        ground_truth = {f"{i}.png": val for i, val in enumerate(loaded_file)}
-    else:
-        # use the index number in image name as the key
-        ground_truth = {i: val for i, val in enumerate(loaded_file)}
-    return ground_truth
+    label_df = pd.read_csv(label_path, index_col=0)
+    return {row['filename']: row['label'] for i, row in label_df.iterrows()}
 
 
 def load_cifar10_data(data_path: pathlib2.Path):
     """
-    Read labels information from a dataset, 2 types of files are accepted, labels.txt and labels.csv.
-    In the case where images are labelled strictly in numeric order (continuous) (1.png, 2.png, ..., 100.png), 
-    labels.txt is just a list of labels (no need to save filenames as it's in order minimizing the space).
-    In the case filenames are not continuous or filenames are not integers (2.png, transformed_100.png, ...) a csv file
-    called labels.csv can be used to map filenames and labels.
-    The first method (labels.txt) may be deprecated to keep this function simpler and robust.
-    :param data_path: directory containing all images and a labels.txt or a labels.csv
+    Read labels information from a dataset
+    Labels.csv is a mapping for filenames and labels.
+    :param data_path: directory containing all images and a labels.csv
     :return:
     """
-    if (data_path / 'labels.txt').exists():
-        labels = np.loadtxt(str(data_path / 'labels.txt')).astype(int)
-        indices = list(range(len(labels)))
-        df = pd.DataFrame(data={"index": indices, "label": labels})
-        df['original_filename'] = df['index'].apply(lambda i: f"{i}.png")
-    elif (data_path / 'labels.csv').exists():
+    if (data_path / 'labels.csv').exists():
         df = pd.read_csv(data_path / 'labels.csv', index_col=0)   # should contain 2 columns: filename, label
         df['original_filename'] = df['filename']
+        df['original_path'] = df['original_filename'].apply(lambda filename: os.path.join(str(data_path), filename))
+        return df
     else:
-        raise OSError(f"label file not found, either labels.txt or labels.csv should be present in {data_path}")
-    df['original_path'] = df['original_filename'].apply(lambda filename: os.path.join(str(data_path), filename))
-    return df.drop(columns='index')
+        raise OSError(f"label file not found, labels.csv should be present in {data_path}")
 
 
 def load_imagenet_data(data_path: pathlib2.Path, image_to_label_id_csv_path: pathlib2.Path):
@@ -230,8 +215,8 @@ def transform_image_dir(
     if target_dir.exists():
         shutil.rmtree(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
-    labels_txt_path = os.path.join(source_dir, 'labels.txt')
-    labels_data = np.loadtxt(labels_txt_path).astype(np.int)
+    label_df = pd.read_csv(source_dir/'labels.csv', index_col=0)
+    label_dict = {row['filename']: row['label'] for i, row in label_df.iterrows()}
     new_filenames = []
     new_labels = []
     transformed_image_paths = []
@@ -255,7 +240,7 @@ def transform_image_dir(
                 if 1 - IQA_score < threshold:
                     # path to save transformed image
                     image_name = os.path.basename(image_path)
-                    label = labels_data[int(image_name.split('.')[0])]
+                    label = label_dict[image_name]
                     new_labels.append(label)
                     new_name = f'{transformation_type}_{image_name}'
                     new_filenames.append(new_name)

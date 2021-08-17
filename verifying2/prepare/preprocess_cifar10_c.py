@@ -5,6 +5,7 @@ import shutil
 import pathlib2
 import logging
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from shutil import copyfile
 
@@ -34,6 +35,7 @@ def main(original_dataset: pathlib2.Path, output_path: pathlib2.Path):
     label_path = original_dataset / "labels.npy"
     copyfile(label_path, output_path / "labels.npy")
     labels = np.load(label_path)
+    label_df = pd.DataFrame(data={'filename': [f"{label}.png" for label in range(len(labels))], 'label': labels})
     for npy_file in tqdm(cifar_10_c_files):
         corruption_type = npy_file.split('.')[0]
         folder_path = output_path / corruption_type
@@ -49,7 +51,7 @@ def main(original_dataset: pathlib2.Path, output_path: pathlib2.Path):
                 logger.error(e)
                 logger.error(npy_file)
                 logger.error(img)
-        np.savetxt(folder_path / "labels.txt", labels)
+        label_df.to_csv(folder_path / "labels.csv")
 
 
 if __name__ == '__main__':
