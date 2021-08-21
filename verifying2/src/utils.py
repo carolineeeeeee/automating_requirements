@@ -220,6 +220,7 @@ def transform_image_dir(
     new_filenames = []
     new_labels = []
     transformed_image_paths = []
+    IQA_scores = []
     count = 0
     for ext in accepted_ext:
         for image_path in tqdm(glob.glob(f'{source_dir}/*.{ext}')):
@@ -244,6 +245,7 @@ def transform_image_dir(
                     new_labels.append(label)
                     new_name = f'{transformation_type}_{image_name}'
                     new_filenames.append(new_name)
+                    IQA_scores.append(IQA_score)
                     target_path = str(target_dir / new_name)
                     cv2.imwrite(target_path, transformed_image)
                     transformed_image_paths.append(target_path)
@@ -251,7 +253,8 @@ def transform_image_dir(
                     break
     df = pd.DataFrame(data={
         'filename': new_filenames,
-        'label': new_labels
+        'label': new_labels,
+        'IQA_score': IQA_scores
     })
     df.to_csv(os.path.join(target_dir, 'labels.csv'))
     return transformed_image_paths
