@@ -9,7 +9,7 @@ from .utils import clean_dir
 from .Imagenet_c_transformations import *
 from .constant import CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GAUSSIAN_NOISE, SHOT_NOISE, \
     IMPULSE_NOISE, DEFOCUS_BLUR, GLASS_BLUR, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, \
-    TRANSFORMATION_LEVEL
+    TRANSFORMATION_LEVEL, ROOT
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -40,11 +40,12 @@ class ImagenetBootstrapper(Bootstrapper):
     def __init__(
             self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
             destination: Union[str, pathlib2.Path],
-            threshold: float, dataset_info_df: pd.DataFrame, transformation: str):
+            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str):
         super(ImagenetBootstrapper, self).__init__(num_sample_iter, sample_size, source, destination)
         self.threshold = threshold
         self.dataset_info_df = dataset_info_df
         self.transformation = transformation
+        self.rq_type = rq_type
 
     def _prepare(self):
         if not self.source.exists():
@@ -74,56 +75,22 @@ class ImagenetBootstrapper(Bootstrapper):
                 image_name = cur_row['original_filename']
                 image_path = cur_row['original_path']
                 if self.transformation in [
-                        GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
-                        JPEG_COMPRESSION]:
+                        GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, RGB, COLOR_JITTER, DEFOCUS_BLUR]:
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)
                 img_g = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # greyscale image
                 while True:
                     # ============= different transformation types begin =============
-                    if self.transformation == CONTRAST_G:
-                        param = random.choice(contrast_params)
-                        img2 = adjust_contrast(img, param)
-                    elif self.transformation == UNIFORM_NOISE:
-                        param = random.choice(uniform_noise_params)
-                        img2 = apply_uniform_noise(img, 0, param)
-                    elif self.transformation == LOWPASS:
-                        param = random.choice(lowpass_params)
-                        img2 = low_pass_filter(img, param)
-                    elif self.transformation == HIGHPASS:
-                        param = random.choice(highpass_params)
-                        img2 = high_pass_filter(img, param)
-                    elif self.transformation == PHASE_NOISE:
-                        param = random.choice(phase_noise_params)
-                        img2 = scramble_phases(img, param)
-                    elif self.transformation == GAUSSIAN_NOISE:
+                    if self.transformation == GAUSSIAN_NOISE:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, param = gaussian_noise(img, param_index)
-                    elif self.transformation == SHOT_NOISE:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = shot_noise(img, param_index)
-                    elif self.transformation == IMPULSE_NOISE:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = impulse_noise(img, param_index)
                     elif self.transformation == DEFOCUS_BLUR:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, param = defocus_blur(img, param_index)
-                    elif self.transformation == GLASS_BLUR:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = glass_blur(img, param_index)
-                    elif self.transformation == MOTION_BLUR:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = motion_blur(img, param_index)
-                    elif self.transformation == SNOW:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2 = snow(img, param_index)
                     elif self.transformation == FROST:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = frost(img, param_index)
-                    elif self.transformation == FOG:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = fog(img, param_index)
                     elif self.transformation == BRIGHTNESS:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = brightness(img, param_index)
@@ -133,6 +100,12 @@ class ImagenetBootstrapper(Bootstrapper):
                     elif self.transformation == JPEG_COMPRESSION:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = jpeg_compression(img, param_index)
+                        img2 = np.asarray(img2)
+                    elif self.transformation == RGB:
+                        img2, _ = RGB(img, param_index)
+                        img2 = np.asarray(img2)
+                    elif self.transformation == COLOR_JITTER:
+                        img2, _ = Color_jitter(img, param_index)
                         img2 = np.asarray(img2)
                         # ============= different transformation types end =============
                     else:
@@ -166,6 +139,7 @@ class ImagenetBootstrapper(Bootstrapper):
                 k += 1
 
         self.bootstrap_df = pd.DataFrame(data=self.data)
+        df.to_csv(os.path.join(str(ROOT) + '/bootstrap_files', self.transformation + "_" + self.rq_type + ".csv"))
         return self.bootstrap_df
 
 
@@ -173,11 +147,12 @@ class Cifar10Bootstrapper(Bootstrapper):
     def __init__(
             self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
             destination: Union[str, pathlib2.Path],
-            threshold: float, dataset_info_df: pd.DataFrame, transformation: str):
+            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str):
         super(Cifar10Bootstrapper, self).__init__(num_sample_iter, sample_size, source, destination)
         self.threshold = threshold
         self.dataset_info_df = dataset_info_df
         self.transformation = transformation
+        self.rq_type = rq_type
 
     def _prepare(self):
         if not self.source.exists():
@@ -215,48 +190,15 @@ class Cifar10Bootstrapper(Bootstrapper):
                 img_g = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # greyscale image
                 while True:
                     # ============= different transformation types begin =============
-                    if self.transformation == CONTRAST_G:
-                        param = random.choice(contrast_params)
-                        img2 = adjust_contrast(img, param)
-                    elif self.transformation == UNIFORM_NOISE:
-                        param = random.choice(uniform_noise_params)
-                        img2 = apply_uniform_noise(img, 0, param)
-                    elif self.transformation == LOWPASS:
-                        param = random.choice(lowpass_params)
-                        img2 = low_pass_filter(img, param)
-                    elif self.transformation == HIGHPASS:
-                        param = random.choice(highpass_params)
-                        img2 = high_pass_filter(img, param)
-                    elif self.transformation == PHASE_NOISE:
-                        param = random.choice(phase_noise_params)
-                        img2 = scramble_phases(img, param)
-                    elif self.transformation == GAUSSIAN_NOISE:
+                    if self.transformation == GAUSSIAN_NOISE:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, param = gaussian_noise(img, param_index)
-                    elif self.transformation == SHOT_NOISE:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = shot_noise(img, param_index)
-                    elif self.transformation == IMPULSE_NOISE:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = impulse_noise(img, param_index)
                     elif self.transformation == DEFOCUS_BLUR:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, param = defocus_blur(img, param_index)
-                    elif self.transformation == GLASS_BLUR:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = glass_blur(img, param_index)
-                    elif self.transformation == MOTION_BLUR:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = motion_blur(img, param_index)
-                    elif self.transformation == SNOW:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2 = snow(img, param_index)
                     elif self.transformation == FROST:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = frost(img, param_index)
-                    elif self.transformation == FOG:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = fog(img, param_index)
                     elif self.transformation == BRIGHTNESS:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = brightness(img, param_index)
@@ -266,6 +208,12 @@ class Cifar10Bootstrapper(Bootstrapper):
                     elif self.transformation == JPEG_COMPRESSION:
                         param_index = random.choice(range(TRANSFORMATION_LEVEL))
                         img2, _ = jpeg_compression(img, param_index)
+                        img2 = np.asarray(img2)
+                    elif self.transformation == RGB:
+                        img2, _ = RGB(img, param_index)
+                        img2 = np.asarray(img2)
+                    elif self.transformation == COLOR_JITTER:
+                        img2, _ = Color_jitter(img, param_index)
                         img2 = np.asarray(img2)
                         # ============= different transformation types end =============
                     else:
@@ -299,4 +247,5 @@ class Cifar10Bootstrapper(Bootstrapper):
                 k += 1
 
         self.bootstrap_df = pd.DataFrame(data=self.data)
+        df.to_csv(os.path.join(str(ROOT) + '/bootstrap_files', self.transformation + "_" + self.rq_type + ".csv"))
         return self.bootstrap_df
