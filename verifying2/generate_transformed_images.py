@@ -11,7 +11,7 @@ threshold = get_transformation_threshold(transformation_type, 'abs')
 matlab_eng = start_matlab(constant.IQA_PATH, constant.matlabPyrToolsPath)
 
 for dataset_type in ['val', 'train']:
-    dataset = f"/home/huakun/Documents/Work/research/automating_requirements/verifying2/data/cifar10_pytorch/{dataset_type}"
+    dataset = constant.ROOT / f"data/cifar10_pytorch/{dataset_type}"
     target = f"./transformed_data/{dataset_type}"
     new_labels = []
     transformed_paths = transform_image_dir(
