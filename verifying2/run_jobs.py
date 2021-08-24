@@ -1,16 +1,19 @@
 import pickle
 import shutil
 
-from src.job import Cifar10Job
+from src.job import Cifar10Job, ImagenetJob
 from src import constant
 
+# job_type = Cifar10Job
+job_type = ImagenetJob
 
 if __name__ == '__main__':
     jobs_queue_path = constant.ROOT / 'jobs'
     finished_job_path = constant.ROOT / 'finished_jobs'
 
     for job_file in jobs_queue_path.iterdir():
-        job = Cifar10Job.load(str(job_file))
+        print(f"running file {str(job_file)}")
+        job = job_type.load(str(job_file))
         # try:
         job.run()
         job.save(str(job_file))

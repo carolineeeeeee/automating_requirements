@@ -11,7 +11,7 @@ IMAGE_2_LABEL_PATH = IMAGENET_DATA_DIR / 'info' / 'image_to_label_id.csv'
 
 MIN_IQA_RANGE = 0.5
 IQA = 'vif/vifvec_release'
-IQA_PATH = os.path.join(ROOT, 'utils', 'image-quality-tools', 'metrix_mux', 'metrix', IQA)
+IQA_PATH = os.path.join(str(ROOT), 'utils', 'image-quality-tools', 'metrix_mux', 'metrix', IQA)
 matlabPyrToolsPath = os.path.join(IQA_PATH, "matlabPyrTools")
 
 ROBUSTBENCH_CIFAR10_MODEL_NAMES = [
@@ -97,7 +97,7 @@ RESNET50 = 'resnet50'
 RESNEXT50 = 'resnext50'
 VGG_16 = 'vgg-16'
 GOOGLENET = 'googlenet'
-MODELS = [ALEXNET, RESNET50, RESNEXT50, VGG_16, GOOGLENET]
+IMAGENET_MODELS = [ALEXNET, RESNET50, RESNEXT50, VGG_16, GOOGLENET]
 
 IMAGENET_NORMALIZE = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                           std=[0.229, 0.224, 0.225])

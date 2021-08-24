@@ -7,7 +7,9 @@ from abc import ABC, abstractmethod
 from typing import Dict, Union, List
 
 from src.bootstrap import Cifar10Bootstrapper, Bootstrapper, ImagenetBootstrapper
-from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET_DATA_DIR, IMAGE_2_LABEL_PATH
+from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET_DATA_DIR, \
+    IMAGE_2_LABEL_PATH
+from src.dataset import ImagenetDataset
 from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
 from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 
@@ -82,7 +84,8 @@ class ImagenetJob(Job):
         self.bootstrapper.run(matlab_eng)
         results = []
         for model_name in self.model_names:
-            record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
+            record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size,
+                                  dataset_class=ImagenetDataset)
             ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
             if self.rq_type == 'rel':
                 a = obtain_preserved_min_degradation(record_df)

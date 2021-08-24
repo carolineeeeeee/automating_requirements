@@ -64,18 +64,21 @@ class ImagenetBootstrapper(Bootstrapper):
         self._prepare()
         logger.info("bootstrapping")
         self.data = []
-        for i in tqdm(range(self.num_sample_iter)):
+        pbar = tqdm(total=self.num_sample_iter * self.sample_size)
+        for i in range(self.num_sample_iter):
             sample_images = self.dataset_info_df.sample(n=self.sample_size, replace=False)
             iteration_path = self.destination / f'batch_{i}'  # output path for current bootstrap iteration
             clean_dir(iteration_path)
             k = 0
             for j, row in sample_images.iterrows():
+                pbar.update()
+                pbar.set_postfix({'iteration': f"{i + 1}/{self.num_sample_iter}"})
                 cur_row = row
                 image_name = cur_row['original_filename']
                 image_path = cur_row['original_path']
                 if self.transformation in [
-                        GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
-                        JPEG_COMPRESSION]:
+                    GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
+                    JPEG_COMPRESSION]:
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)
@@ -207,8 +210,8 @@ class Cifar10Bootstrapper(Bootstrapper):
                 image_name = cur_row['original_filename']
                 image_path = cur_row['original_path']
                 if self.transformation in [
-                        GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
-                        JPEG_COMPRESSION]:
+                    GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
+                    JPEG_COMPRESSION]:
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)

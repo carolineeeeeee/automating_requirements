@@ -5,22 +5,25 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from typing import Dict
+from typing import Dict, Union
 from .constant import MIN_IQA_RANGE
-from .dataset import Cifar10Dataset
+from torch.utils.data import Dataset
 from .utils import get_model
+from .dataset import Cifar10Dataset, ImagenetDataset
+
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(filename)s | %(lineno)d | %(message)s',
                               '%m-%d-%Y %H:%M:%S')
 stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
+stdout_handler.setLevel(logging.DEBUG)
 stdout_handler.setFormatter(formatter)
 logger.addHandler(stdout_handler)
 
 
-def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, batch_size: int = 10):
+def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, batch_size: int = 10,
+              dataset_class: Union[Cifar10Dataset, ImagenetDataset] = Cifar10Dataset):
     model = get_model(model_name, pretrained=True, val=True)
     device = torch.device('cuda' if torch.cuda.is_available() and not cpu else 'cpu')
     logger.info(f"Device: {str(device)}")
@@ -33,18 +36,21 @@ def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, ba
     total_image = 0
     for bootstrap_iter_id in batches:
         df = bootstrap_df[bootstrap_df['bootstrap_iter_id'] == bootstrap_iter_id]
-        dataset = Cifar10Dataset(df)
+        dataset = dataset_class(df)
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False,
                                                  num_workers=1)
 
         for i, data in enumerate(dataloader):
             original_images = data['original_image'].to(device)
             new_images = data['new_image'].to(device)
+
             labels = data['label'].to(device)
             transformed_result = model(new_images)
             original_result = model(original_images)
+
             new_pred = torch.argmax(transformed_result, dim=1)
             original_pred = torch.argmax(original_result, dim=1)
+
             actual_batch_size = len(new_pred)
             top_1_error_count = actual_batch_size - int(torch.sum(labels == new_pred))
             top_5_error_count = actual_batch_size - int(
@@ -53,8 +59,6 @@ def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, ba
             total_image += actual_batch_size
             new_pred = new_pred.tolist()
             original_pred = original_pred.tolist()
-            # print(data.keys())
-            # print(data)
             for k, label in enumerate(labels.tolist()):
                 prediction_records.append({
                     'model_name': model_name,
@@ -122,7 +126,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     if rq_type == 'abs':
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                    ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -133,9 +137,9 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     elif rq_type == 'rel':
         batch_preserved = []
         for batch in batch_results.keys():
-            print(batch_results[batch])
+            # print(batch_results[batch])
             batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                    orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -153,5 +157,5 @@ def obtain_preserved_min_degradation(record_df):
     # find percenrage preserved within minimum IQA range, return it
     min_range_predictions = record_df.loc[record_df['vd_score'] <= MIN_IQA_RANGE]
     predictions_preserved = record_df.loc[(record_df['original_prediction'] == record_df['new_prediction']) & (
-        record_df['vd_score'] <= MIN_IQA_RANGE)]
+            record_df['vd_score'] <= MIN_IQA_RANGE)]
     return len(predictions_preserved) / float(len(min_range_predictions))

@@ -117,7 +117,7 @@ def load_imagenet_data(data_path: pathlib2.Path, image_to_label_id_csv_path: pat
         'original_path': str(path),
         'original_filename': path.name,
         'label': label_map_dict[path.name.split('.')[0]]['label_index']
-    } for path in data_path.iterdir()]
+    } for path in data_path.iterdir() if path.name != "labels.csv"]
     return pd.DataFrame(data=lst)
 
 
@@ -132,7 +132,7 @@ def start_matlab(IQA_PATH: str, matlabPyrToolsPath: str):
 def clean_dir(path: Union[str, pathlib2.Path]):
     path = pathlib2.Path(path)
     if path.exists():
-        shutil.rmtree(path)
+        shutil.rmtree(str(path))
     path.mkdir(parents=True, exist_ok=True)
 
 

@@ -60,7 +60,13 @@ def main(modes: Union[List, Set, int] = RUN_ALL_MODE):
     if (not isinstance(modes, int) and IMAGE_TO_LABEL_ID in modes) or \
             modes == RUN_ALL_MODE or modes == IMAGE_TO_LABEL_ID:
         index_to_label_id = gen_cross_mapping_json()
-        gen_image_to_label_id_csv(index_to_label_id)
+        df = gen_image_to_label_id_csv(index_to_label_id)
+        labels_csv_df = gen_labels_csv(df.reset_index())
+        labels_csv_df.to_csv(imagenet_data_dir / 'imgs' / 'labels.csv')
+
+def gen_labels_csv(df: pd.DataFrame) -> pd.DataFrame:
+
+    return pd.DataFrame(data={'filename': list(df['image_name'].apply(lambda x: x + ".JPEG")), 'label': list(df['label_index'])})
 
 
 def gen_image_to_label_id_csv(index_to_label_id: Dict[int, str]):
@@ -81,7 +87,7 @@ def gen_image_to_label_id_csv(index_to_label_id: Dict[int, str]):
     df.set_index("image_name", inplace=True)
     df.to_csv(str(dataset_info_dir / IMAGE_TO_LABEL_ID_CSV))
     print(tabulate(df.head(), headers='keys', tablefmt='pretty'))
-
+    return df
 
 def gen_class_to_label_id() -> None:
     """generate json file containing class-to-label_id mapping

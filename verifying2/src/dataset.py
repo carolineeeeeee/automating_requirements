@@ -6,6 +6,8 @@ from typing import Dict
 from torchvision import transforms
 from torch.utils.data import Dataset
 
+from src.constant import IMAGENET_DEFAULT_TRANSFORMATION
+
 ToTensor = transforms.ToTensor()
 
 
@@ -26,6 +28,33 @@ class Cifar10Dataset(Dataset):
             'new_image': ToTensor(transformed_image),
         })
         return data
+
+
+class ImagenetDataset(Dataset):
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.reset_index()
+        self.data = self.df.to_dict('records')
+
+    def __len__(self) -> int:
+        return len(self.df)
+
+    def __getitem__(self, index: int) -> Dict:
+        data = self.data[index]
+        original_image = Image.open(data['original_path']).convert('RGB')
+        transformed_image = Image.open(data['new_path']).convert('RGB')
+        resize_crop = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            ToTensor
+        ])
+        data.update({
+            'original_image': resize_crop(original_image),
+            'new_image': resize_crop(transformed_image),
+        })
+        return data
+
+
+
 
 
 class GeneralDataset(Dataset):

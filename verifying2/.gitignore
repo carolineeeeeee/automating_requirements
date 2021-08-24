@@ -8,3 +8,6 @@ models
 
 data/imagenet
 *.JPEG
+transformed_data
+finetune_bootstrap
+utils/image-quality-tools
