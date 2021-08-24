@@ -25,7 +25,7 @@ download_imagenet_val_img: setup_dir
 	if [ ! -e ${imagenet_data_dir}/ILSVRC2012_img_val.tar -a ! -e ${imagenet_data_dir}/imgs ]; then wget -O ${imagenet_data_dir}/ILSVRC2012_img_val.tar https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar; fi
 	if [ -e ${imagenet_data_dir}/ILSVRC2012_img_val.tar -a ! -e ${imagenet_data_dir}/imgs ]; then mkdir -p ${imagenet_data_dir}/imgs && tar xf ${imagenet_data_dir}/ILSVRC2012_img_val.tar -C ${imagenet_data_dir}/imgs; fi
 
-produce_imagenet_label: setup_dir download_imagenet_mapping download_imagenet_val_img
+produce_imagenet_label: setup_dir download_imagenet_mapping download_imagenet_bbox download_imagenet_val_img
 	if [ ! -e ${imagenet_data_dir}/imagenet_label.sh ]; then wget -O ${imagenet_data_dir}/imagenet_label.sh https://pjreddie.com/media/files/imagenet_label.sh; fi
 	if [ ! -e ${imagenet_data_dir}/labelled ]; then cd ${imagenet_data_dir} && bash ${imagenet_data_dir}/imagenet_label.sh; fi
 	python ./prepare/prepare_imagenet.py
