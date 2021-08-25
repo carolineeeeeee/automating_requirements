@@ -3,7 +3,7 @@ from typing import List
 
 import pandas as pd
 import pathlib2
-from src.constant import CIFAR10C
+from src.constant import CIFAR10C, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from src.utils import load_cifar10_data, read_cifar10_ground_truth
 from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 from .bootstrap import Cifar10CBootstrapper
@@ -29,10 +29,10 @@ class Cifar10CJob(Job):
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
             ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
-            if self.rq_type == 'rel':
+            if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
-            elif self.rq_type == 'abs':
+            elif self.rq_type == ACCURACY_PRESERVATION:
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")

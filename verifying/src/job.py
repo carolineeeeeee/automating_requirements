@@ -2,13 +2,12 @@ import os
 import pickle
 import pathlib2
 import pandas as pd
-from tabulate import tabulate
 from abc import ABC, abstractmethod
 from typing import Dict, Union, List
 
-from src.bootstrap import Cifar10Bootstrapper, Bootstrapper, ImagenetBootstrapper
-from src.constant import ROOT, GAUSSIAN_NOISE, IQA, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET_DATA_DIR, \
-    IMAGE_2_LABEL_PATH
+from src.bootstrap import Cifar10Bootstrapper, ImagenetBootstrapper
+from src.constant import ROOT, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET, IMAGE_2_LABEL_PATH, \
+    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from src.dataset import ImagenetDataset
 from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
 from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
@@ -88,10 +87,10 @@ class ImagenetJob(Job):
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size,
                                   dataset_class=ImagenetDataset)
             ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
-            if self.rq_type == 'rel':
+            if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
-            elif self.rq_type == 'abs':
+            elif self.rq_type == ACCURACY_PRESERVATION:
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")
@@ -110,7 +109,7 @@ class ImagenetJob(Job):
             })
         self.job_df = pd.DataFrame(data=results)
         self.done = True
-        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type +".csv"))
+        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type + ".csv"))
         return self.job_df
 
     def to_dict(self) -> Dict:
@@ -165,10 +164,10 @@ class Cifar10Job(Job):
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size)
             ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
-            if self.rq_type == 'rel':
+            if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
-            elif self.rq_type == 'abs':
+            elif self.rq_type == ACCURACY_PRESERVATION:
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")

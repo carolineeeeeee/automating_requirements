@@ -1,13 +1,13 @@
 import argparse
 
-from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS
+from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from cifar10c.job import Cifar10CJob
 
 
 def run(source: str, destination: str, num_sample_iter: int, sample_size: int, model_name: str, corruption: str,
         rq_type: str, batch_size: int, cpu: bool = True):
     job = Cifar10CJob(source, destination, num_sample_iter, sample_size, corruption,
-                 rq_type, cpu, batch_size, model_names=[model_name])
+                      rq_type, cpu, batch_size, model_names=[model_name])
     job.run()
     return job
 
@@ -19,10 +19,13 @@ if __name__ == '__main__':
     parser.add_argument("--source", default=DEFAULT_SOURCE, help="source of dataset")
     parser.add_argument("--destination", default=DEFAULT_DESTINATION, help="location to save bootstrapping images")
     parser.add_argument("--num_sample_iter", required=True, type=int, help="Number of bootstrap iterations")
-    parser.add_argument("--sample_size", required=True, type=int, help="Number of unique images per bootstrap iteration")
+    parser.add_argument("--sample_size", required=True, type=int,
+                        help="Number of unique images per bootstrap iteration")
     parser.add_argument("--corruption", choices=TRANSFORMATIONS,
                         default=GAUSSIAN_NOISE, help="corruption to apply to images")
-    parser.add_argument("--rq_type", choices=["abs", "rel"], required=True, help="requirement type")
+    parser.add_argument(
+        "--rq_type", choices=[ACCURACY_PRESERVATION, PREDICTION_PRESERVATION],
+        required=True, help="requirement type")
     parser.add_argument("--model_name", required=True, type=str, help="name of model to run")
     parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")
     parser.add_argument(

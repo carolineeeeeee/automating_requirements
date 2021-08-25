@@ -1,7 +1,8 @@
 import argparse
 from typing import List
 
-from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, ROBUSTBENCH_CIFAR10_MODEL_NAMES
+from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, ROBUSTBENCH_CIFAR10_MODEL_NAMES, \
+    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import Cifar10Job
 from src.utils import get_transformation_threshold
 
@@ -26,7 +27,9 @@ if __name__ == '__main__':
                         help="Number of unique images per bootstrap iteration")
     parser.add_argument("--transformation", choices=TRANSFORMATIONS,
                         default=GAUSSIAN_NOISE, help="transformation to apply to images")
-    parser.add_argument("--rq_type", choices=["abs", "rel"], required=True, help="requirement type")
+    parser.add_argument(
+        "--rq_type", choices=[ACCURACY_PRESERVATION, PREDICTION_PRESERVATION],
+        required=True, help="requirement type")
     parser.add_argument("--model_names", nargs="+", choices=ROBUSTBENCH_CIFAR10_MODEL_NAMES, help="name of models")
     parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")
     parser.add_argument(

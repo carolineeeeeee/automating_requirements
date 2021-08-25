@@ -1,13 +1,10 @@
-import torch
 import pathlib2
-import torchvision
 from src import constant
-from src.utils import get_transformation_threshold, transform_image_dir
-from src.utils import start_matlab
+from src.utils import get_transformation_threshold, transform_image_dir, start_matlab
 
 transformation_type = constant.CONTRAST
 
-threshold = get_transformation_threshold(transformation_type, 'abs')
+threshold = get_transformation_threshold(transformation_type, constant.ACCURACY_PRESERVATION)
 matlab_eng = start_matlab(constant.IQA_PATH, constant.matlabPyrToolsPath)
 
 for dataset_type in ['val', 'train']:

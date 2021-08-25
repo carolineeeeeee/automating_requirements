@@ -1,7 +1,8 @@
 from tqdm import tqdm
 from src.utils import get_transformation_threshold, clean_dir
 from src.constant import ROOT, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, \
-    PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR, IMAGENET_DATA_DIR, IMAGENET_MODELS
+    PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR, IMAGENET_DATA_DIR, IMAGENET_MODELS, \
+    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import ImagenetJob
 
 DEFAULT_SOURCE = str(IMAGENET_DATA_DIR / 'imgs')
@@ -24,7 +25,7 @@ counter = 0
 pbar = tqdm(total=len(transformations) * 2)
 
 for transformation in transformations:
-    for rq_type in ["abs", "rel"]:
+    for rq_type in [ACCURACY_PRESERVATION, PREDICTION_PRESERVATION]:
         threshold = get_transformation_threshold(transformation, rq_type)
         job = ImagenetJob(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION,
                           num_sample_iter=num_sample_iter,

@@ -39,9 +39,9 @@ download_imagenet_val_img: setup_dir
 	if [ -e ${imagenet_data_dir}/ILSVRC2012_img_val.tar -a ! -e ${imagenet_data_dir}/imgs ]; then mkdir -p ${imagenet_data_dir}/imgs && tar xf ${imagenet_data_dir}/ILSVRC2012_img_val.tar -C ${imagenet_data_dir}/imgs; fi
 
 # download imagenet_label.sh file for labelling images
-# run imagenet_label.sh, this depends on the files ./data/imagenet/val/*.xml, so "make download_imagenet_bbox" is a dependency, which generates val
-# Note: if your network isn't good, you may fail to download imagenet_label.sh, an empty file could be saved to your file system, no error will be raised but the rest of the code will fail
-# run ./prepare/prepare_imagenet.py to produce all kinds of imagenet label mapping in json and csv format for easier access in the future
+# run `imagenet_label.sh`, this depends on the files `./data/imagenet/val/*.xml`, so `make download_imagenet_bbox` is a dependency, which generates `val` directory
+# Note: if your network isn't good, you may fail to download `imagenet_label.sh`, an empty file could be saved to your file system, no error will be raised but the rest of the code will fail. So if something went wrong here, check if this file is empty.
+# run `./prepare/prepare_imagenet.py` to produce all kinds of imagenet label mapping in json and csv format for easier access in the future, these files are saved in `./data/imagenet/info`
 produce_imagenet_label: setup_dir download_imagenet_mapping download_imagenet_bbox download_imagenet_val_img
 	if [ ! -e ${imagenet_data_dir}/imagenet_label.sh ]; then wget -O ${imagenet_data_dir}/imagenet_label.sh https://pjreddie.com/media/files/imagenet_label.sh; fi
 	if [ ! -e ${imagenet_data_dir}/labelled ]; then cd ${imagenet_data_dir} && bash ${imagenet_data_dir}/imagenet_label.sh; fi

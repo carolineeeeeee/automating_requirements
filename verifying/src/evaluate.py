@@ -7,8 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from typing import Dict, Union
-from .constant import MIN_IQA_RANGE
-from torch.utils.data import Dataset
+from .constant import ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from .utils import get_model
 from .dataset import Cifar10Dataset, ImagenetDataset
 
@@ -164,7 +163,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
                                 for i, row in model_df[model_df['bootstrap_iter_id'] == batch_id].iterrows()] for
                      batch_id in batch_ids}
     batch_accuracies = []
-    if rq_type == 'abs':
+    if rq_type == ACCURACY_PRESERVATION:
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
                 ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
@@ -175,7 +174,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
         print("--------------------------------------------")
         return conf_abs, mu, sigma, satisfied
-    elif rq_type == 'rel':
+    elif rq_type == PREDICTION_PRESERVATION:
         batch_preserved = []
         for batch in batch_results.keys():
             # print(batch_results[batch])
