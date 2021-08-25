@@ -115,12 +115,12 @@ Run `python run.py --help` to see all the options.
 #### Sample Command
 
 ```bash
-python run.py --num_sample_iter 2 --sample_size 10 --transformation gaussian_noise --rq_type abs --model_names Standard  Hendrycks2020AugMix_ResNeXt --batch_size 5
+python run_cifar10.py --num_sample_iter 2 --sample_size 10 --transformation gaussian_noise --rq_type abs --model_names Standard Hendrycks2020AugMix_ResNeXt --batch_size 5
 ```
 
-### Run a single experiment on cifar10-c dataset
+### Run a single experiment on ImageNet dataset
 
-Similar to `run.py`
+Similar to `run_cifar10.py`
 
 ### Run Multiple Experiments
 
@@ -141,3 +141,38 @@ See `parse_results.py` for example about how to read the job results.
 ## Clean Up
 
 Running this project requirements lots of space for storing images, run `make clean` to free up spaces.
+
+Or if something went wrong while downloading the required files and you couldn't fix it, you can run `make clean` and restart (downloading everything again takes a long time).
+
+
+
+## File Responsibility
+
+In this seciton, I will describe what the files in `verifying` folder is responsible for.
+
+- Makefile: convenience script/commands for downloading and preprocessing datasets
+- data/: where datasets and their related files will be stored
+- prepare/: script for preprocessing downloaded datasets and turn them into desired format
+  - prepare_imagenet.py
+  - preprocess_cifar10_c.py
+  - preprocess_cifar10_pytorch.py
+- src/: main source files, containing all logics of this project
+  - bootstrap.py: bootstrapping logic
+  - constant.py: constant variables
+  - dataset.py: definition or PyTorch Dataset models for data loading
+  - evaluate.py
+  - job.py: Definition of job objects, each experiment is a job
+  - utils.py: All utility functions
+  - Imagenet_c_transformations.py: definitions of all image transformations
+- utils/
+  - clean.sh:  a shell script for cleaning up data directory (removing all datasets and their related files)
+  - image-quality-tools: a directory user needs to download place here manually, containing matlab code for calculating IQA scores
+- generate_*
+  - generate_cifar10_jobs.py: generate jobs files on cifar10 dataset and save into **jobs** directory
+  - generate_imagenet_jobs.py: generate jobs files on imagenet dataset and save into **jobs** directory
+- run_cifar10.py: run a single Cifar10 job
+- run_imagenet.py: run a single ImageNet job
+- run_jobs.py: run all jobs saved in **jobs** directory and move the successful ones into **finished_jobs** directory
+- parse_jobs_results.py: parse experiment results from job files in **finished_jobs** directory
+- generate_transformed_images.py: generate a transformed image dataset from existing dataset given a transformation type
+- finetune.ipynb: finetuning experiment on transformed image dataset
