@@ -13,3 +13,4 @@ finetune_bootstrap
 utils/image-quality-tools
 recognition_files
 bootstrap_files
+bootstrap_imagenet

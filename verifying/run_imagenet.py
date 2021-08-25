@@ -3,7 +3,7 @@ from typing import List
 
 from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, IMAGENET_MODELS, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import ImagenetJob
-from src.utils import get_transformation_threshold
+from src.utils import get_transformation_threshold, visualize_table
 
 
 def run(source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
@@ -21,19 +21,26 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("Run Cifar10")
     parser.add_argument("--source", default=DEFAULT_SOURCE, help="source of dataset")
     parser.add_argument("--destination", default=DEFAULT_DESTINATION, help="location to save bootstrapping images")
-    parser.add_argument("--num_sample_iter", type=int, required=True, help="Number of bootstrap iterations")
-    parser.add_argument("--sample_size", type=int, required=True,
+    parser.add_argument("--num_sample_iter", type=int, default=5, help="Number of bootstrap iterations")
+    parser.add_argument("--sample_size", type=int, default=10,
                         help="Number of unique images per bootstrap iteration")
     parser.add_argument("--transformation", choices=TRANSFORMATIONS,
                         default=GAUSSIAN_NOISE, help="transformation to apply to images")
     parser.add_argument(
         "--rq_type", choices=[ACCURACY_PRESERVATION, PREDICTION_PRESERVATION],
-        required=True, help="requirement type")
+        default=ACCURACY_PRESERVATION, help="requirement type")
     parser.add_argument("--model_names", nargs="+", choices=IMAGENET_MODELS, help="name of models")
     parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")
     parser.add_argument(
         "--cpu", action="store_true", default=False,
         help="use CPU only while having GPU, will verify if GPU is available if this argument is set to False")
+    parser.add_argument("--preview", action="store_true", default=False, help="visualize pre-saved data")
     args = parser.parse_args()
-    run(args.source, args.destination, args.num_sample_iter, args.sample_size,
-        args.transformation, args.model_names, args.rq_type, args.batch_size, args.cpu)
+    if args.preview:
+        print("Bootstrap information")
+        visualize_table("./bootstrap_files/contrast_abs.csv", print_=True)
+        print("Result information")
+        visualize_table("./recognition_files/contrast_abs.csv", print_=True)
+    else:
+        run(args.source, args.destination, args.num_sample_iter, args.sample_size,
+            args.transformation, args.model_names, args.rq_type, args.batch_size, args.cpu)

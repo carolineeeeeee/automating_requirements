@@ -11,6 +11,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from PIL import Image
 from typing import List
+from tabulate import tabulate
 from typing import Union, Dict
 from robustbench import load_model
 import torchvision.models as models
@@ -243,3 +244,17 @@ def transform_image_dir(
     })
     df.to_csv(os.path.join(target_dir, 'labels.csv'))
     return transformed_image_paths
+
+
+def visualize_table(
+        csv_path: Union[str, pathlib2.Path] = None, dataframe: pd.DataFrame = None, print_: bool = True) -> str:
+    if csv_path is not None:
+        df = pd.read_csv(csv_path, index_col=0)
+    elif dataframe is not None:
+        df = dataframe
+    else:
+        raise ValueError('either csv_path or dataframe must be provided')
+    content = tabulate(df, headers='keys', tablefmt='pretty')
+    if print_:
+        print(content)
+    return content
