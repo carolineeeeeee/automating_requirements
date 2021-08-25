@@ -4,14 +4,22 @@
 
 Working Directory: `automating_requirements/verifying`
 
-1. Recommended to use a virtual python environment with Anaconda
+Author's OS and hardware:
+
+- OS: Ubuntu 20.04, architecture=amd64
+- RAM: 16GB
+- GPU: NVIDIA GTX
+
+1. Recommended to use a virtual python environment with Anaconda, virtualenv works too but the rest of the instructions will be using Anaconda
 
    ```bash
    conda create -n envname python=3.7
    conda activate envname
    ```
 
-2. Install your desired PyTorch (cuda version if you have Nvidia GPU)
+2. Install PyTorch (with cuda if you have Nvidia GPU)
+
+   Check https://pytorch.org/get-started/locally/ for the installation commands
 
    For me, I have cuda 11.1, and run
 
@@ -21,12 +29,16 @@ Working Directory: `automating_requirements/verifying`
 
 3. Install RobustBench
 
+   https://robustbench.github.io/
+
+   https://github.com/RobustBench/robustbench
+
    ```bash
    pip install git+https://github.com/RobustBench/robustbench.git@v0.2.1
    ```
 
-4. Install matlab
-5. Install matlab package for Python with https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
+4. Install matlab (I used 2021a without any addition functionalities)
+5. Install matlab package for Python following https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
    If you are using Anaconda for virtual environment, running `python setup.py install` will install matlab package for your default system python, not for your virtual environment.
 
@@ -40,22 +52,49 @@ Working Directory: `automating_requirements/verifying`
 
 6. A `pythonenv.yml` and a `requirements.txt` are provided just in case some packages are missing. Refer to these files if some packages are missing while running the code.
 
-   `pythonenv.yml` describes the entire conda environment.
+   `pythonenv.yml` describes the entire conda environment on the author's machine
 
    `requirements.txt` listed a few python packages that may not be installed by previous steps. Run `pip install requirements.txt` to install them.
 
-7. Download `image-quality-tools` and place it under `utils` directory as `image-quality-tools/utils`.
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+7. Download `image-quality-tools` and place it under `utils` directory as `utils/image-quality-tools`.
 8. Run `make all` within `automating_requirements/verifying`
 
    Breakdown: `make all` will run the following commands which you can run them individually:
 
+   See the Makefile comments for more detailed explanation
+
    - `make download_cifar10`
 
-     download cifar10 dataset from https://www.cs.toronto.edu/~kriz/cifar.html using pytorch
+     Download cifar10 dataset from https://www.cs.toronto.edu/~kriz/cifar.html using pytorch
 
    - `make download_cifar10_c`
 
-     download cifar10-c dataset from https://zenodo.org/record/2535967, this dataset may take longer to download
+     Download cifar10-c dataset from https://zenodo.org/record/2535967, this dataset may take longer to download
+
+   - `make download_imagenet_mapping`
+
+     - download MSCOCO_to_ImageNet_category_mapping.txt: map imagenet basic class to labels ids
+
+     - download synset_words.txt: map imagenet label ids to english words
+
+   - `make download_imagenet_bbox`
+
+     - download imagenet validation bounding boxes containing image labels from https://image-net.org/data/ILSVRC/2012/ILSVRC2012_bbox_val_v3.tgz
+
+   - `make download_imagenet_val_img`
+
+     - download imagenet validation images from https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar
+
+   - `make produce_imagenet_label`
+
+     - download imagenet_label.sh file for labelling images
+     - run `imagenet_label.sh`, this depends on the files `./data/imagenet/val/*.xml`, so `make download_imagenet_bbox` is a dependency, which generates `val` directory
+     - Note: if your network isn't good, you may fail to download `imagenet_label.sh`, an empty file could be saved to your file system, no error will be raised but the rest of the code will fail. So if something went wrong here, check if this file is empty.
+     - run `./prepare/prepare_imagenet.py` to produce all kinds of imagenet label mapping in json and csv format for easier access in the future, these files are saved in `./data/imagenet/info`
 
    - `make preprocess_cifar10_pytorch`
 
