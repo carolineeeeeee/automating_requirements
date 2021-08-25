@@ -71,7 +71,8 @@ class ImagenetJob(Job):
                                     destination=self.destination,
                                     threshold=self.threshold,
                                     dataset_info_df=self.dataset_info_df,
-                                    transformation=self.transformation)
+                                    transformation=self.transformation,
+                                    rq_type=self.rq_type)
 
     def run(self) -> pd.DataFrame:
         """[summary]
@@ -99,7 +100,7 @@ class ImagenetJob(Job):
                 "mu": mu,
                 "sigma": sigma,
                 "satisfied": satisfied,
-                "dataset": CIFAR10,
+                "dataset": IMAGENET,
                 "num_sample_iter": self.num_sample_iter,
                 "threshold": self.threshold,
                 "batch_size": self.batch_size,
@@ -109,6 +110,7 @@ class ImagenetJob(Job):
             })
         self.job_df = pd.DataFrame(data=results)
         self.done = True
+        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type +".csv"))
         return self.job_df
 
     def to_dict(self) -> Dict:
@@ -147,7 +149,8 @@ class Cifar10Job(Job):
                                    destination=self.destination,
                                    threshold=self.threshold,
                                    dataset_info_df=self.dataset_info_df,
-                                   transformation=self.transformation)
+                                   transformation=self.transformation,
+                                   rq_type=self.rq_type)
 
     def run(self) -> pd.DataFrame:
         """[summary]
@@ -184,6 +187,7 @@ class Cifar10Job(Job):
             })
         self.job_df = pd.DataFrame(data=results)
         self.done = True
+        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type +".csv"))
         return self.job_df
 
     def to_dict(self) -> Dict:
