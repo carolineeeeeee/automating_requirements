@@ -54,9 +54,6 @@ class ImagenetDataset(Dataset):
         return data
 
 
-
-
-
 class GeneralDataset(Dataset):
     def __init__(self, dataset_path: pathlib2.Path):
         self.dataset_path = dataset_path
@@ -77,26 +74,23 @@ class GeneralDataset(Dataset):
         return image, label, IQA_score, data['filepath']
 
 
-class GeneralDataset2(Dataset):
-    def __init__(self, dataset_path: pathlib2.Path, alternative_dataset_path: pathlib2.Path,
-                 alternative_prob: float = 0.5):
-        self.datapaths = {'main': dataset_path, 'alt': alternative_dataset_path}
+class GeneralDatasetAlter(Dataset):
+    def __init__(
+            self, dataset_path: pathlib2.Path, alternative_dataset_path: pathlib2.Path, alternative_prob: float = 0.5):
+        self.data_paths = {'main': dataset_path, 'alt': alternative_dataset_path}
         self.alternative_prob = alternative_prob
-        self.info_df = {
-            type_: pd.read_csv(str(self.datapaths[type_] / 'labels.csv'),
-                               index_col=0) for type_ in self.datapaths.keys()}
-        for type_ in self.datapaths.keys():
+        self.info_df = {type_: pd.read_csv(str(self.data_paths[type_] / 'labels.csv'), index_col=0) for type_ in
+                        self.data_paths.keys()}
+        for type_ in self.data_paths.keys():
             self.info_df[type_]['filepath'] = self.info_df[type_]['filename'].apply(
-                lambda filename: str(self.dataset_path / filename))
-        # self.data = {}
-        self.data = self.df.to_dict('records')
-        self.alternative_data = self.alternative_df.to_dict('records')
+                lambda filename: str(self.data_paths[type_] / filename))
+        self.data = {type_: self.info_df[type_].to_dict('records') for type_ in self.data_paths.keys()}
 
     def __len__(self) -> int:
-        return len(self.df)
+        return len(self.info_df['main'])
 
     def __getitem__(self, index: int) -> Dict:
-        data = self.alternative_data[index] if random.random() < self.alternative_prob else self.data[index]
+        data = self.data['alt'][index] if random.random() < self.alternative_prob else self.data['main'][index]
         pil_img = Image.open(data['filepath'])
         image = ToTensor(pil_img)
         pil_img.close()

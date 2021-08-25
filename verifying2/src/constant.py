@@ -22,6 +22,7 @@ ROBUSTBENCH_CIFAR10_MODEL_NAMES = [
 # dataset
 CIFAR10 = 'cifar10'
 CIFAR10C = 'cifar10c'
+IMAGENET = 'imagenet'
 # transformations
 CONTRAST_G = "contrast_G"
 UNIFORM_NOISE = "uniform_noise"
