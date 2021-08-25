@@ -4,7 +4,10 @@ cifar10_data_dir=${PWD}/data/cifar10
 setup_dir:
 	mkdir -p ${imagenet_data_dir}
 	# mkdir -p ./data/cifar10
+	mkdir ${PWD}/recognition_files
+	mkdir ${PWD}/bootstrap_files
 
+# download cifar10 dataset 
 download_cifar10:
 	if [ ! -e ./data/cifar-10-python.tar.gz -a ! -e ./data/cifar-10-python ]; then wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz -O ./data/cifar-10-python.tar.gz; fi
 	if [ -e ./data/cifar-10-python.tar.gz -a ! -e ./data/cifar-10-python ]; then tar xvzf ./data/cifar-10-python.tar.gz -C ./data; fi
@@ -40,7 +43,7 @@ download: download_cifar10 download_cifar10_c download_imagenet_mapping download
 
 preprocess: preprocess_cifar10_pytorch preprocess_cifar10c produce_imagenet_label
 
-all: download preprocess
+all: setup_dir download preprocess
 
 clean:
 	bash ./utils/clean.sh
