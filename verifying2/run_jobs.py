@@ -21,7 +21,7 @@ if __name__ == '__main__':
     finished_job_path = constant.ROOT / 'finished_jobs'
 
     for job_file in jobs_queue_path.iterdir():
-        print(f"running file {str(job_file)}")
+        print(f"Running file {str(job_file)}")
         job = job_type.load(str(job_file))
         # try:
         job.run()

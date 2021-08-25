@@ -1,8 +1,7 @@
 from tqdm import tqdm
 from src.job import Cifar10Job
 from src.utils import get_transformation_threshold, clean_dir
-from src.constant import ROOT, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, \
-    MOTION_BLUR, GLASS_BLUR
+from src.constant import ROOT, CONTRAST, DEFOCUS_BLUR
 
 DEFAULT_SOURCE = str(ROOT / 'data' / 'cifar10_pytorch' / 'val')
 DEFAULT_DESTINATION = str(ROOT / 'bootstrap_data' / 'cifar10_pytorch')
@@ -12,8 +11,7 @@ num_sample_iter = 2
 sample_size = 5
 jobs_queue_path = ROOT / 'jobs'
 finished_job_path = ROOT / 'finished_jobs'
-transformations = [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR,
-                   GLASS_BLUR]
+transformations = [CONTRAST, DEFOCUS_BLUR]
 transformations = [CONTRAST]
 
 clean_dir(jobs_queue_path)

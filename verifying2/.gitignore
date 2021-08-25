@@ -11,3 +11,5 @@ data/imagenet
 transformed_data
 finetune_bootstrap
 utils/image-quality-tools
+recognition_files
+bootstrap_files

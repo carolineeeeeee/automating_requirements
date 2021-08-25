@@ -7,7 +7,7 @@ Working Directory: `automating_requirements/verifying`
 1. Recommended to use a virtual python environment with Anaconda
 
    ```bash
-   conda create -n envname python=3.8
+   conda create -n envname python=3.7
    conda activate envname
    ```
 
@@ -38,7 +38,7 @@ Working Directory: `automating_requirements/verifying`
     sudo $conda_python setup.py install
    ```
 
-6. A `pythonenv.yml` and a `requirements.txt` is provided just in case some packages are missing. Refer to these files if some packages are missing while running the code.
+6. A `pythonenv.yml` and a `requirements.txt` are provided just in case some packages are missing. Refer to these files if some packages are missing while running the code.
 
    `pythonenv.yml` describes the entire conda environment.
 

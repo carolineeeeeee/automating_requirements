@@ -7,9 +7,8 @@ from tqdm import tqdm
 from typing import Union
 from .utils import clean_dir
 from .Imagenet_c_transformations import *
-from .constant import CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, GAUSSIAN_NOISE, SHOT_NOISE, \
-    IMPULSE_NOISE, DEFOCUS_BLUR, GLASS_BLUR, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, \
-    TRANSFORMATION_LEVEL, ROOT
+from .constant import GAUSSIAN_NOISE, DEFOCUS_BLUR, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, \
+    TRANSFORMATION_LEVEL, ROOT, COLOR_JITTER
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -142,7 +141,7 @@ class ImagenetBootstrapper(Bootstrapper):
                 k += 1
 
         self.bootstrap_df = pd.DataFrame(data=self.data)
-        df.to_csv(os.path.join(str(ROOT) + '/bootstrap_files', self.transformation + "_" + self.rq_type + ".csv"))
+        self.bootstrap_df.to_csv(ROOT / 'bootstrap_files' / f'{self.transformation}_{self.rq_type}.csv')
         return self.bootstrap_df
 
 
@@ -161,7 +160,7 @@ class Cifar10Bootstrapper(Bootstrapper):
         if not self.source.exists():
             raise ValueError(f"Source data {self.source} doesn't exist")
         if self.destination.exists():
-            shutil.rmtree(self.destination)
+            shutil.rmtree(str(self.destination))
         self.destination.mkdir(parents=True, exist_ok=True)
 
     def run(self, matlab_engine) -> pd.DataFrame:
@@ -184,9 +183,7 @@ class Cifar10Bootstrapper(Bootstrapper):
                 cur_row = row
                 image_name = cur_row['original_filename']
                 image_path = cur_row['original_path']
-                if self.transformation in [
-                    GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
-                    JPEG_COMPRESSION]:
+                if self.transformation in [GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION]:
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)
@@ -250,5 +247,5 @@ class Cifar10Bootstrapper(Bootstrapper):
                 k += 1
 
         self.bootstrap_df = pd.DataFrame(data=self.data)
-        df.to_csv(os.path.join(str(ROOT) + '/bootstrap_files', self.transformation + "_" + self.rq_type + ".csv"))
+        self.bootstrap_df.to_csv(ROOT / 'bootstrap_files' / f'{self.transformation}_{self.rq_type}.csv')
         return self.bootstrap_df

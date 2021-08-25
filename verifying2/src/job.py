@@ -187,7 +187,7 @@ class Cifar10Job(Job):
             })
         self.job_df = pd.DataFrame(data=results)
         self.done = True
-        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type +".csv"))
+        self.job_df.to_csv(ROOT / 'recognition_files' / f'{self.transformation}_{self.rq_type}.csv')
         return self.job_df
 
     def to_dict(self) -> Dict:

@@ -2,6 +2,7 @@ import sys
 import scipy
 import torch
 import logging
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -80,40 +81,45 @@ def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, ba
     records_df = pd.DataFrame(data=prediction_records)
     return records_df
 
+
 def calculate_confidence(acc_list, base_acc, req_acc):
-    # fitting a truncated normal distribution    
+    # fitting a truncated normal distribution
     def func(p, r, xa, xb):
-        return truncnorm.nnlf(p, r)    
+        return scipy.stats.truncnorm.nnlf(p, r)
+
     def constraint(p, r, xa, xb):
         a, b, loc, scale = p
-        return np.array([a*scale + loc - xa, b*scale + loc - xb])    
+        return np.array([a*scale + loc - xa, b*scale + loc - xb])
     xa, xb = 0, 1
     mu, sigma = scipy.stats.norm.fit(acc_list)
-    xa, xb = 0, 1    
+    xa, xb = 0, 1
     mu_guess = mu
     sigma_guess = sigma
     a_guess = (xa - mu_guess)/sigma_guess
     b_guess = (xb - mu_guess)/sigma_guess
-    p0 = [a_guess, b_guess, mu_guess, sigma_guess]    
-    par = fmin_slsqp(func, p0, f_eqcons=constraint, args=(acc_list, xa, xb),
-                    iprint=False, iter=500)
-    #print(par)
+    p0 = [a_guess, b_guess, mu_guess, sigma_guess]
+    par = scipy.optimize.fmin_slsqp(func, p0, f_eqcons=constraint, args=(acc_list, xa, xb),
+                                    iprint=False, iter=500)
+    # print(par)
     xmin = min(acc_list)
     xmax = max(acc_list)
     x = np.linspace(xmin, xmax, 1000)
     distribution = scipy.stats.truncnorm(*par)
-    result = 1 - distribution.cdf(req_acc)    fig, ax = plt.subplots(1, 1)
-    #ax.plot(x, truncnorm.pdf(x, a, b, loc=loc, scale=scale),
-    #        'r-', lw=3, alpha=0.4, label='truncnorm pdf')    
-    ax.plot(x, truncnorm.pdf(x, *par),
+    result = 1 - distribution.cdf(req_acc)
+    fig, ax = plt.subplots(1, 1)
+    # ax.plot(x, truncnorm.pdf(x, a, b, loc=loc, scale=scale),
+    #        'r-', lw=3, alpha=0.4, label='truncnorm pdf')
+    ax.plot(x, scipy.stats.truncnorm.pdf(x, *par),
             'k--', lw=1, alpha=1.0, label='truncnorm fit')
     ax.plot(x, scipy.stats.norm.pdf(x, mu, sigma), lw=1, alpha=1.0, label='norm fit')
     ax.hist(acc_list, bins=20, density=True, histtype='stepfilled', alpha=0.3)
     ax.legend(shadow=True)
     plt.xlim(xmin, xmax)
-    plt.grid(True)    
+    plt.grid(True)
     plt.show()
     return result, par[2], par[3], result >= 0.95
+
+
 '''
 def calculate_confidence(acc_list, base_acc, req_acc):
     # fitting a normal distribution
@@ -132,6 +138,7 @@ def calculate_confidence(acc_list, base_acc, req_acc):
         print("requirement NOT SATISFIED")
     return result, mu, sigma, result >= 0.5
 '''
+
 
 def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int, ground_truth: Dict, a: float = 0.95):
     """
@@ -160,7 +167,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     if rq_type == 'abs':
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                    ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -173,7 +180,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         for batch in batch_results.keys():
             # print(batch_results[batch])
             batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                    orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
+                orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
                         == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
         print("--------------------------------------------")
@@ -192,5 +199,6 @@ def obtain_preserved_min_degradation(record_df):
     range_limit = np.percentile(np.array(record_df['vd_score']), 10)
     #range_limit = min(record_df['vd_score']) + MIN_IQA_RANGE
     min_range_predictions = record_df.loc[record_df['vd_score'] <= range_limit]
-    predictions_preserved = record_df.loc[((record_df['original_prediction']==1) == (record_df['transformed_prediction']==1)) & (record_df['vd_score'] <= range_limit)]
+    predictions_preserved = record_df.loc[((record_df['original_prediction'] == 1) == (
+        record_df['new_prediction'] == 1)) & (record_df['vd_score'] <= range_limit)]
     return len(predictions_preserved) / float(len(min_range_predictions))

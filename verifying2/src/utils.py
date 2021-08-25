@@ -16,23 +16,8 @@ from robustbench import load_model
 import torchvision.models as models
 
 from .Imagenet_c_transformations import *
-from .constant import GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST, \
-    JPEG_COMPRESSION, \
-    ALEXNET, \
-    GOOGLENET, \
-    RESNET50, \
-    RESNEXT50, \
-    VGG_16, \
-    THRESHOLD_MAP, \
-    ROBUSTBENCH_CIFAR10_MODEL_NAMES, \
-    GENERALIZED, \
-    CONTRAST_G, \
-    UNIFORM_NOISE, \
-    LOWPASS, \
-    HIGHPASS, \
-    PHASE_NOISE, \
-    DEFOCUS_BLUR, \
-    GLASS_BLUR
+from .constant import GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, ALEXNET, GOOGLENET, RESNET50, \
+    RESNEXT50, VGG_16, THRESHOLD_MAP, ROBUSTBENCH_CIFAR10_MODEL_NAMES, DEFOCUS_BLUR
 
 
 def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.Module:
