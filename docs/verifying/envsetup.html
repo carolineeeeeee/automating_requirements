@@ -1,0 +1,469 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Verifying &mdash; Auto Req  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Evaluation of Our Approach" href="../evaluation-of-approach.html" />
+    <link rel="prev" title="Estimating" href="../estimate.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Auto Req
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Transformations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../transformations.html">Transformations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Human Experiment</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../human-experiment.html">Human Experiment</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../estimate.html">Estimating</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Verifying</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Verifying</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup-procedures">Setup Procedures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-run">How to run?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-a-single-experiment-on-cifar10-dataset">Run a single experiment on cifar10 dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sample-command">Sample Command</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run-a-single-experiment-on-imagenet-dataset">Run a single experiment on ImageNet dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-multiple-experiments">Run Multiple Experiments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#clean-up">Clean Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-responsibility">File Responsibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../evaluation-of-approach.html">Evaluation of Our Approach</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Auto Req</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Verifying</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/verifying/envsetup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="verifying">
+<h1>Verifying<a class="headerlink" href="#verifying" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setup-procedures">
+<h2>Setup Procedures<a class="headerlink" href="#setup-procedures" title="Permalink to this headline">¶</a></h2>
+<p>Working Directory: <code class="docutils literal notranslate"><span class="pre">automating_requirements/verifying</span></code></p>
+<p>Author’s OS and hardware:</p>
+<ul class="simple">
+<li><p>OS: Ubuntu 20.04, architecture=amd64</p></li>
+<li><p>RAM: 16GB</p></li>
+<li><p>GPU: NVIDIA GTX</p></li>
+</ul>
+<ol class="arabic">
+<li><p>Recommended to use a virtual python environment with Anaconda,
+virtualenv works too but the rest of the instructions will be using
+Anaconda</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>conda create -n envname <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
+<span class="linenos">2</span>conda activate envname
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install PyTorch (with cuda if you have Nvidia GPU)</p>
+<blockquote>
+<div><p>Check <a class="reference external" href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-started/locally/</a> for the installation
+commands</p>
+<p>For me, I have cuda 11.1, and run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>conda install pytorch torchvision torchaudio <span class="nv">cudatoolkit</span><span class="o">=</span><span class="m">11</span>.1 -c pytorch -c nvidia
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install RobustBench</p>
+<blockquote>
+<div><p><a class="reference external" href="https://robustbench.github.io/">https://robustbench.github.io/</a></p>
+<p><a class="reference external" href="https://github.com/RobustBench/robustbench">https://github.com/RobustBench/robustbench</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>pip install git+https://github.com/RobustBench/robustbench.git@v0.2.1
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install matlab (I used 2021a without any addition functionalities)</p></li>
+<li><p>Install matlab package for Python following
+<a class="reference external" href="https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html">https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html</a></p>
+<blockquote>
+<div><p>If you are using Anaconda for virtual environment, running
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> will install matlab package for your default
+system python, not for your virtual environment.</p>
+<p><strong>Solution:</strong> run <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">python</span></code> while your virtual environment is
+activated and get your virtual environment python executable path, then
+run <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> with this executable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>conda activate envname
+<span class="linenos">2</span><span class="nv">conda_python</span><span class="o">=</span><span class="k">$(</span>which python<span class="k">)</span>
+<span class="linenos">3</span>sudo <span class="nv">$conda_python</span> setup.py install
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">pythonenv.yml</span></code> and a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> are provided just in
+case some packages are missing. Refer to these files if some packages
+are missing while running the code.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">pythonenv.yml</span></code> describes the entire conda environment on the author’s
+machine</p>
+<p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> listed a few python packages that may not be
+installed by previous steps. Run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">requirements.txt</span></code> to
+install them.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>pip install -r requirements.txt
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libmagickwand-dev</span></code></p></li>
+<li><p>Download <code class="docutils literal notranslate"><span class="pre">image-quality-tools</span></code> and place it under <code class="docutils literal notranslate"><span class="pre">utils</span></code> directory as <code class="docutils literal notranslate"><span class="pre">utils/image-quality-tools</span></code>.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">all</span></code> within <code class="docutils literal notranslate"><span class="pre">automating_requirements/verifying</span></code></p>
+<p>Breakdown: <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">all</span></code> will run the following commands which you can run them individually:</p>
+<blockquote>
+<div><p>See the Makefile comments for more detailed explanation</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_cifar10</span></code></p></li>
+</ul>
+<p>Download cifar10 dataset from
+<a class="reference external" href="https://www.cs.toronto.edu/~kriz/cifar.html">https://www.cs.toronto.edu/~kriz/cifar.html</a> using pytorch</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_cifar10_c</span></code></p></li>
+</ul>
+<p>Download cifar10-c dataset from <a class="reference external" href="https://zenodo.org/record/2535967">https://zenodo.org/record/2535967</a>,
+this dataset may take longer to download</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_imagenet_mapping</span></code></p></li>
+<li><dl class="simple">
+<dt>download MSCOCO_to_ImageNet_category_mapping.txt: map imagenet</dt><dd><p>basic class to labels ids</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>download synset_words.txt: map imagenet label ids to english</dt><dd><p>words</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_imagenet_bbox</span></code></p></li>
+<li><dl class="simple">
+<dt>download imagenet validation bounding boxes containing image</dt><dd><p>labels from
+<a class="reference external" href="https://image-net.org/data/ILSVRC/2012/ILSVRC2012_bbox_val_v3.tgz">https://image-net.org/data/ILSVRC/2012/ILSVRC2012_bbox_val_v3.tgz</a></p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_imagenet_val_img</span></code></p></li>
+<li><dl class="simple">
+<dt>download imagenet validation images from</dt><dd><p><a class="reference external" href="https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar">https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar</a></p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">produce_imagenet_label</span></code></p></li>
+<li><p>download imagenet_label.sh file for labelling images</p></li>
+<li><dl class="simple">
+<dt>run <code class="docutils literal notranslate"><span class="pre">imagenet_label.sh</span></code>, this depends on the files</dt><dd><p><code class="docutils literal notranslate"><span class="pre">./data/imagenet/val/*.xml</span></code>, so <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">download_imagenet_bbox</span></code>
+is a dependency, which generates <code class="docutils literal notranslate"><span class="pre">val</span></code> directory</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Note: if your network isn’t good, you may fail to download</dt><dd><p><code class="docutils literal notranslate"><span class="pre">imagenet_label.sh</span></code>, an empty file could be saved to your file
+system, no error will be raised but the rest of the code will
+fail. So if something went wrong here, check if this file is
+empty.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>run <code class="docutils literal notranslate"><span class="pre">./prepare/prepare_imagenet.py</span></code> to produce all kinds of</dt><dd><p>imagenet label mapping in json and csv format for easier access in
+the future, these files are saved in <code class="docutils literal notranslate"><span class="pre">./data/imagenet/info</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">preprocess_cifar10_pytorch</span></code></p></li>
+</ul>
+<p>Preprocess the downloaded dataset to save the images in the desired
+sturcture</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">preprocess_cifar10c</span></code></p></li>
+</ul>
+<p>Preprocess the downloaded dataset to save the images in the desired
+sturcture</p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="how-to-run">
+<h2>How to run?<a class="headerlink" href="#how-to-run" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="run-a-single-experiment-on-cifar10-dataset">
+<h3>Run a single experiment on cifar10 dataset<a class="headerlink" href="#run-a-single-experiment-on-cifar10-dataset" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">run.py</span></code> is responsible for running an experiment.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">run.py</span> <span class="pre">--help</span></code> to see all the options.</p>
+<div class="section" id="sample-command">
+<h4>Sample Command<a class="headerlink" href="#sample-command" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>python run_cifar10.py --num_sample_iter <span class="m">2</span> --sample_size <span class="m">10</span> --transformation gaussian_noise --rq_type abs --model_names Standard Hendrycks2020AugMix_ResNeXt --batch_size <span class="m">5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="run-a-single-experiment-on-imagenet-dataset">
+<h3>Run a single experiment on ImageNet dataset<a class="headerlink" href="#run-a-single-experiment-on-imagenet-dataset" title="Permalink to this headline">¶</a></h3>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">run_cifar10.py</span></code></p>
+</div>
+<div class="section" id="run-multiple-experiments">
+<h3>Run Multiple Experiments<a class="headerlink" href="#run-multiple-experiments" title="Permalink to this headline">¶</a></h3>
+<p>Running multiple jobs is risky, because the jobs could terminate in the
+middle due to various reasons such as lack of GPU memory, bugs, or
+incorrect setup. Then you may lose your progress, and be forced to
+restart all experiments.</p>
+<p>Thus, we designed each experiment to be a Python Job object which can be
+saved with pickle. Jobs in the queue will be saved in <code class="docutils literal notranslate"><span class="pre">jobs</span></code>
+directory, all finished jobs will be moved to <code class="docutils literal notranslate"><span class="pre">finished_jobs</span></code>
+directory.</p>
+<p>The configuration and experiment results for each job will also be saved
+in the finished jobs objects. You can use a script the read these
+objects and parse the results.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">run-all.py</span></code> for an example about how to generate the jobs
+objects. You can tweak the parameters at the top of the file for
+creating jobs.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">parse_results.py</span></code> for example about how to read the job results.</p>
+</div>
+</div>
+<div class="section" id="clean-up">
+<h2>Clean Up<a class="headerlink" href="#clean-up" title="Permalink to this headline">¶</a></h2>
+<p>Running this project requirements lots of space for storing images, run
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code> to free up spaces.</p>
+<p>Or if something went wrong while downloading the required files and you
+couldn’t fix it, you can run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code> and restart (downloading
+everything again takes a long time).</p>
+</div>
+<div class="section" id="file-responsibility">
+<h2>File Responsibility<a class="headerlink" href="#file-responsibility" title="Permalink to this headline">¶</a></h2>
+<p>In this seciton, I will describe what the files in <code class="docutils literal notranslate"><span class="pre">verifying</span></code> folder
+is responsible for.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Makefile</span></code>: convenience script/commands for downloading and preprocessing datasets</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data/</span></code>: where datasets and their related files will be stored</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prepare/</span></code>: script for preprocessing downloaded datasets and turn them into desired format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prepare_imagenet.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocess_cifar10_c.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocess_cifar10_pytorch.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/</span></code>: main source files, containing all logics of this project</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap.py</span></code>: bootstrapping logic</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant.py</span></code>: constant variables</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset.py</span></code>: definition or PyTorch Dataset models for data loading</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evaluate.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">job.py</span></code>: Definition of job objects, each experiment is a job</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils.py</span></code>: All utility functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Imagenet_c_transformations.py</span></code>: definitions of all image transformations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clean.sh</span></code>: a shell script for cleaning up data directory (removing all datasets and their related files)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">image-quality-tools</span></code>: a directory user needs to download place here manually, containing matlab code for calculating IQA scores</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_*</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_cifar10_jobs.py</span></code>: generate jobs files on cifar10 dataset and save into <strong>jobs</strong> directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_imagenet_jobs.py</span></code>: generate jobs files on imagenet dataset and save into <strong>jobs</strong> directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_cifar10.py</span></code>: run a single Cifar10 job</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_imagenet.py</span></code>: run a single ImageNet job</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_jobs.py</span></code>: run all jobs saved in <strong>jobs</strong> directory and move the successful ones into <strong>finished_jobs</strong> directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parse_jobs_results.py</span></code>: parse experiment results from job files in <strong>finished_jobs</strong> directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_transformed_images.py</span></code>: generate a transformed image dataset from existing dataset given a transformation type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">finetune.ipynb</span></code>: finetuning experiment on transformed image dataset</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../evaluation-of-approach.html" class="btn btn-neutral float-right" title="Evaluation of Our Approach" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../estimate.html" class="btn btn-neutral float-left" title="Estimating" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Authors.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
