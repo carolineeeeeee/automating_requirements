@@ -6,7 +6,6 @@ from typing import Dict
 from torchvision import transforms
 from torch.utils.data import Dataset
 
-from src.constant import IMAGENET_DEFAULT_TRANSFORMATION
 
 ToTensor = transforms.ToTensor()
 

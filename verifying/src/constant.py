@@ -97,3 +97,7 @@ IMAGENET_DEFAULT_TRANSFORMATION = transforms.Compose([
 
 CIFAR10_DEFAULT_TRANSFORMATION = transforms.Compose(
     [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+
+CAR_MAPPING_IMAGENET = ['n02701002', 'n02814533', 'n02930766', 'n03100240',
+                        'n03594945', 'n03670208', 'n03770679', 'n03777568', 'n04037443', 'n04285008']

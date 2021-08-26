@@ -60,8 +60,9 @@ Author's OS and hardware:
    pip install -r requirements.txt
    ```
 
-7. Download `image-quality-tools` and place it under `utils` directory as `utils/image-quality-tools`.
-8. Run `make all` within `automating_requirements/verifying`
+7. Run `apt-get install libmagickwand-dev`
+8. Download `image-quality-tools` and place it under `utils` directory as `utils/image-quality-tools`.
+9. Run `make all` within `automating_requirements/verifying`
 
    Breakdown: `make all` will run the following commands which you can run them individually:
 
@@ -144,8 +145,6 @@ Running this project requirements lots of space for storing images, run `make cl
 
 Or if something went wrong while downloading the required files and you couldn't fix it, you can run `make clean` and restart (downloading everything again takes a long time).
 
-
-
 ## File Responsibility
 
 In this seciton, I will describe what the files in `verifying` folder is responsible for.
@@ -165,9 +164,9 @@ In this seciton, I will describe what the files in `verifying` folder is respons
   - utils.py: All utility functions
   - Imagenet_c_transformations.py: definitions of all image transformations
 - utils/
-  - clean.sh:  a shell script for cleaning up data directory (removing all datasets and their related files)
+  - clean.sh: a shell script for cleaning up data directory (removing all datasets and their related files)
   - image-quality-tools: a directory user needs to download place here manually, containing matlab code for calculating IQA scores
-- generate_*
+- generate\_\*
   - generate_cifar10_jobs.py: generate jobs files on cifar10 dataset and save into **jobs** directory
   - generate_imagenet_jobs.py: generate jobs files on imagenet dataset and save into **jobs** directory
 - run_cifar10.py: run a single Cifar10 job

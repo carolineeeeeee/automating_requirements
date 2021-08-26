@@ -2,6 +2,7 @@ import shutil
 import pandas as pd
 from abc import ABC, abstractmethod
 import matlab.engine
+import random
 import matlab
 from tqdm import tqdm
 from typing import Union
@@ -11,11 +12,11 @@ from .constant import GAUSSIAN_NOISE, DEFOCUS_BLUR, FROST, BRIGHTNESS, CONTRAST,
     TRANSFORMATION_LEVEL, ROOT, COLOR_JITTER
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(filename)s | %(lineno)d | %(message)s',
                               '%m-%d-%Y %H:%M:%S')
 stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
+stdout_handler.setLevel(logging.DEBUG)
 stdout_handler.setFormatter(formatter)
 logger.addHandler(stdout_handler)
 
@@ -39,8 +40,9 @@ class ImagenetBootstrapper(Bootstrapper):
     def __init__(
             self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
             destination: Union[str, pathlib2.Path],
-            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str):
+            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str, random_seed: int = None):
         super(ImagenetBootstrapper, self).__init__(num_sample_iter, sample_size, source, destination)
+        self.random_seed = random_seed
         self.threshold = threshold
         self.dataset_info_df = dataset_info_df
         self.transformation = transformation
@@ -61,6 +63,8 @@ class ImagenetBootstrapper(Bootstrapper):
         :return: info of generated bootstrapping images
         :rtype: pd.DataFrame
         """
+        if self.random_seed is not None:
+            random.seed(self.random_seed)
         self._prepare()
         logger.info("bootstrapping")
         self.data = []
@@ -114,11 +118,12 @@ class ImagenetBootstrapper(Bootstrapper):
                         raise ValueError("Invalid Transformation")
                     img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY) if len(img2.shape) == 3 else img2
                     try:
-                        IQA_score = matlab_engine.vifvec2_layers(
+                        IQA_score = matlab_engine.vifvec(
                             matlab.double(np.asarray(img_g).tolist()),
                             matlab.double(np.asarray(img2_g).tolist()))
                     except Exception as e:
                         logger.error("failed")
+                        logger.error(e)
                         cur_row = self.dataset_info_df.sample(n=1).iloc[0]
                         continue
                     if 1 - IQA_score < self.threshold:
@@ -149,9 +154,10 @@ class Cifar10Bootstrapper(Bootstrapper):
     def __init__(
             self, num_sample_iter: int, sample_size: int, source: Union[str, pathlib2.Path],
             destination: Union[str, pathlib2.Path],
-            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str):
+            threshold: float, dataset_info_df: pd.DataFrame, transformation: str, rq_type: str, random_seed: int = None):
         super(Cifar10Bootstrapper, self).__init__(num_sample_iter, sample_size, source, destination)
         self.threshold = threshold
+        self.random_seed = random_seed
         self.dataset_info_df = dataset_info_df
         self.transformation = transformation
         self.rq_type = rq_type
@@ -171,6 +177,8 @@ class Cifar10Bootstrapper(Bootstrapper):
         :return: info of generated bootstrapping images
         :rtype: pd.DataFrame
         """
+        if self.random_seed is not None:
+            random.seed(self.random_seed)
         self._prepare()
         logger.info("bootstrapping")
         self.data = []

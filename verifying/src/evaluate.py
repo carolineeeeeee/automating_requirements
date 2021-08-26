@@ -4,13 +4,14 @@ import torch
 import logging
 import numpy as np
 import pandas as pd
+import torchvision
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from typing import Dict, Union
 from .constant import ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from .utils import get_model
 from .dataset import Cifar10Dataset, ImagenetDataset
-
+from torch.utils.data import Dataset
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -23,7 +24,7 @@ logger.addHandler(stdout_handler)
 
 
 def run_model(model_name: str, bootstrap_df: pd.DataFrame, cpu: bool = False, batch_size: int = 10,
-              dataset_class: Union[Cifar10Dataset, ImagenetDataset] = Cifar10Dataset):
+              dataset_class: Dataset = Cifar10Dataset):
     model = get_model(model_name, pretrained=True, val=True)
     device = torch.device('cuda' if torch.cuda.is_available() and not cpu else 'cpu')
     logger.info(f"Device: {str(device)}")
@@ -115,7 +116,7 @@ def calculate_confidence(acc_list, base_acc, req_acc):
     ax.legend(shadow=True)
     plt.xlim(xmin, xmax)
     plt.grid(True)
-    plt.show()
+    # plt.show()
     return result, par[2], par[3], result >= 0.95
 
 

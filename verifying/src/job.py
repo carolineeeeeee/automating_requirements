@@ -5,12 +5,12 @@ import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Dict, Union, List
 
-from src.bootstrap import Cifar10Bootstrapper, ImagenetBootstrapper
-from src.constant import ROOT, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET, IMAGE_2_LABEL_PATH, \
+from .bootstrap import Cifar10Bootstrapper, ImagenetBootstrapper
+from .constant import ROOT, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET, IMAGE_2_LABEL_PATH, \
     ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
-from src.dataset import ImagenetDataset
-from src.utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
-from src.evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
+from .dataset import ImagenetDataset
+from .utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
+from .evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
 
 
 class Job(ABC):
@@ -54,10 +54,11 @@ class ImagenetJob(Job):
             self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
             rq_type: str, model_names: List[str], threshold: float = 0.95,
             batch_size: int = 10, cpu: bool = True, bootstrapper: ImagenetBootstrapper = None,
-            image_to_label_id_csv_path: pathlib2.Path = IMAGE_2_LABEL_PATH):
+            image_to_label_id_csv_path: pathlib2.Path = IMAGE_2_LABEL_PATH, random_seed:int=None):
         super(ImagenetJob, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
                                           model_names)
         self.transformation = transformation
+        self.random_seed = random_seed
         self.rq_type = rq_type
         self.threshold = threshold
         self.dataset_info_df = load_imagenet_data(pathlib2.Path(self.source), image_to_label_id_csv_path)
@@ -71,7 +72,8 @@ class ImagenetJob(Job):
                                     threshold=self.threshold,
                                     dataset_info_df=self.dataset_info_df,
                                     transformation=self.transformation,
-                                    rq_type=self.rq_type)
+                                    rq_type=self.rq_type,
+                                    random_seed=self.random_seed)
 
     def run(self) -> pd.DataFrame:
         """[summary]
@@ -109,7 +111,8 @@ class ImagenetJob(Job):
             })
         self.job_df = pd.DataFrame(data=results)
         self.done = True
-        (self.job_df).to_csv(os.path.join(str(ROOT) + '/recognition_files', self.transformation + "_" + self.rq_type + ".csv"))
+        self.job_df.to_csv(ROOT / 'recognition_files' / f'{self.transformation}_{self.rq_type}.csv')
+
         return self.job_df
 
     def to_dict(self) -> Dict:
@@ -132,11 +135,12 @@ class Cifar10Job(Job):
     def __init__(
             self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
             rq_type: str, model_names: List[str], threshold: float = 0.95,
-            batch_size: int = 10, cpu: bool = True, bootstrapper: Cifar10Bootstrapper = None):
+            batch_size: int = 10, cpu: bool = True, bootstrapper: Cifar10Bootstrapper = None, random_seed:int=None):
         super(Cifar10Job, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
                                          model_names)
         self.transformation = transformation
         self.rq_type = rq_type
+        self.random_seed = random_seed
         self.threshold = threshold
         self.dataset_info_df = load_cifar10_data(pathlib2.Path(self.source))
         self.bootstrapper = self.gen_bootstrapper() if bootstrapper is None else bootstrapper
@@ -149,7 +153,8 @@ class Cifar10Job(Job):
                                    threshold=self.threshold,
                                    dataset_info_df=self.dataset_info_df,
                                    transformation=self.transformation,
-                                   rq_type=self.rq_type)
+                                   rq_type=self.rq_type,
+                                   random_seed=self.random_seed)
 
     def run(self) -> pd.DataFrame:
         """[summary]
