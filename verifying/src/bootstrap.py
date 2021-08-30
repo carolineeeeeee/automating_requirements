@@ -85,39 +85,44 @@ class ImagenetBootstrapper(Bootstrapper):
                     img = Image.open(image_path)
                 else:
                     img = np.asarray(cv2.imread(image_path), dtype=np.float32)
-                img_g = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # greyscale image
                 while True:
-                    # ============= different transformation types begin =============
-                    if self.transformation == GAUSSIAN_NOISE:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = gaussian_noise(img, param_index)
-                    elif self.transformation == DEFOCUS_BLUR:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, param = defocus_blur(img, param_index)
-                    elif self.transformation == FROST:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = frost(img, param_index)
-                    elif self.transformation == BRIGHTNESS:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = brightness(img, param_index)
-                    elif self.transformation == CONTRAST:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = contrast(img, param_index)
-                    elif self.transformation == JPEG_COMPRESSION:
-                        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-                        img2, _ = jpeg_compression(img, param_index)
-                        img2 = np.asarray(img2)
-                    elif self.transformation == RGB:
-                        img2, _ = RGB(img, param_index)
-                        img2 = np.asarray(img2)
-                    elif self.transformation == COLOR_JITTER:
-                        img2, _ = Color_jitter(img, param_index)
-                        img2 = np.asarray(img2)
-                        # ============= different transformation types end =============
-                    else:
-                        raise ValueError("Invalid Transformation")
-                    img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY) if len(img2.shape) == 3 else img2
                     try:
+                        # ============= different transformation types begin =============
+                        if self.transformation == GAUSSIAN_NOISE:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, param = gaussian_noise(img, param_index)
+                        elif self.transformation == DEFOCUS_BLUR:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, param = defocus_blur(img, param_index)
+                        elif self.transformation == FROST:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, _ = frost(img, param_index)
+                        elif self.transformation == BRIGHTNESS:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, _ = brightness(img, param_index)
+                        elif self.transformation == CONTRAST:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, _ = contrast(img, param_index)
+                        elif self.transformation == JPEG_COMPRESSION:
+                            param_index = random.choice(range(TRANSFORMATION_LEVEL))
+                            img2, _ = jpeg_compression(img, param_index)
+                            img2 = np.asarray(img2)
+                        elif self.transformation == RGB:
+                            img2, _ = RGB(img, param_index)
+                            img2 = np.asarray(img2)
+                        elif self.transformation == COLOR_JITTER:
+                            img2, _ = Color_jitter(img, param_index)
+                            img2 = np.asarray(img2)
+                        # ============= different transformation types end =============
+                        else:
+                            raise ValueError("Invalid Transformation")
+                        if len(img2.shape) == 3:
+                            img_g = cv2.cvtColor(np.float32(img), cv2.COLOR_BGR2GRAY)
+                            img2_g = cv2.cvtColor(np.float32(img2), cv2.COLOR_BGR2GRAY) 
+                        else:
+                            img_g = img
+                            img2_g = img2
+                        
                         IQA_score = matlab_engine.vifvec(
                             matlab.double(np.asarray(img_g).tolist()),
                             matlab.double(np.asarray(img2_g).tolist()))
@@ -125,6 +130,13 @@ class ImagenetBootstrapper(Bootstrapper):
                         logger.error("failed")
                         logger.error(e)
                         cur_row = self.dataset_info_df.sample(n=1).iloc[0]
+                        image_name = cur_row['original_filename']
+                        image_path = cur_row['original_path']
+                        if self.transformation in [
+                                GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, RGB, COLOR_JITTER, DEFOCUS_BLUR]:
+                            img = Image.open(image_path)
+                        else:
+                            img = np.asarray(cv2.imread(image_path), dtype=np.float32)
                         continue
                     if 1 - IQA_score < self.threshold:
                         # path to save transformed image
