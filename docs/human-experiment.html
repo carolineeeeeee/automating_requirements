@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Estimating" href="estimate.html" />
-    <link rel="prev" title="Transformations" href="transformations.html" /> 
+    <link rel="prev" title="Transformations Collection" href="transformations/transformation-collection.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,25 +87,28 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples:</span></p>
+              <p class="caption"><span class="caption-text">Examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Transformations:</span></p>
+<p class="caption"><span class="caption-text">Transformations</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Human Experiment:</span></p>
+<p class="caption"><span class="caption-text">Human Experiment</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Human Experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Human Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#transformations-included-in-our-experiments">8 transformations included in our experiments</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results:</span></p>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Verifying</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Environment Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
 <ul>
@@ -179,6 +182,24 @@
             
   <div class="section" id="human-experiment">
 <h1>Human Experiment<a class="headerlink" href="#human-experiment" title="Permalink to this headline">¶</a></h1>
+<p>In this page we present the settings, implementation and results of the image classification experiments with human participants that we conducted.
+We followed the same experiment procedure as Geirhos et al~cite{Geirhos2018GeneralisationIH}.
+To make sure that the participants understand the task, we included qualification tests and sanity checks.
+We only considered results from those that passed both.
+In this experiment, we used images from the ILSRVR 2012 training dataset~cite{ILSVRC2012} and considered a binary classification problem of recognizing car instances.
+To differentiate between car and non-car instances, we adopted the class hierarchy provided by the ILSVRC2012 dataset.
+In our experiment, we selected one transformation for each CV-Hazop entry, which corresponds to 8 safety-related transformations: RGB, contrast, defocus blur, brightness, frost, color jitter, jpeg compression, and gaussian noise.</p>
+<div class="section" id="transformations-included-in-our-experiments">
+<h2>8 transformations included in our experiments<a class="headerlink" href="#transformations-included-in-our-experiments" title="Permalink to this headline">¶</a></h2>
+<img alt="8 transformations included in our experiments" src="_images/IMG_TRANSFORMATION.png" />
+<p>For each of the 8 transformations, we sampled uniformly 1000 transformation magnitudes
+and measured the performance of 5 human participants per each transformation level.
+To achieve this, we divided the 1000 magnitudes * 8 transformations into batches of 20 images.
+Each batch is shown 5 times to different participants using the platform Amazon Mechanical Turk.
+As a result, for image classification, we collected 40000 human performance results.</p>
+<p>Find here the implementations which enabled us to measure human performance on the platform Amazon Mechanical Turk.</p>
+<p><a class="reference external" href="_static/full-recog-fix.html">full-recog-fix</a></p>
+</div>
 </div>
 
 
@@ -188,7 +209,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="estimate.html" class="btn btn-neutral float-right" title="Estimating" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="transformations.html" class="btn btn-neutral float-left" title="Transformations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transformations/transformation-collection.html" class="btn btn-neutral float-left" title="Transformations Collection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

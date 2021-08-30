@@ -40,7 +40,9 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Transformations Collection" href="transformations/transformation-collection.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,9 +87,32 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Environment Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Transformations</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Transformations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transformations/transformation-collection.html">Transformations Collection</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Human Experiment</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Human Experiment</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Verifying</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evaluation-of-approach.html">Evaluation of Our Approach</a></li>
 </ul>
 
             
@@ -157,6 +182,39 @@
             
   <div class="section" id="transformations">
 <h1>Transformations<a class="headerlink" href="#transformations" title="Permalink to this headline">¶</a></h1>
+<p>In this page, we identify a class of <em>safety-related</em> image transformations
+We say that a transformation is <em>safety-related</em> if its negative effect can occur in a real-world machine vision scenario.
+To assess this systematically, we utilize the CV-HAZOP checklist <a class="reference internal" href="#cv-hazop" id="id1"><span>[CV_HAZOP]</span></a> which comprehensively identifies the negative impacts of different modes of interference in the vision process.
+A transformation that can produce such impacts is considered safety-related.
+In the following table, we consider the transformations provided by the state-of-the-art library albumentations <a class="reference internal" href="#albumentation" id="id2"><span>[albumentation]</span></a> and ML robustness benchmark imagenet-c~footnote{hendrycks2019robustness}, which consist of 50 unique transformations.
+From these, we identified the ones that are <em>safety-related</em> (50 to 45), omitting the ones not applicable to our approach and the ones that can not produce a continuous range of transformed images (45 to 31).</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Transformations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transformations/transformation-collection.html">Transformations Collection</a></li>
+</ul>
+</div>
+<dl class="citation">
+<dt class="label" id="cv-hazop"><span class="brackets"><a class="fn-backref" href="#id1">CV_HAZOP</a></span></dt>
+<dd><p>author={O. {Zendel} and others}</p>
+<p>booktitle={ICCV’15}</p>
+<p>title={{CV-HAZOP: Introducing Test Data Validation for Computer Vision}}</p>
+<p>year={2015}</p>
+<p>pages={2066-2074}</p>
+</dd>
+<dt class="label" id="albumentation"><span class="brackets"><a class="fn-backref" href="#id2">albumentation</a></span></dt>
+<dd><p>AUTHOR = {Buslaev, Alexander and Iglovikov, Vladimir I. and Khvedchenya, Eugene and Parinov, Alex and Druzhinin, Mikhail and Kalinin, Alexandr A.},</p>
+<p>TITLE = {{Albumentations: Fast and Flexible Image Augmentations}},</p>
+<p>JOURNAL = {Information},</p>
+<p>VOLUME = {11},</p>
+<p>YEAR = {2020},</p>
+<p>NUMBER = {2},</p>
+<p>ARTICLE-NUMBER = {125},</p>
+<p>URL = {<a class="reference external" href="https://www.mdpi.com/2078-2489/11/2/125">https://www.mdpi.com/2078-2489/11/2/125</a>},</p>
+<p>ISSN = {2078-2489},</p>
+<p>DOI = {10.3390/info11020125}</p>
+</dd>
+</dl>
 </div>
 
 
@@ -164,6 +222,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="transformations/transformation-collection.html" class="btn btn-neutral float-right" title="Transformations Collection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
