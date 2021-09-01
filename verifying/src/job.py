@@ -10,7 +10,7 @@ from .constant import ROOT, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET, IMA
     ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
 from .dataset import ImagenetDataset
 from .utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
-from .evaluate import run_model, estimate_conf_int, obtain_preserved_min_degradation
+from .evaluate import run_model, estimate_conf_int, estimate_conf_int_imagenet, obtain_preserved_min_degradation
 
 
 class Job(ABC):
@@ -54,7 +54,7 @@ class ImagenetJob(Job):
             self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
             rq_type: str, model_names: List[str], threshold: float = 0.95,
             batch_size: int = 10, cpu: bool = True, bootstrapper: ImagenetBootstrapper = None,
-            image_to_label_id_csv_path: pathlib2.Path = IMAGE_2_LABEL_PATH, random_seed:int=None):
+            image_to_label_id_csv_path: pathlib2.Path = IMAGE_2_LABEL_PATH, random_seed: int = None):
         super(ImagenetJob, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
                                           model_names)
         self.transformation = transformation
@@ -75,15 +75,16 @@ class ImagenetJob(Job):
                                     rq_type=self.rq_type,
                                     random_seed=self.random_seed)
 
-    def run(self) -> pd.DataFrame:
+    def run(self, run_bootstrap: bool = True) -> pd.DataFrame:
         """[summary]
 
         :param bootstrapper: optional bootstrapper object, in case you need to reuse a bootstrapper object and images for multiple jobs
         :type bootstrapper: Union[Bootstrapper, None]
         :raises ValueError: [description]
         """
-        matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
-        self.bootstrapper.run(matlab_eng)
+        if run_bootstrap:
+            matlab_eng = start_matlab(IQA_PATH, matlabPyrToolsPath)
+            self.bootstrapper.run(matlab_eng)
         results = []
         for model_name in self.model_names:
             record_df = run_model(model_name, self.bootstrapper.bootstrap_df, cpu=self.cpu, batch_size=self.batch_size,
@@ -135,7 +136,7 @@ class Cifar10Job(Job):
     def __init__(
             self, source: str, destination: str, num_sample_iter: int, sample_size: int, transformation: str,
             rq_type: str, model_names: List[str], threshold: float = 0.95,
-            batch_size: int = 10, cpu: bool = True, bootstrapper: Cifar10Bootstrapper = None, random_seed:int=None):
+            batch_size: int = 10, cpu: bool = True, bootstrapper: Cifar10Bootstrapper = None, random_seed: int = None):
         super(Cifar10Job, self).__init__(source, destination, num_sample_iter, sample_size, cpu, batch_size,
                                          model_names)
         self.transformation = transformation
@@ -171,9 +172,9 @@ class Cifar10Job(Job):
             ground_truth = read_cifar10_ground_truth(os.path.join(self.source, "labels.csv"))
             if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
-                conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
+                conf, mu, sigma, satisfied = estimate_conf_int_imagenet(record_df, self.rq_type, 1, ground_truth, a)
             elif self.rq_type == ACCURACY_PRESERVATION:
-                conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
+                conf, mu, sigma, satisfied = estimate_conf_int_imagenet(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")
             results.append({

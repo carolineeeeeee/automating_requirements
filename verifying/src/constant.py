@@ -1,8 +1,9 @@
 import os
+import json
 import pathlib2
 from torchvision import transforms
 
-ROOT = pathlib2.Path(__file__).parent.parent
+ROOT = pathlib2.Path(__file__).parent.parent.absolute()
 DATA_DIR = ROOT / 'data'
 IMAGENET_DATA_DIR = DATA_DIR / 'imagenet'
 # ImageNet info path
@@ -78,14 +79,13 @@ phase_noise_params = [x / 100 for x in list(range(0, 200))]
 
 # ImageNet Models
 ALEXNET = 'alexnet'
-DARKNET19 = 'darknet19'
-DARKNET53_448 = 'darknet53_448'
 RESNET50 = 'resnet50'
 RESNEXT50 = 'resnext50'
 VGG_16 = 'vgg-16'
 GOOGLENET = 'googlenet'
 IMAGENET_MODELS = [ALEXNET, RESNET50, RESNEXT50, VGG_16, GOOGLENET]
 
+# transformation
 IMAGENET_NORMALIZE = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                           std=[0.229, 0.224, 0.225])
 
@@ -98,6 +98,12 @@ IMAGENET_DEFAULT_TRANSFORMATION = transforms.Compose([
 CIFAR10_DEFAULT_TRANSFORMATION = transforms.Compose(
     [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-
-CAR_MAPPING_IMAGENET = ['n02701002', 'n02814533', 'n02930766', 'n03100240',
-                        'n03594945', 'n03670208', 'n03770679', 'n03777568', 'n04037443', 'n04285008']
+# Label Mapping
+CAR_MAPPING_IMAGENET_ID = ['n02701002', 'n02814533', 'n02930766', 'n03100240',
+                           'n03594945', 'n03670208', 'n03770679', 'n03777568',
+                           'n04037443', 'n04285008']
+with open(str(IMAGENET_DATA_DIR / 'info' / 'index_to_label_id.json'), 'r') as f:
+    index_to_label_id_ = json.load(f)
+    index_to_label_id = {int(k): v for k, v in index_to_label_id_.items()}
+label_id_to_index = {v: k for k, v in index_to_label_id.items()}
+CAR_MAPPING_IMAGENET_IDX = [label_id_to_index[id_] for id_ in CAR_MAPPING_IMAGENET_ID]

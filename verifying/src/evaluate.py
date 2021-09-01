@@ -8,7 +8,7 @@ import torchvision
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from typing import Dict, Union
-from .constant import ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+from .constant import ACCURACY_PRESERVATION, PREDICTION_PRESERVATION, CAR_MAPPING_IMAGENET_IDX
 from .utils import get_model
 from .dataset import Cifar10Dataset, ImagenetDataset
 from torch.utils.data import Dataset
@@ -156,6 +156,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     - original_path
     - new_path
     """
+    target = [1, 9]
     # model_df
     model_df.drop_duplicates(subset=['original_filename']).set_index('original_filename')
     orig_results = {row['original_filename']: row['original_prediction'] for i, row in model_df.iterrows()}
@@ -166,10 +167,10 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
     batch_accuracies = []
     if rq_type == ACCURACY_PRESERVATION:
         for batch in batch_results.keys():
-            batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                ground_truth[x[0]] == target_label_id)]) / len(batch_results[batch]))
-        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
-                        == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
+            batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] in target) == (
+                ground_truth[x[0]] in target)]) / len(batch_results[batch]))
+        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in target)
+                        == (ground_truth[x] in target)]) / len(orig_results.keys())
         print("--------------------------------------------")
         print("Verifying Absolute Requirement: ")
         conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
@@ -179,10 +180,64 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         batch_preserved = []
         for batch in batch_results.keys():
             # print(batch_results[batch])
-            batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] == target_label_id) == (
-                orig_results[x[0]] == target_label_id)]) / len(batch_results[batch]))
-        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] == target_label_id)
-                        == (ground_truth[x] == target_label_id)]) / len(orig_results.keys())
+            batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] in target) == (
+                orig_results[x[0]] in target)]) / len(batch_results[batch]))
+        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in target)
+                        == (ground_truth[x] in target)]) / len(orig_results.keys())
+        print("--------------------------------------------")
+        print(" Verifying Relative Requirement:")
+        conf_rel, mu, sigma, satisfied = calculate_confidence(batch_preserved, base_acc, a)  # rel
+        print("--------------------------------------------")
+
+        return conf_rel, mu, sigma, satisfied
+    else:
+        raise ValueError("Invalid rq_type")
+
+
+def estimate_conf_int_imagenet(
+        model_df: pd.DataFrame, rq_type: str, target_label_id: int, ground_truth: Dict, a: float = 0.95):
+    """
+    model_df should have the following columns:
+    - model_name
+    - bootstrap_iter_id
+    - dataload_itr_id
+    - image_idx_in_batch
+    - label
+    - new_prediction
+    - original_prediction
+    - transformation
+    - original_filename
+    - new_filename
+    - original_path
+    - new_path
+    """
+    # model_df
+    model_df.drop_duplicates(subset=['original_filename']).set_index('original_filename')
+    orig_results = {row['original_filename']: row['original_prediction'] for i, row in model_df.iterrows()}
+    batch_ids = model_df['bootstrap_iter_id'].unique()
+    batch_results = {batch_id: [(row['original_filename'], row['new_prediction'])
+                                for i, row in model_df[model_df['bootstrap_iter_id'] == batch_id].iterrows()] for
+                     batch_id in batch_ids}
+    batch_accuracies = []
+    if rq_type == ACCURACY_PRESERVATION:
+        for batch in batch_results.keys():
+            batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] in CAR_MAPPING_IMAGENET_IDX) == (
+                ground_truth[x[0]] in CAR_MAPPING_IMAGENET_IDX)]) / len(batch_results[batch]))
+        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in CAR_MAPPING_IMAGENET_IDX)
+                        == (ground_truth[x] in CAR_MAPPING_IMAGENET_IDX)]) / len(orig_results.keys())
+        print("--------------------------------------------")
+        print("Verifying Absolute Requirement: ")
+        conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
+        print("--------------------------------------------")
+        return conf_abs, mu, sigma, satisfied
+    elif rq_type == PREDICTION_PRESERVATION:
+        batch_preserved = []
+        for batch in batch_results.keys():
+            # print(batch_results[batch])
+            batch_preserved.append(sum([1 for x in batch_results[batch] if (x[1] in CAR_MAPPING_IMAGENET_IDX) == (
+                orig_results[x[0]] in CAR_MAPPING_IMAGENET_IDX)]) / len(batch_results[batch]))
+        base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in CAR_MAPPING_IMAGENET_IDX)
+                        == (ground_truth[x] in CAR_MAPPING_IMAGENET_IDX)]) / len(orig_results.keys())
         print("--------------------------------------------")
         print(" Verifying Relative Requirement:")
         conf_rel, mu, sigma, satisfied = calculate_confidence(batch_preserved, base_acc, a)  # rel
