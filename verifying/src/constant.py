@@ -85,6 +85,22 @@ VGG_16 = 'vgg-16'
 GOOGLENET = 'googlenet'
 IMAGENET_MODELS = [ALEXNET, RESNET50, RESNEXT50, VGG_16, GOOGLENET]
 
+# ImageNetC Models
+ANT3x3_Model = 'ANT3x3_Model'
+ANT3x3_SIN_Model = 'ANT3x3_SIN_Model'
+ANT_Model = 'ANT_Model'
+ANT_SIN_Model = 'ANT_SIN_Model'
+Gauss_mult_Model = 'Gauss_mult_Model'
+Gauss_sigma_0 = 'Gauss_sigma_0.5_Model'
+Speckle_Model = 'Speckle_Model'
+DEEPAUGMENT_AND_AUGMIX = "deepaugment_and_augmix"
+RESNEXT101_AUGMIX_AND_DEEPAUGMENT = "resnext101_augmix_and_deepaugment"
+DEEPAUGMENT = "deepaugment"
+
+# ImageNetC Model Path
+IMAGENETC_MODEL_PATH = ROOT / 'imagenetc_models'
+
+
 # transformation
 IMAGENET_NORMALIZE = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                           std=[0.229, 0.224, 0.225])

@@ -1,9 +1,11 @@
 import os
+import cv2
 import glob
+import torch
 import random
 import shutil
-import cv2
 import pathlib2
+import torchvision
 import numpy as np
 import pandas as pd
 import matlab.engine
@@ -14,11 +16,14 @@ from typing import List
 from tabulate import tabulate
 from typing import Union, Dict
 from robustbench import load_model
+from collections import OrderedDict
 import torchvision.models as models
 
 from .Imagenet_c_transformations import *
 from .constant import GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST, JPEG_COMPRESSION, ALEXNET, GOOGLENET, RESNET50, \
-    RESNEXT50, VGG_16, THRESHOLD_MAP, ROBUSTBENCH_CIFAR10_MODEL_NAMES, DEFOCUS_BLUR
+    RESNEXT50, VGG_16, THRESHOLD_MAP, ROBUSTBENCH_CIFAR10_MODEL_NAMES, DEFOCUS_BLUR, ANT3x3_Model, ANT3x3_SIN_Model, \
+    ANT_Model, ANT_SIN_Model, Gauss_mult_Model, Gauss_sigma_0, Speckle_Model, DEEPAUGMENT_AND_AUGMIX, \
+    RESNEXT101_AUGMIX_AND_DEEPAUGMENT, DEEPAUGMENT, IMAGENETC_MODEL_PATH
 
 
 def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.Module:
@@ -51,6 +56,20 @@ def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.
         elif 'Linf' in model_name:
             model = load_model(model_name=model_name, dataset='cifar10', threat_model="Linf")
         model = load_model(model_name=model_name, dataset='cifar10', threat_model="corruptions")
+    elif model_name in [ANT3x3_Model, ANT3x3_SIN_Model, ANT_Model, ANT_SIN_Model, Gauss_mult_Model, Gauss_sigma_0, Speckle_Model]:
+        model = torchvision.models.resnet50(pretrained=False)
+        model.load_state_dict(
+            torch.load(str(IMAGENETC_MODEL_PATH / f"{model_name}.pth"))['model_state_dict'])
+    elif model_name in [DEEPAUGMENT_AND_AUGMIX, DEEPAUGMENT, RESNEXT101_AUGMIX_AND_DEEPAUGMENT]:
+        new_state_dict = OrderedDict()
+        state_dict = torch.load(str(IMAGENETC_MODEL_PATH / f"{model_name}.pth"))['state_dict']
+        for k, v in state_dict.items():
+            new_state_dict[k[7:]] = v
+        if model_name == RESNEXT101_AUGMIX_AND_DEEPAUGMENT:
+            model = torchvision.models.resnext101_32x8d(pretrained=False)
+        else:
+            model = torchvision.models.resnet50(pretrained=False)
+        model.load_state_dict(new_state_dict)
     else:
         raise ValueError(f"Invalid Model Name: {model_name}")
     if val:
