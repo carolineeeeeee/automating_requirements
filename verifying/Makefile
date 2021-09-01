@@ -4,8 +4,6 @@ cifar10_data_dir=${PWD}/data/cifar10
 setup_dir:
 	mkdir -p ${imagenet_data_dir}
 	# mkdir -p ./data/cifar10
-	mkdir ${PWD}/recognition_files
-	mkdir ${PWD}/bootstrap_files
 
 # download cifar10 dataset to ./data/cifar-10-python.tar.gz
 # uncompress the dataset file to ./data/cifar-10-batches-py in pickle format
@@ -22,7 +20,6 @@ download_cifar10_c:
 
 # save file for imagenet label mapping to ./data/imagenet, the files are MSCOCO_to_ImageNet_category_mapping.txt and synset_words.txt
 download_imagenet_mapping: setup_dir
-	if [ ! -e ${imagenet_data_dir}/MSCOCO_to_ImageNet_category_mapping.txt ]; then wget -O ${imagenet_data_dir}/MSCOCO_to_ImageNet_category_mapping.txt https://raw.githubusercontent.com/rgeirhos/generalisation-humans-DNNs/master/16-class-ImageNet/MSCOCO_to_ImageNet_category_mapping.txt; fi
 	if [ ! -e ${imagenet_data_dir}/synset_words.txt ]; then wget -O ${imagenet_data_dir}/synset_words.txt https://raw.githubusercontent.com/HoldenCaulfieldRye/caffe/master/data/ilsvrc12/synset_words.txt; fi
 
 
