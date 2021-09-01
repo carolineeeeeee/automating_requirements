@@ -75,11 +75,6 @@
         </div>
         </div>
 
-        <!--<p>The <b style="color:yellow;text-shadow: 0px 0px 2px #000000">yellow</b> dot above shows the desired click for this cat.</p>
-
-        <p>In order to estimate the desired center of the object, you have to first imagine a perfectly tight box around the object and then click as close as possible to the center of this imaginary box.<br />
-        <b style="color:red;">Try not to think about the center of mass of the physical objects!</b></p>-->
-
         <h3>More examples</h3>
 
         <table align="center">
@@ -101,12 +96,6 @@
               <td width="33%"><img alt="a ship" src="https://pilotexp.s3.ca-central-1.amazonaws.com/Examples_Experiment/ILSVRC2012_val_00024089.JPEG" style="display:block;" width="90%" /></td>
               <td width="33%"><img alt="a helmet" src="https://pilotexp.s3.ca-central-1.amazonaws.com/Examples_Experiment/ILSVRC2012_val_00004202.JPEG" style="display:block;" width="90%" /></td>
               <td width="33%"><img alt="a cat" src="https://pilotexp.s3.ca-central-1.amazonaws.com/Examples_Experiment/ILSVRC2012_val_00002036.JPEG" style="display:block;" width="90%" /></td>
-            </tr>
-
-            <!--<tr>
-              <td width="33%">If the displayed object is truncated (only a part of the object is visible), click on the center of the visible part.</td>
-              <td width="33%">Note that in some rare cases, the real center of the imaginary box might be <b>outside</b> of the object.</td>
-              <td width="33%">If there are more than one target objects in the image, you only need to click on the center of <b>any</b> of them.</td>-->
             </tr>
           </tbody>
         </table>
@@ -132,11 +121,6 @@
               <td width="33%"><img alt="" src="https://pilotexp.s3.ca-central-1.amazonaws.com/Examples_Experiment/ILSVRC2012_val_00003473.JPEG" style="display:block;" width="90%" /></td>
             </tr>
             
-            <!--<tr>
-              <td width="33%">If the displayed object is truncated (only a part of the object is visible), click on the center of the visible part.</td>
-              <td width="33%">Note that in some rare cases, the real center of the imaginary box might be <b>outside</b> of the object.</td>
-              <td width="33%">If there are more than one target objects in the image, you only need to click on the center of <b>any</b> of them.</td>-->
-            </tr>
           </tbody>
         </table>
         <p align="center"><input id="proceedButton" onclick=" document.getElementById('Instructions').style.display = 'none'; document.getElementById('QtestStart').style.display = 'block'" style="height:50px" type="button" value="" /></p>
@@ -168,24 +152,7 @@
 
         <p align="center"><input id="qTestButton" onclick="startTest(); document.getElementById('QtestStart').style.display = 'none'; document.getElementById('QTest').style.display = 'block'" style="height:50px;width:100px" type="button" value="Start" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input id="skipButton" onclick=" document.getElementById('QtestStart').style.display = 'none'; document.getElementById('WorkSession').style.display = 'block'" style="height:50px;width:100px" type="button" value="Skip" /></p> 
         </div>
-            
-        <!-- <div id="qTestImages" class="panel-body" style="display:block;">
-        <p>If this is your first HIT of this project, you should first pass a qualification test where you are asked to click on the center of 10 objects.</p>
-
-        <p>In order to estimate the desired center of the object, you have to first imagine a perfectly tight box around the object and then click as close as possible to the center of this imaginary box.</p>
-
-        <p>In order to pass the qualification test, you need to:</p>
-
-        <ul>
-          <li>have an average click accuracy <b>less than 25 pixels</b></li>
-          <li>complete the qualification test in <b>less than 30 seconds</b> (3 seconds per example)</li>
-        </ul>
-
-        <p>If you have already passed this test in a previous HIT,you have the option to insert the qualification password here in order to skip the test: <input id="pswQualification" onchange="checkPassQual()" type="text" value="" /></p>
-
-        <p align="center"><input id="qTestButton" onclick="startTest(); document.getElementById('QtestStart').style.display = 'none'; document.getElementById('QTest').style.display = 'block'" style="height:50px;width:100px" type="button" value="Start" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input id="skipButton" onclick=" document.getElementById('QtestStart').style.display = 'none'; document.getElementById('WorkSession').style.display = 'block'" style="height:50px;width:100px" type="button" value="Skip" /></p>
-        </div> -->
-            
+       
         </div>
         <!-- End of Qualification test 1st panel -->
             
@@ -204,14 +171,6 @@
             <div id="select-btn-group-test">
               <button type="button" id="car-select-btn" value="car">car</button>
               <button type="button" id="not-car-select-btn" value="not car">not car</button>
-              <!--<button type="button" id="rider-select-btn" value="rider">rider</button>
-              <button type="button" id="train-select-btn" value="train">train</button>
-              <button type="button" id="bus-select-btn" value="bus">bus</button>
-              <button type="button" id="bicycle-select-btn" value="bicycle">bicycle</button>
-              <button type="button" id="truck-select-btn" value="truck">truck</button>
-              <button type="button" id="motorcycle-select-btn" value="motorcycle">
-                motorcycle
-              </button>-->
             </div>
             <p align="center" id="workCountImages">&nbsp;</p>
           </div>
@@ -402,14 +361,6 @@
             <div id="select-btn-group">
               <button type="button" id="car-select-btn" value="car">car</button>
               <button type="button" id="not-car-select-btn" value="not car">not car</button>
-              <!--<button type="button" id="rider-select-btn" value="rider">rider</button>
-              <button type="button" id="train-select-btn" value="train">train</button>
-              <button type="button" id="bus-select-btn" value="bus">bus</button>
-              <button type="button" id="bicycle-select-btn" value="bicycle">bicycle</button>
-              <button type="button" id="truck-select-btn" value="truck">truck</button>
-              <button type="button" id="motorcycle-select-btn" value="motorcycle">
-                motorcycle
-              </button> -->
             </div>
             <p align="center" id="workCountImages">&nbsp;</p>
           </div>
@@ -852,7 +803,6 @@
     </p>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <!-- <script src="https://assets.crowd.aws/crowd-html-elements.js"></script> -->
     <script language="javascript">
       /////////////////////////////////////////////////////////////////////
       //                     global params                               //
@@ -932,17 +882,9 @@
       window.onload = function () {
         document.getElementById('skipButton').disabled = true;
         batchSize = parseInt(document.getElementById('numBatchImages').value);
-
-         //if (assign == 'ASSIGNMENT_ID_NOT_AVAILABLE') {
-         //document.getElementById('proceedButton').disabled = true;
-         //  document.getElementById('proceedButton').value =
-          //   'You must ACCEPT the HIT before you PROCEED';
-          // document.getElementById('proceedButton').style.width = '350px';
-         //} else {
         document.getElementById('proceedButton').disabled = false;
         document.getElementById('proceedButton').value = 'Start';
         document.getElementById('proceedButton').style.width = '300px';
-         //}
         document.getElementById('submitButton').style.visibility = 'hidden';
       };
 
@@ -961,22 +903,13 @@
           startTestTime = Date.now();
           CurrentPhase = "qTest";
           
-           currpsw = document.getElementById('pswqualtestID').value;
+          currpsw = document.getElementById('pswqualtestID').value;
           
-          //tmpS ='testcls';
-          //var strImg = currTestImage.toString();
-          //tmpS = tmpS.concat(strImg);
-          //document.getElementById(tmpS).style.display = 'block';
-
           myImg = document.getElementById(TIM);
           addNoise_test(TIM);
           document.getElementById(TIM).style.display = 'block';
           addNoise_test(TIM);
           myImg.onmousedown = GetCoordinates;
-          
-          //myImg = document.getElementById(TIM);
-          //myImg.onmousedown = GetCoordinates;
-
       }
           
       function addNoise_test(IM) {
@@ -1050,12 +983,6 @@
                   tmpS = tmpS.concat(strImg);
                   document.getElementById(TIM).src= document.getElementById(tmpS).value;
                   
-                  //tmpS ='testcls';
-                  //tmpS = tmpS.concat(strImg);
-                  //document.getElementById(tmpS).style.display = 'block';
-                  //tmpS ='testcls';
-                  //tmpS = tmpS.concat(strImg-1);
-                  //document.getElementById(tmpS).style.display = 'none';
                   addNoise_test(TIM);
                   myImg = document.getElementById(TIM);
                   addNoise_test(TIM);
@@ -1102,19 +1029,9 @@
               TUy = TUy.substring(0, TUy.length - tmpSub);
               TUy = TUy.concat(strImg); 
               
-              //TIM = TIM.substring(0, TIM.length - tmpSub);
-              //TIM = TIM.concat(strImg); 
-              
               tmpS ='SRCtestimage';
               tmpS = tmpS.concat(strImg);
               document.getElementById(TIM).src= document.getElementById(tmpS).value;
-              
-              //tmpS ='testcls';
-              //tmpS = tmpS.concat(strImg);
-              //document.getElementById(tmpS).style.display = 'block';
-              //tmpS ='testcls';
-              //tmpS = tmpS.concat(strImg-1);
-              //document.getElementById(tmpS).style.display = 'none';
               addNoise_test(TIM);
               myImg = document.getElementById(TIM);
               addNoise_test(TIM);
@@ -1179,7 +1096,6 @@
                 }
 
                 console.log("test image " + i.toString() + ', user_answer: ' + user_answer + ', ground_truth: '+ ground_truth)
-                //drawOnFeedImage(i,user_answer,ground_truth);
 
               }
               console.log("num_correct: " + num_correct.toString())
@@ -1194,8 +1110,6 @@
               TotalTestTime = (endTestTime - startTestTime)/1000;
               var SpeedComment = "<h3> You completed the qualification test in <strong>" + TotalTestTime.toString() + "</strong> seconds.</h3>";
               
-              //TotalTestAccuracy = TotalTestAccuracy/20;
-              //TotalTestAccuracy = parseFloat(Math.round(TotalTestAccuracy * 100) / 100).toFixed(2);
               var AccuracyComment = "<h3> Your average classiification accuracy was <strong>" + num_correct.toString() + "/" + batchTestSize.toString() + "</strong>.</h3>";
               
               var extraComment = '<p>The correct classes of the images are shown above them and your answers are shown below. <b style="color:green;text-shadow: 0px 0px 2px #000000">green</b> are correct answers, while the  <b style="color:red;text-shadow: 0px 0px 2px #000000">red</b> are incorrect answers.</p>';
@@ -1207,7 +1121,6 @@
                   document.getElementById('TestRT').value = TotalTestTime;
                   document.getElementById('TestAccuracy').value = TotalTestAccuracy;
               }
-              //num_correct = 0;
           }
       }
           
@@ -1239,18 +1152,6 @@
               context.font = "18px sans-serif";
               context.fillText(user_answer, 50, 50);
           };
-          //if (imgDisplayTest.width>= 480) {
-          //    clickX = clickX*300/imgDisplayTest.width;
-          //} else {
-          //    clickX = clickX*250/400;
-          //}
-          //clickY = clickY*250/imgDisplayTest.height;
-        
-          
-          //ctx.beginPath();
-          //ctx.arc(clickX, clickY, 7, 0, 2 * Math.PI, false);
-          //ctx.fillStyle = "blue";
-          //ctx.fill();
       }
       /////////////////////////////////////////////////////////////////////
       //                     Work Session                                //
@@ -1266,8 +1167,6 @@
         document.getElementById(IM).style.display = 'block';
         addNoise_work(IM, myImg);
         myImg.onmousedown = GetCoordinates;
-
-        //nextImage();
       }
 
       function FindPosition(oElement) {
@@ -1307,7 +1206,6 @@
           document.getElementById(RT).value = endTime - startTime;
           document.getElementById(Ux).value = PosX;
           document.getElementById(Uy).value = PosY;
-          // nextImage();
         }
       }
 
@@ -1350,8 +1248,6 @@
             '</strong> seconds. <br /> Press the buttton below to SUBMIT this HIT.</p>';
 
           document.getElementById('Work').style.display = 'none';
-          //document.getElementById('Finish').style.display = 'block';
-          //document.getElementById('submitButton').style.visibility = 'visible';
 
           // check if all the answers have been filled
           classification_str = 'classification-'
@@ -1372,25 +1268,13 @@
         } else {
           if (currImage == 8) {
             UserGoldenX = document.getElementById('classification-8').value;
-           // UserGoldenY = parseInt(document.getElementById(Uy).value);
             RealGoldenClass = document.getElementById('goldenQ_label1').value;
-            //RealGoldenY = parseInt(document.getElementById('goldenQ_y1').value);
-            //GoldenDist1 = Math.sqrt(
-            //  Math.pow(UserGoldenX - RealGoldenX, 2) + Math.pow(UserGoldenY - RealGoldenY, 2)
-            //);
             if (UserGoldenX != RealGoldenClass){
               isAccuracyGood = 0;
             }
           } else if (currImage == 16) {
             UserGoldenX = document.getElementById('classification-16').value;
-           // UserGoldenY = parseInt(document.getElementById(Uy).value);
             RealGoldenClass = document.getElementById('goldenQ_label2').value;
-            //RealGoldenY = parseInt(document.getElementById('goldenQ_y2').value);
-            //GoldenDist2 = Math.sqrt(
-            //  Math.pow(UserGoldenX - RealGoldenX, 2) + Math.pow(UserGoldenY - RealGoldenY, 2)
-            //);
-
-            //GoldenDistAll = (GoldenDist1 + GoldenDist2) / 2;
 
             if (UserGoldenX != RealGoldenClass){
               isAccuracyGood = 0;
@@ -1408,15 +1292,12 @@
 
           Ux = Ux.substring(0, Ux.length - tmpSub);
           Ux = Ux.concat(strImg);
-          //console.log(Ux);
 
           Uy = Uy.substring(0, Uy.length - tmpSub);
           Uy = Uy.concat(strImg);
-          //console.log(Uy);
 
           Ucat = Ucat.substring(0, Ucat.length - tmpSub);
           Ucat = Ucat.concat(strImg);
-          //console.log(Ucat);
 
           RT = RT.substring(0, RT.length - tmpSub);
           RT = RT.concat(strImg);
@@ -1454,16 +1335,9 @@
       function addNoise_example() {
       
         if (firstTimeExample == true) {
-          //if(assign=="ASSIGNMENT_ID_NOT_AVAILABLE") {
-          //   document.getElementById('proceedButton').disabled = true;
-          //  document.getElementById('proceedButton').value = "You must ACCEPT the HIT before you PROCEED";
-          // document.getElementById('proceedButton').style.width = "350px";
-
-          //} else {
           document.getElementById('proceedButton').disabled = false;
           document.getElementById('proceedButton').value = 'PROCEED to the qualification test';
           document.getElementById('proceedButton').style.width = '300px';
-          //}
           document.getElementById('submitButton').style.visibility = 'hidden';
           var interval;
           function isEven(n) {

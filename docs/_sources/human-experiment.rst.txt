@@ -23,6 +23,6 @@ To achieve this, we divided the 1000 magnitudes * 8 transformations into batches
 Each batch is shown 5 times to different participants using the platform Amazon Mechanical Turk.
 As a result, for image classification, we collected 40000 human performance results.
 
-Find here the implementations which enabled us to measure human performance on the platform Amazon Mechanical Turk.
+`Find here <_static/full-recog-fix.html>`_ the implementations which enabled us to measure human performance on the platform Amazon Mechanical Turk.
 
-`full-recog-fix <_static/full-recog-fix.html>`_
+TODO: Our code is written based on ...

@@ -11,39 +11,22 @@ From these, we identified the ones that are *safety-related* (50 to 45), omittin
 
 .. toctree::
    :maxdepth: 2
-   :caption: Transformations
 
    transformations/transformation-collection.rst
 
 .. [CV_HAZOP]
 
-   author={O. {Zendel} and others}
+   Author: O. Zendel and others
    
-   booktitle={ICCV'15}
+   Title: CV-HAZOP: Introducing Test Data Validation for Computer Vision
    
-   title={{CV-HAZOP: Introducing Test Data Validation for Computer Vision}}
+   Year: 2015
    
-   year={2015}
-   
-   pages={2066-2074}
-
 .. [albumentation]
-   AUTHOR = {Buslaev, Alexander and Iglovikov, Vladimir I. and Khvedchenya, Eugene and Parinov, Alex and Druzhinin, Mikhail and Kalinin, Alexandr A.},
+   Author: Buslaev, Alexander and Iglovikov, Vladimir I. and Khvedchenya, Eugene and Parinov, Alex and Druzhinin, Mikhail and Kalinin, Alexandr A.
    
-   TITLE = {{Albumentations: Fast and Flexible Image Augmentations}},
+   Title: Albumentations: Fast and Flexible Image Augmentations
    
-   JOURNAL = {Information},
+   Year: 2020
    
-   VOLUME = {11},
-   
-   YEAR = {2020},
-   
-   NUMBER = {2},
-   
-   ARTICLE-NUMBER = {125},
-   
-   URL = {https://www.mdpi.com/2078-2489/11/2/125},
-   
-   ISSN = {2078-2489},
-   
-   DOI = {10.3390/info11020125}
+   URL: https://www.mdpi.com/2078-2489/11/2/125
