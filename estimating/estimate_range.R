@@ -3,13 +3,16 @@ library( graphics )
 library( SemiPar ) 
 library(ggplot2)
 
+REforML_path <- "YOUR_PATH/automating_requirements/estimating/"		# TODO: fill this in with your path
+
+
 cifar10_tranformations <- c('brightness', 'contrast', 'frost', 'jpeg_compression')
 orig_acc = 0.967
 print('cifar10')
 for (transformation in cifar10_tranformations) {
 	print(transformation)
 	print('correctness-preservation')
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/cifar10/','cifar10_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/cifar10/','cifar10_c_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -45,7 +48,7 @@ for (transformation in cifar10_tranformations) {
 	}
 	
 	print('prediction-preservation')	
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/cifar10/','cifar10_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/cifar10/','cifar10_p_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -100,7 +103,7 @@ orig_acc = 0.970
 for (transformation in imagenet_transformations) {
 	print(transformation)
 	print('correctness-preservation')
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/imagenet/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste('/Users//Desktop/REforML/imagenet/','imagenet_c_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -137,7 +140,7 @@ for (transformation in imagenet_transformations) {
 	}
 	
 	print('prediction-preservation')	
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/imagenet/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/imagenet/','imagenet_p_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -195,7 +198,7 @@ imagenet_transformations <- c('RGB', 'brightness', 'contrast', 'gaussian_noise',
 for (transformation in imagenet_transformations) {
 	print(transformation)
 	#########################first subset###########################
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/sixty_percent/sixty_percent_1/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_1/','imagenet_c_p_', transformation, '.csv', sep = "")
 	acc_all_point_1 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	acc_all_point_1.IQA <- as.vector(acc_all_point_1[,'IQA'])
 	acc_all_point_1.Counts<-as.vector(acc_all_point_1[,"Count"])
@@ -210,7 +213,7 @@ for (transformation in imagenet_transformations) {
 	acc_all_point_1.upper <- acc_all_fit_1$y + 1.39*sigma*sqrt(acc_all_fit_1$lev)   # upper 83% conf. band
 	acc_all_point_1.lower <- acc_all_fit_1$y - 1.39*sigma*sqrt(acc_all_fit_1$lev)   # lower 83% conf. band
 	
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/sixty_percent/sixty_percent_1/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_1/','imagenet_p_p_', transformation, '.csv', sep = "")
 	pre_all_point_1 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	pre_all_point_1.IQA <- as.vector(pre_all_point_1[,'IQA'])
 	pre_all_point_1.Counts<-as.vector(pre_all_point_1[,"Count"])
@@ -227,7 +230,7 @@ for (transformation in imagenet_transformations) {
 	
 	
 	#########################second subset###########################
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/sixty_percent/sixty_percent_2/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_2/','imagenet_c_p_', transformation, '.csv', sep = "")
 	acc_all_point_2 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	acc_all_point_2.IQA <- as.vector(acc_all_point_2[,'IQA'])
 	acc_all_point_2.Counts<-as.vector(acc_all_point_2[,"Count"])
@@ -242,7 +245,7 @@ for (transformation in imagenet_transformations) {
 	acc_all_point_2.upper <- acc_all_fit_2$y + 1.39*sigma*sqrt(acc_all_fit_2$lev)   # upper 83% conf. band
 	acc_all_point_2.lower <- acc_all_fit_2$y - 1.39*sigma*sqrt(acc_all_fit_2$lev)   # lower 83% conf. band
 
-	csv_filename = paste('/Users/caroline/Desktop/REforML/git_repos/automating_requirements/estimating/sixty_percent/sixty_percent_2/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_2/','imagenet_p_p_', transformation, '.csv', sep = "")
 	pre_all_point_2 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	pre_all_point_2.IQA <- as.vector(pre_all_point_2[,'IQA'])
 	pre_all_point_2.Counts<-as.vector(pre_all_point_2[,"Count"])
