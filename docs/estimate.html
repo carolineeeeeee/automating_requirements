@@ -179,6 +179,13 @@
             
   <div class="section" id="estimating">
 <h1>Estimating<a class="headerlink" href="#estimating" title="Permalink to this headline">¶</a></h1>
+<p>As promised, here’s the scripts for estimating and the two files containing human experiment results. For the files in estimating, user just need to run parse_exp_results.py first then run estimate_range.R
+A fews that we need to be careful about:
+parse_exp_results.py, since it needs the two experiment result csv files, depending on the directory we end up putting the result csv files,  the path on line 22 and 41 need to be updated
+in estimate_range.R, it reads files that are created by parse_exp_results.py. So there are paths that have my name on it,  this also need to be updated for the final version.
+We also allow people to re-create our results in the paper, thus I have the folders cifar10, imagenet and sixty percent. We just need to add instructions for that.</p>
+<p>Check <code class="docutils literal notranslate"><span class="pre">estimating</span></code> directory for the code.</p>
+<p>Check <code class="docutils literal notranslate"><span class="pre">cifar10_experiment_results.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">imagenet_experiment_results.csv</span></code> for the results.</p>
 </div>
 
 
