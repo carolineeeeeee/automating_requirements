@@ -116,7 +116,7 @@ Run `python run.py --help` to see all the options.
 #### Sample Command
 
 ```bash
-python run_cifar10.py --num_sample_iter 2 --sample_size 10 --transformation gaussian_noise --rq_type accuracy_preservation --model_names Standard Hendrycks2020AugMix_ResNeXt --batch_size 5
+python run_cifar10.py --num_sample_iter 2 --sample_size 10 --transformation gaussian_noise --rq_type correction_preservation --model_names Standard Hendrycks2020AugMix_ResNeXt --batch_size 5
 ```
 
 ### Run a single experiment on ImageNet dataset

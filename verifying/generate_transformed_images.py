@@ -4,7 +4,7 @@ from src.utils import get_transformation_threshold, transform_image_dir, start_m
 
 transformation_type = constant.CONTRAST
 
-threshold = get_transformation_threshold(transformation_type, constant.ACCURACY_PRESERVATION)
+threshold = get_transformation_threshold(transformation_type, constant.CORRECTION_PRESERVATION)
 matlab_eng = start_matlab(constant.IQA_PATH, constant.matlabPyrToolsPath)
 
 for dataset_type in ['val', 'train']:

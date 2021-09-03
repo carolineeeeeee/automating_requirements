@@ -8,7 +8,7 @@ import torchvision
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from typing import Dict, Union
-from .constant import ACCURACY_PRESERVATION, PREDICTION_PRESERVATION, CAR_MAPPING_IMAGENET_IDX
+from .constant import CORRECTION_PRESERVATION, PREDICTION_PRESERVATION, CAR_MAPPING_IMAGENET_IDX
 from .utils import get_model
 from .dataset import Cifar10Dataset, ImagenetDataset
 from torch.utils.data import Dataset
@@ -165,7 +165,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
                                 for i, row in model_df[model_df['bootstrap_iter_id'] == batch_id].iterrows()] for
                      batch_id in batch_ids}
     batch_accuracies = []
-    if rq_type == ACCURACY_PRESERVATION:
+    if rq_type == CORRECTION_PRESERVATION:
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] in target) == (
                 ground_truth[x[0]] in target)]) / len(batch_results[batch]))
@@ -219,7 +219,7 @@ def estimate_conf_int_imagenet(
                                 for i, row in model_df[model_df['bootstrap_iter_id'] == batch_id].iterrows()] for
                      batch_id in batch_ids}
     batch_accuracies = []
-    if rq_type == ACCURACY_PRESERVATION:
+    if rq_type == CORRECTION_PRESERVATION:
         for batch in batch_results.keys():
             batch_accuracies.append(sum([1 for x in batch_results[batch] if (x[1] in CAR_MAPPING_IMAGENET_IDX) == (
                 ground_truth[x[0]] in CAR_MAPPING_IMAGENET_IDX)]) / len(batch_results[batch]))

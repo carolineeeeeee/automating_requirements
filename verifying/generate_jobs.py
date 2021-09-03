@@ -3,7 +3,7 @@ from tqdm import tqdm
 from src.utils import get_transformation_threshold, clean_dir
 from src.constant import ROOT, ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, \
     PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR, CIFAR10_C_CORRUPTION, IMAGENET_DATA_DIR, \
-    IMAGENET_MODELS, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+    IMAGENET_MODELS, CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import Cifar10Job, ImagenetJob
 from cifar10c.job import Cifar10CJob
 
@@ -40,7 +40,7 @@ counter = 0
 pbar = tqdm(total=len(transformations) * 2)
 
 for transformation in transformations:
-    for rq_type in [ACCURACY_PRESERVATION, PREDICTION_PRESERVATION]:
+    for rq_type in [CORRECTION_PRESERVATION, PREDICTION_PRESERVATION]:
         threshold = get_transformation_threshold(transformation, rq_type)
         # cifar10 job
         # job = Cifar10Job(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION, num_sample_iter=num_sample_iter,
