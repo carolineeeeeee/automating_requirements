@@ -7,7 +7,7 @@ from typing import Dict, Union, List
 
 from .bootstrap import Cifar10Bootstrapper, ImagenetBootstrapper
 from .constant import ROOT, IQA_PATH, matlabPyrToolsPath, CIFAR10, IMAGENET, IMAGE_2_LABEL_PATH, \
-    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+    CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from .dataset import ImagenetDataset
 from .utils import start_matlab, load_cifar10_data, read_cifar10_ground_truth, dict_to_str, load_imagenet_data
 from .evaluate import run_model, estimate_conf_int, estimate_conf_int_imagenet, obtain_preserved_min_degradation
@@ -93,7 +93,7 @@ class ImagenetJob(Job):
             if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, a)
-            elif self.rq_type == ACCURACY_PRESERVATION:
+            elif self.rq_type == CORRECTION_PRESERVATION:
                 conf, mu, sigma, satisfied = estimate_conf_int(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")
@@ -173,7 +173,7 @@ class Cifar10Job(Job):
             if self.rq_type == PREDICTION_PRESERVATION:
                 a = obtain_preserved_min_degradation(record_df)
                 conf, mu, sigma, satisfied = estimate_conf_int_imagenet(record_df, self.rq_type, 1, ground_truth, a)
-            elif self.rq_type == ACCURACY_PRESERVATION:
+            elif self.rq_type == CORRECTION_PRESERVATION:
                 conf, mu, sigma, satisfied = estimate_conf_int_imagenet(record_df, self.rq_type, 1, ground_truth, 0.95)
             else:
                 raise ValueError("Invalid rq_type")

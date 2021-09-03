@@ -1,7 +1,7 @@
 from tqdm import tqdm
 from src.utils import get_transformation_threshold, clean_dir
 from src.constant import ROOT, CONTRAST, DEFOCUS_BLUR, IMAGENET_DATA_DIR, IMAGENET_MODELS, \
-    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+    CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import ImagenetJob
 
 DEFAULT_SOURCE = str(IMAGENET_DATA_DIR / 'imgs')
@@ -23,10 +23,10 @@ counter = 0
 pbar = tqdm(total=len(transformations) * 2)
 
 for i in range(2):
-    threshold = get_transformation_threshold(CONTRAST, ACCURACY_PRESERVATION)
+    threshold = get_transformation_threshold(CONTRAST, CORRECTION_PRESERVATION)
     job = ImagenetJob(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION,
                       num_sample_iter=num_sample_iter,
-                      sample_size=sample_size, transformation=CONTRAST, rq_type=ACCURACY_PRESERVATION,
+                      sample_size=sample_size, transformation=CONTRAST, rq_type=CORRECTION_PRESERVATION,
                       model_names=model_names, threshold=threshold, batch_size=5, cpu=False, random_seed=counter)
     job.save(jobs_queue_path / f'{counter}.pickle')
     counter += 1

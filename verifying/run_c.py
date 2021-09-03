@@ -1,6 +1,6 @@
 import argparse
 
-from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from cifar10c.job import Cifar10CJob
 
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parser.add_argument("--corruption", choices=TRANSFORMATIONS,
                         default=GAUSSIAN_NOISE, help="corruption to apply to images")
     parser.add_argument(
-        "--rq_type", choices=[ACCURACY_PRESERVATION, PREDICTION_PRESERVATION],
+        "--rq_type", choices=[CORRECTION_PRESERVATION, PREDICTION_PRESERVATION],
         required=True, help="requirement type")
     parser.add_argument("--model_name", required=True, type=str, help="name of model to run")
     parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")

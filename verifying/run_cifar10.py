@@ -2,7 +2,7 @@ import argparse
 from typing import List
 
 from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, ROBUSTBENCH_CIFAR10_MODEL_NAMES, \
-    ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+    CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import Cifar10Job
 from src.utils import get_transformation_threshold, visualize_table
 
@@ -29,8 +29,8 @@ if __name__ == '__main__':
     parser.add_argument("--transformation", choices=TRANSFORMATIONS,
                         default=GAUSSIAN_NOISE, help="transformation to apply to images")
     parser.add_argument(
-        "--rq_type", choices=[ACCURACY_PRESERVATION, PREDICTION_PRESERVATION],
-        default=ACCURACY_PRESERVATION, help="requirement type")
+        "--rq_type", choices=[CORRECTION_PRESERVATION, PREDICTION_PRESERVATION],
+        default=CORRECTION_PRESERVATION, help="requirement type")
     parser.add_argument("--model_names", nargs="+", choices=ROBUSTBENCH_CIFAR10_MODEL_NAMES, help="name of models")
     parser.add_argument("--batch_size", type=int, default=5, help="name of model to run")
     parser.add_argument(

@@ -1,7 +1,7 @@
 from tqdm import tqdm
 from src.job import Cifar10Job
 from src.utils import get_transformation_threshold, clean_dir
-from src.constant import ROOT, CONTRAST, DEFOCUS_BLUR, ACCURACY_PRESERVATION, PREDICTION_PRESERVATION
+from src.constant import ROOT, CONTRAST, DEFOCUS_BLUR, CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 
 DEFAULT_SOURCE = str(ROOT / 'data' / 'cifar10_pytorch' / 'val')
 DEFAULT_DESTINATION = str(ROOT / 'bootstrap_data' / 'cifar10_pytorch')
@@ -29,7 +29,7 @@ counter = 0
 pbar = tqdm(total=len(transformations) * 2)
 
 for transformation in transformations:
-    for rq_type in [ACCURACY_PRESERVATION, PREDICTION_PRESERVATION]:
+    for rq_type in [CORRECTION_PRESERVATION, PREDICTION_PRESERVATION]:
         threshold = get_transformation_threshold(transformation, rq_type)
         job = Cifar10Job(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION, num_sample_iter=num_sample_iter,
                          sample_size=sample_size, transformation=transformation, rq_type=rq_type,
