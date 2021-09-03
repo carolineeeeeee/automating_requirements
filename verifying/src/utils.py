@@ -62,7 +62,7 @@ def get_model(model_name: str, pretrained: bool = True, val: bool = True) -> nn.
             torch.load(str(IMAGENETC_MODEL_PATH / f"{model_name}.pth"))['model_state_dict'])
     elif model_name in [DEEPAUGMENT_AND_AUGMIX, DEEPAUGMENT, RESNEXT101_AUGMIX_AND_DEEPAUGMENT]:
         new_state_dict = OrderedDict()
-        state_dict = torch.load(str(IMAGENETC_MODEL_PATH / f"{model_name}.pth"))['state_dict']
+        state_dict = torch.load(str(IMAGENETC_MODEL_PATH / f"{model_name}.pth.tar"))['state_dict']
         for k, v in state_dict.items():
             new_state_dict[k[7:]] = v
         if model_name == RESNEXT101_AUGMIX_AND_DEEPAUGMENT:
