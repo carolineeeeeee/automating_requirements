@@ -14,3 +14,4 @@ finished_jobs
 bootstrap_data
 bootstrap_data_c
 .DS_Store
+*.pth
