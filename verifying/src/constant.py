@@ -96,7 +96,8 @@ Speckle_Model = 'Speckle_Model'
 DEEPAUGMENT_AND_AUGMIX = "deepaugment_and_augmix"
 RESNEXT101_AUGMIX_AND_DEEPAUGMENT = "resnext101_augmix_and_deepaugment"
 DEEPAUGMENT = "deepaugment"
-
+IMAGENETC_MODELS = [ANT3x3_Model, ANT3x3_SIN_Model, ANT_Model, ANT_SIN_Model, Gauss_mult_Model,
+                    Gauss_sigma_0, Speckle_Model, DEEPAUGMENT_AND_AUGMIX, RESNEXT101_AUGMIX_AND_DEEPAUGMENT, DEEPAUGMENT]
 # ImageNetC Model Path
 IMAGENETC_MODEL_PATH = ROOT / 'imagenetc_models'
 
