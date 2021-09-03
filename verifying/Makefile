@@ -18,7 +18,7 @@ download_cifar10_c:
 	if [ -e ./data/CIFAR-10-C.tar -a ! -e ./data/CIFAR-10-C ]; then tar -xvf ./data/CIFAR-10-C.tar -C ./data; fi
 
 
-# save file for imagenet label mapping to ./data/imagenet, the files are MSCOCO_to_ImageNet_category_mapping.txt and synset_words.txt
+# save files for imagenet label mapping to ./data/imagenet, the file is synset_words.txt
 download_imagenet_mapping: setup_dir
 	if [ ! -e ${imagenet_data_dir}/synset_words.txt ]; then wget -O ${imagenet_data_dir}/synset_words.txt https://raw.githubusercontent.com/HoldenCaulfieldRye/caffe/master/data/ilsvrc12/synset_words.txt; fi
 
