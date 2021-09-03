@@ -20,7 +20,7 @@
 project = 'Auto Req'
 copyright = '2021, Authors'
 author = 'Authors'
-
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
