@@ -1,17 +1,11 @@
-import os
-import cv2
 import glob
 import torch
-import random
 import shutil
-import pathlib2
 import torchvision
-import numpy as np
 import pandas as pd
 import matlab.engine
 import torch.nn as nn
 from tqdm import tqdm
-from PIL import Image
 from typing import List
 from tabulate import tabulate
 from typing import Union, Dict
@@ -85,8 +79,7 @@ def dir_is_empty(path: Union[str, pathlib2.Path]) -> bool:
 
 
 def get_transformation_threshold(transformation: str, rq_type: str):
-    return THRESHOLD_MAP[transformation][rq_type] if transformation in THRESHOLD_MAP else THRESHOLD_MAP[GENERALIZED][
-        rq_type]
+    return THRESHOLD_MAP[transformation][rq_type]
 
 
 def read_cifar10_ground_truth(label_path: str):
@@ -147,54 +140,21 @@ def dict_to_str(d: Dict) -> str:
 
 def transform_image(image_path: str, transformation: str):
     if transformation in [
-            GAUSSIAN_NOISE, SHOT_NOISE, IMPULSE_NOISE, MOTION_BLUR, SNOW, FROST, FOG, BRIGHTNESS, CONTRAST,
+            GAUSSIAN_NOISE, FROST, BRIGHTNESS, CONTRAST,
             JPEG_COMPRESSION]:
         img = Image.open(image_path)
     else:
         img = np.asarray(cv2.imread(image_path), dtype=np.float32)
     # ============= different transformation types begin =============
-    if transformation == CONTRAST_G:
-        param = random.choice(contrast_params)
-        img2 = adjust_contrast(img, param)
-    elif transformation == UNIFORM_NOISE:
-        param = random.choice(uniform_noise_params)
-        img2 = apply_uniform_noise(img, 0, param)
-    elif transformation == LOWPASS:
-        param = random.choice(lowpass_params)
-        img2 = low_pass_filter(img, param)
-    elif transformation == HIGHPASS:
-        param = random.choice(highpass_params)
-        img2 = high_pass_filter(img, param)
-    elif transformation == PHASE_NOISE:
-        param = random.choice(phase_noise_params)
-        img2 = scramble_phases(img, param)
-    elif transformation == GAUSSIAN_NOISE:
+    if transformation == GAUSSIAN_NOISE:
         param_index = random.choice(range(TRANSFORMATION_LEVEL))
         img2, param = gaussian_noise(img, param_index)
-    elif transformation == SHOT_NOISE:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2, param = shot_noise(img, param_index)
-    elif transformation == IMPULSE_NOISE:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2, param = impulse_noise(img, param_index)
     elif transformation == DEFOCUS_BLUR:
         param_index = random.choice(range(TRANSFORMATION_LEVEL))
         img2, param = defocus_blur(img, param_index)
-    elif transformation == GLASS_BLUR:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2, param = glass_blur(img, param_index)
-    elif transformation == MOTION_BLUR:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2, param = motion_blur(img, param_index)
-    elif transformation == SNOW:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2 = snow(img, param_index)
     elif transformation == FROST:
         param_index = random.choice(range(TRANSFORMATION_LEVEL))
         img2, _ = frost(img, param_index)
-    elif transformation == FOG:
-        param_index = random.choice(range(TRANSFORMATION_LEVEL))
-        img2, _ = fog(img, param_index)
     elif transformation == BRIGHTNESS:
         param_index = random.choice(range(TRANSFORMATION_LEVEL))
         img2, _ = brightness(img, param_index)

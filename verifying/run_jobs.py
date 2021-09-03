@@ -1,4 +1,3 @@
-import pickle
 import shutil
 import argparse
 from src.job import Cifar10Job, ImagenetJob

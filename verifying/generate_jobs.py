@@ -1,8 +1,8 @@
 from tqdm import tqdm
 
 from src.utils import get_transformation_threshold, clean_dir
-from src.constant import ROOT, ROBUSTBENCH_CIFAR10_MODEL_NAMES, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, \
-    PHASE_NOISE, CONTRAST, DEFOCUS_BLUR, MOTION_BLUR, GLASS_BLUR, CIFAR10_C_CORRUPTION, IMAGENET_DATA_DIR, \
+from src.constant import ROOT, ROBUSTBENCH_CIFAR10_MODEL_NAMES, \
+    CONTRAST, DEFOCUS_BLUR, CIFAR10_C_CORRUPTION, IMAGENET_DATA_DIR, \
     IMAGENET_MODELS, CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import Cifar10Job, ImagenetJob
 from cifar10c.job import Cifar10CJob
@@ -17,8 +17,6 @@ num_sample_iter = 2
 sample_size = 5
 jobs_queue_path = ROOT / 'jobs'
 finished_job_path = ROOT / 'finished_jobs'
-transformations = [CONTRAST, CONTRAST_G, UNIFORM_NOISE, LOWPASS, HIGHPASS, PHASE_NOISE, DEFOCUS_BLUR, MOTION_BLUR,
-                   GLASS_BLUR]
 transformations = [CONTRAST]
 
 clean_dir(jobs_queue_path)
