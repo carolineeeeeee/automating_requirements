@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Auto Req'
+project = 'Explainable Reliability Requirements'
 copyright = '2021, Authors'
 author = 'Authors'
 
