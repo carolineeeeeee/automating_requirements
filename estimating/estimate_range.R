@@ -3,8 +3,7 @@ library( graphics )
 library( SemiPar ) 
 library(ggplot2)
 
-REforML_path <- "YOUR_PATH/automating_requirements/estimating/"		# TODO: fill this in with your path
-
+File_path <- "YOUR_PATH/automating_requirements/estimating/"		# TODO: fill this in with your path
 
 cifar10_tranformations <- c('brightness', 'contrast', 'frost', 'jpeg_compression')
 orig_acc = 0.967
@@ -12,7 +11,7 @@ print('cifar10')
 for (transformation in cifar10_tranformations) {
 	print(transformation)
 	print('correctness-preservation')
-	csv_filename = paste(REforML_path, '/cifar10/','cifar10_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/cifar10/','cifar10_c_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -26,7 +25,7 @@ for (transformation in cifar10_tranformations) {
 	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
 	all_point.upper <- all_fit$y + 1.39*sigma*sqrt(all_fit$lev)   # upper 83% conf. band
 	all_point.lower <- all_fit$y - 1.39*sigma*sqrt(all_fit$lev)   # lower 83% conf. band
-	matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+	#matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
 	
 	p_values <- c()
 	for (i in 1:length(all_point.IQA)){
@@ -35,20 +34,28 @@ for (transformation in cifar10_tranformations) {
 	}
 
 	i <- 1
-	while (i <= length(p_values)){
+	continue <-2
+	while (i <= length(all_point.IQA)){
 		if (p_values[i] < 0.05){
-			break
-		}
+			continue <- continue -1
+			if (continue == 0){
+				i <= i-2
+				break
+			} 
+		}else{
+				continue <- 2
+			}
+		
 		i = i+1
 	}
 	if (i > length(p_values)){
-		print(all_point.IQA[length(p_values)])
+		print(all_point.IQA[length(p_values)-1])
 	} else {
 		print(all_point.IQA[i])
 	}
 	
 	print('prediction-preservation')	
-	csv_filename = paste(REforML_path, '/cifar10/','cifar10_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/cifar10/','cifar10_p_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -62,7 +69,7 @@ for (transformation in cifar10_tranformations) {
 	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
 	all_point.upper <- all_fit$y + 1.39*sigma*sqrt(all_fit$lev)   # upper 83% conf. band
 	all_point.lower <- all_fit$y - 1.39*sigma*sqrt(all_fit$lev)   # lower 83% conf. band
-	matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+	#matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
 	
 	p_values <- c()
 	left = ceiling(sum(all_point.Counts) * 0.5)
@@ -83,14 +90,22 @@ for (transformation in cifar10_tranformations) {
 		p_values <- c(p_values, binom_result$p.value)
 	}
 	i <- 1
-	while (i <= length(p_values)){
+	continue <-2
+	while (i <= length(all_point.IQA)){
 		if (p_values[i] < 0.05){
-			break
-		}
+			continue <- continue -1
+			if (continue == 0){
+				i <= i-2
+				break
+			} 
+		}else{
+				continue <- 2
+			}
+		
 		i = i+1
 	}
 	if (i > length(p_values)){
-		print(all_point.IQA[length(p_values)])
+		print(all_point.IQA[length(p_values)-1])
 	} else {
 		print(all_point.IQA[i])
 	}
@@ -103,7 +118,7 @@ orig_acc = 0.970
 for (transformation in imagenet_transformations) {
 	print(transformation)
 	print('correctness-preservation')
-	csv_filename = paste('/Users//Desktop/REforML/imagenet/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path,'/imagenet/','imagenet_c_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -117,7 +132,7 @@ for (transformation in imagenet_transformations) {
 	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
 	all_point.upper <- all_fit$y + 1.39*sigma*sqrt(all_fit$lev)   # upper 83% conf. band
 	all_point.lower <- all_fit$y - 1.39*sigma*sqrt(all_fit$lev)   # lower 83% conf. band
-	matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+	#matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
 	
 	p_values <- c()
 	for (i in 1:length(all_point.IQA)){
@@ -126,21 +141,28 @@ for (transformation in imagenet_transformations) {
 	}
 	#print(p_values)
 	i <- 1
-	while (i <= length(p_values)){
-		#print(p_values[i])
+	continue <-2
+	while (i <= length(all_point.IQA)){
 		if (p_values[i] < 0.05){
-			break
-		}
+			continue <- continue -1
+			if (continue == 0){
+				i <= i-2
+				break
+			} 
+		}else{
+				continue <- 2
+			}
+		
 		i = i+1
 	}
 	if (i > length(p_values)){
-		print(all_point.IQA[length(p_values)])
+		print(all_point.IQA[length(p_values)-1])
 	} else {
 		print(all_point.IQA[i])
 	}
 	
 	print('prediction-preservation')	
-	csv_filename = paste(REforML_path, '/imagenet/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/imagenet/','imagenet_p_p_', transformation, '.csv', sep = "")
 	all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	all_point.IQA <- as.vector(all_point[,'IQA'])
 	all_point.Counts<-as.vector(all_point[,"Count"])
@@ -154,7 +176,7 @@ for (transformation in imagenet_transformations) {
 	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
 	all_point.upper <- all_fit$y + 1.39*sigma*sqrt(all_fit$lev)   # upper 83% conf. band
 	all_point.lower <- all_fit$y - 1.39*sigma*sqrt(all_fit$lev)   # lower 83% conf. band
-	matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+	#matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
 	
 	p_values <- c()
 	left = ceiling(sum(all_point.Counts) * 0.5)
@@ -176,15 +198,22 @@ for (transformation in imagenet_transformations) {
 	}
 
 	i <- 1
-	while (i <= length(p_values)){
-		#print(p_values[i])
+	continue <- 2
+	while (i <= length(all_point.IQA)){
 		if (p_values[i] < 0.05){
-			break
-		}
+			continue <- continue -1
+			if (continue == 0){
+				i <= i-2
+				break
+			} 
+		}else{
+				continue <- 2
+			}
+		
 		i = i+1
 	}
-	if (i > length(p_values)){
-		print(all_point.IQA[length(p_values)])
+	if (i > length(all_point.IQA)){
+		print(all_point.IQA[length(p_values)-1])
 	} else {
 		print(all_point.IQA[i])
 	}
@@ -197,8 +226,40 @@ imagenet_transformations <- c('RGB', 'brightness', 'contrast', 'gaussian_noise',
 
 for (transformation in imagenet_transformations) {
 	print(transformation)
+	#########################all results############################
+	csv_filename = paste(File_path,'/imagenet/','imagenet_c_p_', transformation, '.csv', sep = "")
+	acc_all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
+	acc_all_point.IQA <- as.vector(acc_all_point[,'IQA'])
+	acc_all_point.Counts<-as.vector(acc_all_point[,"Count"])
+	acc_all_point.Accuracy <- as.vector(acc_all_point[,"Accuracy"])
+	acc_all_point.Num_Acc <- as.vector(acc_all_point[,"Num_Accs"])
+	
+	acc_all_fit =smooth.spline( acc_all_point.IQA , acc_all_point.Accuracy, cv=T)
+	res <- (acc_all_fit$yin - acc_all_fit$y)/(1-acc_all_fit$lev)      # jackknife residuals
+	sigma <- sqrt(var(res))                     # estimate sd
+	#all_point.upper <- all_fit$y + 2.0*sigma*sqrt(all_fit$lev)   # upper 95% conf. band
+	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
+	acc_all_point.upper <- acc_all_fit$y + 1.39*sigma*sqrt(acc_all_fit$lev)   # upper 83% conf. band
+	acc_all_point.lower <- acc_all_fit$y - 1.39*sigma*sqrt(acc_all_fit$lev)   # lower 83% conf. band
+	
+	csv_filename = paste(File_path, '/imagenet/','imagenet_p_p_', transformation, '.csv', sep = "")
+	pre_all_point <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
+	pre_all_point.IQA <- as.vector(pre_all_point[,'IQA'])
+	pre_all_point.Counts<-as.vector(pre_all_point[,"Count"])
+	pre_all_point.Accuracy <- as.vector(pre_all_point[,"Preserved"])
+	pre_all_point.Num_Acc <- as.vector(pre_all_point[,"Num_Pre"])
+
+	pre_all_fit =smooth.spline( pre_all_point.IQA , pre_all_point.Accuracy, cv=T)
+	res <- (pre_all_fit$yin - pre_all_fit$y)/(1-pre_all_fit$lev)      # jackknife residuals
+	sigma <- sqrt(var(res))                     # estimate sd
+	#all_point.upper <- all_fit$y + 2.0*sigma*sqrt(all_fit$lev)   # upper 95% conf. band
+	#all_point.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
+	pre_all_point.upper <- pre_all_fit$y + 1.39*sigma*sqrt(pre_all_fit$lev)   # upper 83% conf. band
+	pre_all_point.lower <- pre_all_fit$y - 1.39*sigma*sqrt(pre_all_fit$lev)   # lower 83% conf. band
+	#matplot(all_fit$x, cbind(all_point.upper, all_fit$y, all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+	
 	#########################first subset###########################
-	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_1/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/sixty_percent/sixty_percent_1/','imagenet_c_p_', transformation, '.csv', sep = "")
 	acc_all_point_1 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	acc_all_point_1.IQA <- as.vector(acc_all_point_1[,'IQA'])
 	acc_all_point_1.Counts<-as.vector(acc_all_point_1[,"Count"])
@@ -213,7 +274,7 @@ for (transformation in imagenet_transformations) {
 	acc_all_point_1.upper <- acc_all_fit_1$y + 1.39*sigma*sqrt(acc_all_fit_1$lev)   # upper 83% conf. band
 	acc_all_point_1.lower <- acc_all_fit_1$y - 1.39*sigma*sqrt(acc_all_fit_1$lev)   # lower 83% conf. band
 	
-	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_1/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/sixty_percent/sixty_percent_1/','imagenet_p_p_', transformation, '.csv', sep = "")
 	pre_all_point_1 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	pre_all_point_1.IQA <- as.vector(pre_all_point_1[,'IQA'])
 	pre_all_point_1.Counts<-as.vector(pre_all_point_1[,"Count"])
@@ -230,7 +291,7 @@ for (transformation in imagenet_transformations) {
 	
 	
 	#########################second subset###########################
-	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_2/','imagenet_c_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/sixty_percent/sixty_percent_2/','imagenet_c_p_', transformation, '.csv', sep = "")
 	acc_all_point_2 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	acc_all_point_2.IQA <- as.vector(acc_all_point_2[,'IQA'])
 	acc_all_point_2.Counts<-as.vector(acc_all_point_2[,"Count"])
@@ -245,7 +306,7 @@ for (transformation in imagenet_transformations) {
 	acc_all_point_2.upper <- acc_all_fit_2$y + 1.39*sigma*sqrt(acc_all_fit_2$lev)   # upper 83% conf. band
 	acc_all_point_2.lower <- acc_all_fit_2$y - 1.39*sigma*sqrt(acc_all_fit_2$lev)   # lower 83% conf. band
 
-	csv_filename = paste(REforML_path, '/sixty_percent/sixty_percent_2/','imagenet_p_p_', transformation, '.csv', sep = "")
+	csv_filename = paste(File_path, '/sixty_percent/sixty_percent_2/','imagenet_p_p_', transformation, '.csv', sep = "")
 	pre_all_point_2 <- read.table(csv_filename, colClasses=c("numeric", "numeric", "numeric", "numeric"), header = TRUE, numerals = "no.loss", sep=',')
 	pre_all_point_2.IQA <- as.vector(pre_all_point_2[,'IQA'])
 	pre_all_point_2.Counts<-as.vector(pre_all_point_2[,"Count"])
@@ -260,11 +321,22 @@ for (transformation in imagenet_transformations) {
 	#pre_all_point_2.lower <- all_fit$y - 2.0*sigma*sqrt(all_fit$lev)   # lower 95% conf. band
 	pre_all_point_2.upper <- pre_all_fit_2$y + 1.39*sigma*sqrt(pre_all_fit_2$lev)   # upper 83% conf. band
 	pre_all_point_2.lower <- pre_all_fit_2$y - 1.39*sigma*sqrt(pre_all_fit_2$lev)   # lower 83% conf. band
+	matplot(pre_all_fit_2$x, cbind(pre_all_point_2.upper, pre_all_fit_2$y, pre_all_point_2.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (subset 2)', sep = ""))
 
-	par(mfrow = c(2, 1)) 
-	matplot(pre_all_fit_1$x, cbind(pre_all_point_1.upper, pre_all_fit_1$y, pre_all_point_1.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
-	matplot(pre_all_fit_2$x, cbind(pre_all_point_2.upper, pre_all_fit_2$y, pre_all_point_2.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ))
+
+	jpeg(paste(File_path, transformation, '_c_p.jpeg', sep = ""))
+	par(mfrow = c(3, 1)) 
+	matplot(acc_all_fit_1$x, cbind(acc_all_point_1.upper, acc_all_fit_1$y, acc_all_point_1.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (subset 1)', sep = ""))
+	matplot(acc_all_fit_2$x, cbind(acc_all_point_2.upper, acc_all_fit_2$y, acc_all_point_2.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (subset 2)', sep = ""))
+	matplot(acc_all_fit$x, cbind(acc_all_point.upper, acc_all_fit$y, acc_all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (all results)', sep = ""))
+	dev.off()
 	
+	jpeg(paste(File_path, transformation, '_p_p.jpeg', sep = ""))
+	par(mfrow = c(3, 1)) 
+	matplot(pre_all_fit_1$x, cbind(pre_all_point_1.upper, pre_all_fit_1$y, pre_all_point_1.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (subset 1)', sep = ""))
+	matplot(pre_all_fit_2$x, cbind(pre_all_point_2.upper, pre_all_fit_2$y, pre_all_point_2.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (subset 2)', sep = ""))
+	matplot(pre_all_fit$x, cbind(pre_all_point.upper, pre_all_fit$y, pre_all_point.lower), type="plp", pch=21:23, xlim=c( 0, 1) , ylim=c( 0, 1 ), xlab='Delta_v', ylab='Human Accuracy', main = paste(transformation, ' (all results)', sep = ""))
+	dev.off()
 	
 	acc_comparison_result <- c()
 	acc_IQA <- c()
