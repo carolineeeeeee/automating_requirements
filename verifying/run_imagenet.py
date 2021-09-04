@@ -1,7 +1,8 @@
 import argparse
 from typing import List
 
-from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, IMAGENET_MODELS, IMAGENETC_MODELS, CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
+from src.constant import ROOT, GAUSSIAN_NOISE, TRANSFORMATIONS, IMAGENET_MODELS, IMAGENETC_MODELS, \
+    CORRECTION_PRESERVATION, PREDICTION_PRESERVATION
 from src.job import ImagenetJob
 from src.utils import get_transformation_threshold, visualize_table
 
