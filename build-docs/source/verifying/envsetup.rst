@@ -1,5 +1,10 @@
-Verifying
-=========
+Requirement checking method
+===========================
+
+This automated method checks whether an MVC satisfies the instantiated reliability requirements.
+Given a set with original images, our process generates test cases by transforming the original images within the range specified in the instantiated requirements, runs the tests on the model, and checks whether the MVC satisfies our requirements.
+
+We provide in this page the implementation details.
 
 Setup Procedures
 ----------------

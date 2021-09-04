@@ -8,13 +8,14 @@ Welcome to Auto Req's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Examples
+   :caption: Main
 
    examples
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
+   :caption: Visual changes in images 
 
    transformations
 
@@ -27,13 +28,13 @@ Welcome to Auto Req's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Estimating tolerated range from human experiments results
+   :caption: Estimating tolerated range
 
    estimate
    
 .. toctree::
    :maxdepth: 2
-   :caption: Verifying
+   :caption: Checking reliability requirements
 
    verifying/envsetup
 
