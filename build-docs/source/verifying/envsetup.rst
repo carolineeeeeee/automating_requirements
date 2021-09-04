@@ -1,3 +1,5 @@
+.. _checking:
+
 Requirement checking method
 ===========================
 

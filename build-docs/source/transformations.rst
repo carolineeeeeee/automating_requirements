@@ -1,3 +1,5 @@
+.. _transformation:
+
 ########################
 Visual changes in images
 ########################
