@@ -36,7 +36,7 @@ Welcome to Auto Req's documentation!
    :maxdepth: 2
    :caption: Checking reliability requirements
 
-   verifying/envsetup
+   checking/envsetup
 
 
 .. toctree::

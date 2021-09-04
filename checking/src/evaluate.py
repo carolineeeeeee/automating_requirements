@@ -172,7 +172,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in target)
                         == (ground_truth[x] in target)]) / len(orig_results.keys())
         print("--------------------------------------------")
-        print("Verifying Absolute Requirement: ")
+        print("Checking Absolute Requirement: ")
         conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
         print("--------------------------------------------")
         return conf_abs, mu, sigma, satisfied
@@ -185,7 +185,7 @@ def estimate_conf_int(model_df: pd.DataFrame, rq_type: str, target_label_id: int
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in target)
                         == (ground_truth[x] in target)]) / len(orig_results.keys())
         print("--------------------------------------------")
-        print(" Verifying Relative Requirement:")
+        print(" Checking Relative Requirement:")
         conf_rel, mu, sigma, satisfied = calculate_confidence(batch_preserved, base_acc, a)  # rel
         print("--------------------------------------------")
 
@@ -226,7 +226,7 @@ def estimate_conf_int_imagenet(
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in CAR_MAPPING_IMAGENET_IDX)
                         == (ground_truth[x] in CAR_MAPPING_IMAGENET_IDX)]) / len(orig_results.keys())
         print("--------------------------------------------")
-        print("Verifying Absolute Requirement: ")
+        print("Checking Absolute Requirement: ")
         conf_abs, mu, sigma, satisfied = calculate_confidence(batch_accuracies, base_acc, base_acc)  # abs
         print("--------------------------------------------")
         return conf_abs, mu, sigma, satisfied
@@ -239,7 +239,7 @@ def estimate_conf_int_imagenet(
         base_acc = sum([1 for x in orig_results.keys() if (orig_results[x] in CAR_MAPPING_IMAGENET_IDX)
                         == (ground_truth[x] in CAR_MAPPING_IMAGENET_IDX)]) / len(orig_results.keys())
         print("--------------------------------------------")
-        print(" Verifying Relative Requirement:")
+        print(" Checking Relative Requirement:")
         conf_rel, mu, sigma, satisfied = calculate_confidence(batch_preserved, base_acc, a)  # rel
         print("--------------------------------------------")
 

@@ -11,7 +11,7 @@ We provide in this page the implementation details.
 Setup Procedures
 ----------------
 
-Working Directory: ``automating_requirements/verifying``
+Working Directory: ``automating_requirements/checking``
 
 Author's OS and hardware:
 
@@ -93,7 +93,7 @@ Author's OS and hardware:
 
 8. Download ``image-quality-tools`` and place it under ``utils`` directory as ``utils/image-quality-tools``.
 
-9. Run ``make all`` within ``automating_requirements/verifying``
+9. Run ``make all`` within ``automating_requirements/checking``
 
    Breakdown: ``make all`` will run the following commands which you can run them individually:
 
@@ -212,7 +212,7 @@ everything again takes a long time).
 File Responsibility
 -------------------
 
-In this seciton, I will describe what the files in ``verifying`` folder
+In this seciton, I will describe what the files in ``checking`` folder
 is responsible for.
 
 -  ``Makefile``: convenience script/commands for downloading and preprocessing datasets
