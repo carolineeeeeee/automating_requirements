@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Transformations &mdash; Auto Req  documentation</title>
+  <title>Visual changes in images &mdash; Explainable Reliability Requirements  documentation</title>
   
 
   
@@ -35,6 +35,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -42,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Transformations Collection" href="transformations/transformation-collection.html" />
-    <link rel="prev" title="Examples" href="examples.html" /> 
+    <link rel="prev" title="Suplementary material" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,7 +57,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Auto Req
+            <a href="index.html" class="icon icon-home"> Explainable Reliability Requirements
           
 
           
@@ -87,14 +88,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">Main</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Suplementary material</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Transformations</span></p>
+<p class="caption"><span class="caption-text">Visual changes in images</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Transformations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="transformations/transformation-collection.html">Transformations Collection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Visual changes in images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#visual-change-delta-v">Visual Change (<span class="math notranslate nohighlight">\(\Delta_v\)</span>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#safety-related-transformation">Safety-Related Transformation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#machine-vision-pipeline-taken-from-cv-hazop">machine vision pipeline (taken from <span>[CV_HAZOP]</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changeable-cv-hazop-properties-that-are-applicable-to-delta-v">Changeable CV-HAZOP properties that are applicable to <span class="math notranslate nohighlight">\(\Delta_v\)</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-transformations-and-corresponding-cv-hazop-entries">Example transformations and corresponding CV-HAZOP entries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformations/transformation-collection.html">Transformations Collection</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -102,13 +112,13 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Human Experiment</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<p class="caption"><span class="caption-text">Estimating tolerated range</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Verifying</span></p>
+<p class="caption"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checking/envsetup.html">Requirement checking method</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
 <ul>
@@ -128,7 +138,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Auto Req</a>
+          <a href="index.html">Explainable Reliability Requirements</a>
         
       </nav>
 
@@ -161,7 +171,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Transformations</li>
+      <li>Visual changes in images</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -180,13 +190,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="transformations">
-<h1>Transformations<a class="headerlink" href="#transformations" title="Permalink to this headline">¶</a></h1>
-<p>In this page, we identify a class of <em>safety-related</em> image transformations
-We say that a transformation is <em>safety-related</em> if its negative effect can occur in a real-world machine vision scenario.
-To assess this systematically, we utilize the CV-HAZOP checklist <a class="reference internal" href="#cv-hazop" id="id1"><span>[CV_HAZOP]</span></a> which comprehensively identifies the negative impacts of different modes of interference in the vision process.
-A transformation that can produce such impacts is considered safety-related.
-In the following table, we consider the transformations provided by the state-of-the-art library albumentations <a class="reference internal" href="#albumentation" id="id2"><span>[albumentation]</span></a> and ML robustness benchmark imagenet-c~footnote{hendrycks2019robustness}, which consist of 50 unique transformations.
+  <div class="section" id="visual-changes-in-images">
+<span id="transformation"></span><h1>Visual changes in images<a class="headerlink" href="#visual-changes-in-images" title="Permalink to this headline">¶</a></h1>
+<p>In this page, we first present the metric <span class="math notranslate nohighlight">\(\Delta_v\)</span>, which measures human visual changes in images caused by transformations.
+Then, we identify a class of <em>safety-related</em> image transformations.</p>
+<div class="section" id="visual-change-delta-v">
+<h2>Visual Change (<span class="math notranslate nohighlight">\(\Delta_v\)</span>)<a class="headerlink" href="#visual-change-delta-v" title="Permalink to this headline">¶</a></h2>
+<p>Let an image <span class="math notranslate nohighlight">\(x\)</span>, an applicable transformation <span class="math notranslate nohighlight">\(T_X\)</span> with a parameter domain <span class="math notranslate nohighlight">\(C\)</span> and a parameter <span class="math notranslate nohighlight">\(c\in C\)</span>, s.t. <span class="math notranslate nohighlight">\(x' = T_X(x,c)\)</span> be given.</p>
+<p><span class="math notranslate nohighlight">\(\Delta_v(x,x')\)</span> is a function defined as follows:</p>
+<img alt="visual-changes" src="_images/visual-changes.png" />
+<p>The VSNR <a class="reference internal" href="#chandler-hemami-07" id="id1"><span>[Chandler_Hemami_07]</span></a> and VIF <a class="reference internal" href="#sheikh-bovik-06" id="id2"><span>[Sheikh_Bovik_06]</span></a> implementation can be found through their papers or from this Github <a class="reference external" href="https://github.com/sattarab/image-quality-tools">link</a> and the additional required python library matlabPyrTools is available on this <a class="reference external" href="http://www.cns.nyu.edu/~lcv/software.php">page</a>.</p>
+</div>
+<div class="section" id="safety-related-transformation">
+<h2>Safety-Related Transformation<a class="headerlink" href="#safety-related-transformation" title="Permalink to this headline">¶</a></h2>
+<p>We say that a transformation is <em>safety-related</em> if its negative effect can occur in a real-world machine vision scenario.
+To assess this systematically, we utilize the CV-HAZOP checklist <a class="reference internal" href="#cv-hazop" id="id3"><span>[CV_HAZOP]</span></a> which comprehensively identifies the negative impacts of different modes of interference in the vision pipeline.</p>
+<div class="section" id="machine-vision-pipeline-taken-from-cv-hazop">
+<h3>machine vision pipeline (taken from <a class="reference internal" href="#cv-hazop" id="id4"><span>[CV_HAZOP]</span></a>)<a class="headerlink" href="#machine-vision-pipeline-taken-from-cv-hazop" title="Permalink to this headline">¶</a></h3>
+<img alt="machine vision pipeline" src="_images/vision-pipeline.png" />
+<p>CV-HAZOP checklist provides a list of properties, i.e., parameters that can change at each pipeline location.
+Please find below, the changeable properties taken from [CV_HAZOP] sorted according to their applicability to our visual change metric <span class="math notranslate nohighlight">\(\Delta_v\)</span>. Columns represent the <a class="reference internal" href="#cv-hazop" id="id5"><span>[CV_HAZOP]</span></a> parameters’ for the perception pipeline. Rows  correspond to the parameters’ applicability in our approach</p>
+</div>
+<div class="section" id="changeable-cv-hazop-properties-that-are-applicable-to-delta-v">
+<h3>Changeable CV-HAZOP properties that are applicable to <span class="math notranslate nohighlight">\(\Delta_v\)</span><a class="headerlink" href="#changeable-cv-hazop-properties-that-are-applicable-to-delta-v" title="Permalink to this headline">¶</a></h3>
+<img alt="changeable properties" src="_images/properties.png" />
+<p>Each checklist entry consists of a location, a parameter and a guide word indicating where, what and how much change occurs.
+It also provides the meaning, consequence and possible risk of this entry, as determined by domain experts, for example the example shown below:</p>
+</div>
+<div class="section" id="example-transformations-and-corresponding-cv-hazop-entries">
+<h3>Example transformations and corresponding CV-HAZOP entries<a class="headerlink" href="#example-transformations-and-corresponding-cv-hazop-entries" title="Permalink to this headline">¶</a></h3>
+<img alt="example entries" src="_images/entries-example.png" />
+<p>Risk number 184 in the checklist has a location <em>Medium</em>, a parameter <em>Transparency</em> and a guide word <em>less (less of, lower)</em>.
+This entry means that the medium is optically thicker, thus reducing contrast, which could potentially lead to mistakes.</p>
+<p>Since the scope of CV-HAZOP is broader than this image transformation assessment task, we remove those hazard scenarios entries that are not image-related from the checklist.
+To determine whether a given image transformation belongs to our safety-related class, one should first identify the location in the machine vision pipeline to which the transformation corresponds; then the property of the location that the transformation is affecting (CV-HAZOP parameters); and finally, how the transformation is changing the property (CV-HAZOP guide words). For example, defocus blur is changing the focus of the observer (CV-HAZOP entry No.1018), i.e., camera, and therefore belongs in our class.</p>
+<p>Find <a class="reference external" href="_static/Our_Annotaed_Verison_of_CV-HAZOP_Checklist.pdf">here</a> the full list of CV-HAZOP safety-related entries.</p>
+<p>In the following table, we consider the transformations provided by the state-of-the-art library albumentations <a class="reference internal" href="#albumentation" id="id6"><span>[albumentation]</span></a> and ML robustness benchmark imagenet-c~footnote{hendrycks2019robustness}, which consist of 50 unique transformations.
 From these, we identified the ones that are <em>safety-related</em> (50 to 45), omitting the ones not applicable to our approach and the ones that can not produce a continuous range of transformed images (45 to 31).</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -194,18 +233,30 @@ From these, we identified the ones that are <em>safety-related</em> (50 to 45), 
 </ul>
 </div>
 <dl class="citation">
-<dt class="label" id="cv-hazop"><span class="brackets"><a class="fn-backref" href="#id1">CV_HAZOP</a></span></dt>
+<dt class="label" id="chandler-hemami-07"><span class="brackets"><a class="fn-backref" href="#id1">Chandler_Hemami_07</a></span></dt>
+<dd><p>Author: D. Chandler and S. Hemami</p>
+<p>Title: VSNR: A Wavelet-Based Visual Signal-to-Noise Ratio for Natural Images</p>
+<p>Year: 2007</p>
+</dd>
+<dt class="label" id="sheikh-bovik-06"><span class="brackets"><a class="fn-backref" href="#id2">Sheikh_Bovik_06</a></span></dt>
+<dd><p>Author: H. Sheikh and A. Bovik</p>
+<p>Title: Image Information and Visual Quality</p>
+<p>Year: 2006</p>
+</dd>
+<dt class="label" id="cv-hazop"><span class="brackets">CV_HAZOP</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>,<a href="#id5">3</a>)</span></dt>
 <dd><p>Author: O. Zendel and others</p>
 <p>Title: CV-HAZOP: Introducing Test Data Validation for Computer Vision</p>
 <p>Year: 2015</p>
 </dd>
-<dt class="label" id="albumentation"><span class="brackets"><a class="fn-backref" href="#id2">albumentation</a></span></dt>
+<dt class="label" id="albumentation"><span class="brackets"><a class="fn-backref" href="#id6">albumentation</a></span></dt>
 <dd><p>Author: Buslaev, Alexander and Iglovikov, Vladimir I. and Khvedchenya, Eugene and Parinov, Alex and Druzhinin, Mikhail and Kalinin, Alexandr A.</p>
 <p>Title: Albumentations: Fast and Flexible Image Augmentations</p>
 <p>Year: 2020</p>
 <p>URL: <a class="reference external" href="https://www.mdpi.com/2078-2489/11/2/125">https://www.mdpi.com/2078-2489/11/2/125</a></p>
 </dd>
 </dl>
+</div>
+</div>
 </div>
 
 
@@ -215,7 +266,7 @@ From these, we identified the ones that are <em>safety-related</em> (50 to 45), 
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="transformations/transformation-collection.html" class="btn btn-neutral float-right" title="Transformations Collection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-left" title="Suplementary material" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

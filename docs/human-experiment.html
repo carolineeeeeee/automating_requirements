@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Human Experiment &mdash; Auto Req  documentation</title>
+  <title>Human Experiment &mdash; Explainable Reliability Requirements  documentation</title>
   
 
   
@@ -56,7 +56,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Auto Req
+            <a href="index.html" class="icon icon-home"> Explainable Reliability Requirements
           
 
           
@@ -87,13 +87,13 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">Main</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Suplementary material</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Transformations</span></p>
+<p class="caption"><span class="caption-text">Visual changes in images</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Visual changes in images</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Human Experiment</span></p>
 <ul class="current">
@@ -102,13 +102,13 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<p class="caption"><span class="caption-text">Estimating tolerated range</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Verifying</span></p>
+<p class="caption"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checking/envsetup.html">Requirement checking method</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
 <ul>
@@ -128,7 +128,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Auto Req</a>
+          <a href="index.html">Explainable Reliability Requirements</a>
         
       </nav>
 
@@ -183,11 +183,11 @@
   <div class="section" id="human-experiment">
 <h1>Human Experiment<a class="headerlink" href="#human-experiment" title="Permalink to this headline">¶</a></h1>
 <p>In this page we present the settings, implementation and results of the image classification experiments with human participants that we conducted.
-We followed the same experiment procedure as Geirhos et al~cite{Geirhos2018GeneralisationIH}.
+We followed the same experiment procedure as Geirhos et al <a class="reference internal" href="#geirhos-et-al-18" id="id1"><span>[Geirhos-et-al-18]</span></a>.
 To make sure that the participants understand the task, we included qualification tests and sanity checks.
 We only considered results from those that passed both.
-In this experiment, we used images from the ILSRVR 2012 training dataset~cite{ILSVRC2012} and considered a binary classification problem of recognizing car instances.
-To differentiate between car and non-car instances, we adopted the class hierarchy provided by the ILSVRC2012 dataset.
+In this experiment, we used images from the ILSRVR 2012 training dataset <a class="reference internal" href="#ilsvrc2012" id="id2"><span>[ILSVRC2012]</span></a> and considered a binary classification problem of recognizing car instances.
+To differentiate between car and non-car instances, we adopted the <a class="reference external" href="https://observablehq.com/&#64;mbostock/imagenet-hierarchy">class hierarchy</a> provided by the ILSVRC2012 dataset .
 In our experiment, we selected one transformation for each CV-Hazop entry, which corresponds to 8 safety-related transformations: RGB, contrast, defocus blur, brightness, frost, color jitter, jpeg compression, and gaussian noise.</p>
 <div class="section" id="transformations-included-in-our-experiments">
 <h2>8 transformations included in our experiments<a class="headerlink" href="#transformations-included-in-our-experiments" title="Permalink to this headline">¶</a></h2>
@@ -197,8 +197,26 @@ and measured the performance of 5 human participants per each transformation lev
 To achieve this, we divided the 1000 magnitudes * 8 transformations into batches of 20 images.
 Each batch is shown 5 times to different participants using the platform Amazon Mechanical Turk.
 As a result, for image classification, we collected 40000 human performance results.</p>
-<p><a class="reference external" href="_static/full-recog-fix.html">Find here</a> the implementations which enabled us to measure human performance on the platform Amazon Mechanical Turk.</p>
-<p>TODO: Our code is written based on …</p>
+<p>Find <a class="reference external" href="_static/full-recog-fix.html">here</a> the implementations which enabled us to measure human performance on the platform Amazon Mechanical Turk.</p>
+<p>The code of experiment is based on the code shared by Dr. Dimitrios Papadopoulos <a class="reference internal" href="#papadopoulos-et-al-17" id="id3"><span>[Papadopoulos-et-al-17]</span></a>, we would like to thank Dr. Papadopoulos for sharing his experiment implementation with us.</p>
+<dl class="citation">
+<dt class="label" id="geirhos-et-al-18"><span class="brackets"><a class="fn-backref" href="#id1">Geirhos-et-al-18</a></span></dt>
+<dd><p>Author: R. Geirhos and others</p>
+<p>Title: Generalisation in humans and deep neural networks</p>
+<p>Year: 2018</p>
+</dd>
+<dt class="label" id="ilsvrc2012"><span class="brackets"><a class="fn-backref" href="#id2">ILSVRC2012</a></span></dt>
+<dd><p>Author: O. Russakovsky and others</p>
+<p>Title: ImageNet Large Scale Visual Recognition Challenge</p>
+<p>Year: 2015</p>
+<p>Link: <a class="reference external" href="https://image-net.org/challenges/LSVRC/2012/">ILSVRC2012 website</a></p>
+</dd>
+<dt class="label" id="papadopoulos-et-al-17"><span class="brackets"><a class="fn-backref" href="#id3">Papadopoulos-et-al-17</a></span></dt>
+<dd><p>Author: D. Papadopoulosand others</p>
+<p>Title: Training Object Class Detectors with Click Supervision</p>
+<p>Year: 2017</p>
+</dd>
+</dl>
 </div>
 </div>
 

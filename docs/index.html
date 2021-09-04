@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Welcome to Auto Req’s documentation! &mdash; Auto Req  documentation</title>
+  <title>Welcome to Auto Req’s documentation! &mdash; Explainable Reliability Requirements  documentation</title>
   
 
   
@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" /> 
+    <link rel="next" title="Suplementary material" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,7 +55,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Auto Req
+            <a href="#" class="icon icon-home"> Explainable Reliability Requirements
           
 
           
@@ -86,25 +86,25 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">Main</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Suplementary material</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Transformations</span></p>
+<p class="caption"><span class="caption-text">Visual changes in images</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Visual changes in images</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Human Experiment</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Human Experiment</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<p class="caption"><span class="caption-text">Estimating tolerated range</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Verifying</span></p>
+<p class="caption"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checking/envsetup.html">Requirement checking method</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
 <ul>
@@ -124,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Auto Req</a>
+          <a href="#">Explainable Reliability Requirements</a>
         
       </nav>
 
@@ -179,16 +179,25 @@
   <div class="section" id="welcome-to-auto-req-s-documentation">
 <h1>Welcome to Auto Req’s documentation!<a class="headerlink" href="#welcome-to-auto-req-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Examples</span></p>
+<p class="caption"><span class="caption-text">Main</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Suplementary material</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#overview-of-our-requierement-instantiation-and-checking-methods">Overview of our requierement instantiation and checking methods</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Transformations</span></p>
+<p class="caption"><span class="caption-text">Visual changes in images</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="transformations/transformation-collection.html">Transformations Collection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Visual changes in images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transformations.html#visual-change-delta-v">Visual Change (<span class="math notranslate nohighlight">\(\Delta_v\)</span>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformations.html#safety-related-transformation">Safety-Related Transformation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformations.html#machine-vision-pipeline-taken-from-cv-hazop">machine vision pipeline (taken from <span>[CV_HAZOP]</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transformations.html#changeable-cv-hazop-properties-that-are-applicable-to-delta-v">Changeable CV-HAZOP properties that are applicable to <span class="math notranslate nohighlight">\(\Delta_v\)</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transformations.html#example-transformations-and-corresponding-cv-hazop-entries">Example transformations and corresponding CV-HAZOP entries</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -203,19 +212,19 @@
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Estimating tolerated range from human experiments results</span></p>
+<p class="caption"><span class="caption-text">Estimating tolerated range</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Verifying</span></p>
+<p class="caption"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="verifying/envsetup.html">Verifying</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="verifying/envsetup.html#setup-procedures">Setup Procedures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="verifying/envsetup.html#how-to-run">How to run?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="verifying/envsetup.html#clean-up">Clean Up</a></li>
-<li class="toctree-l2"><a class="reference internal" href="verifying/envsetup.html#file-responsibility">File Responsibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checking/envsetup.html">Requirement checking method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="checking/envsetup.html#setup-procedures">Setup Procedures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="checking/envsetup.html#how-to-run">How to run?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="checking/envsetup.html#clean-up">Clean Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="checking/envsetup.html#file-responsibility">File Responsibility</a></li>
 </ul>
 </li>
 </ul>
@@ -223,7 +232,11 @@
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Evaluation of our approach</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="evaluation-of-approach.html">Evaluation of Our Approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation-of-approach.html">Evaluation of Our Approach</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evaluation-of-approach.html#comparison-of-different-subsets-of-experimental-results-for-estimating-t-c">Comparison of different subsets of experimental results for estimating <span class="math notranslate nohighlight">\(t_c\)</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation-of-approach.html#comparison-of-different-subsets-of-experimental-results-for-estimating-t-p">Comparison of different subsets of experimental results for estimating <span class="math notranslate nohighlight">\(t_p\)</span></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -242,7 +255,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Suplementary material" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
