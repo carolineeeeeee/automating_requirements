@@ -11,10 +11,10 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
 
   
   
@@ -26,18 +26,18 @@
 
   
   <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
+    <script src="static/js/html5shiv.min.js"></script>
   <![endif]-->
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/underscore.js"></script>
+        <script src="static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
@@ -220,7 +220,7 @@ It also provides the meaning, consequence and possible risk of this entry, as de
 This entry means that the medium is optically thicker, thus reducing contrast, which could potentially lead to mistakes.</p>
 <p>Since the scope of CV-HAZOP is broader than this image transformation assessment task, we remove those hazard scenarios entries that are not image-related from the checklist.
 To determine whether a given image transformation belongs to our safety-related class, one should first identify the location in the machine vision pipeline to which the transformation corresponds; then the property of the location that the transformation is affecting (CV-HAZOP parameters); and finally, how the transformation is changing the property (CV-HAZOP guide words). For example, defocus blur is changing the focus of the observer (CV-HAZOP entry No.1018), i.e., camera, and therefore belongs in our class.</p>
-<p>Find <a class="reference external" href="_static/Our_Annotaed_Verison_of_CV-HAZOP_Checklist.pdf">here</a> the full list of CV-HAZOP safety-related entries.</p>
+<p>Find <a class="reference external" href="static/Our_Annotaed_Verison_of_CV-HAZOP_Checklist.pdf">here</a> the full list of CV-HAZOP safety-related entries.</p>
 <p>In the following table, we consider the transformations provided by the state-of-the-art library albumentations <a class="reference internal" href="#albumentation" id="id6"><span>[albumentation]</span></a> and ML robustness benchmark imagenet-c~footnote{hendrycks2019robustness}, which consist of 50 unique transformations.
 From these, we identified the ones that are <em>safety-related</em> (50 to 45), omitting the ones not applicable to our approach and the ones that can not produce a continuous range of transformed images (45 to 31).</p>
 <div class="toctree-wrapper compound">
