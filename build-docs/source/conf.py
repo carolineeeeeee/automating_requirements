@@ -19,7 +19,7 @@
 
 project = 'Reliability Requierements for Vision Components'
 copyright = '2022, Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik'
-author = 'Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik'
+author = 'If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components'
 master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
