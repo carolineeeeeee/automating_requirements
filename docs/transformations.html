@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Visual changes in images &mdash; If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components  documentation</title>
+  <title>Visual changes in images &mdash; Reliability Requierements for Vision Components  documentation</title>
   
 
   
@@ -57,7 +57,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components
+            <a href="index.html" class="icon icon-home"> Reliability Requierements for Vision Components
           
 
           
@@ -134,7 +134,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components</a>
+          <a href="index.html">Reliability Requierements for Vision Components</a>
         
       </nav>
 
@@ -194,7 +194,7 @@ Then, we identify a class of <em>safety-related</em> image transformations.</p>
 <h2>Visual Change (<span class="math notranslate nohighlight">\(\Delta_v\)</span>)<a class="headerlink" href="#visual-change-delta-v" title="Permalink to this headline">¶</a></h2>
 <p>Let an image <span class="math notranslate nohighlight">\(x\)</span>, an applicable transformation <span class="math notranslate nohighlight">\(T_X\)</span> with a parameter domain <span class="math notranslate nohighlight">\(C\)</span> and a parameter <span class="math notranslate nohighlight">\(c\in C\)</span>, s.t. <span class="math notranslate nohighlight">\(x' = T_X(x,c)\)</span> be given.</p>
 <p><span class="math notranslate nohighlight">\(\Delta_v(x,x')\)</span> is a function defined as follows:</p>
-<img alt="visual-changes" src="_images/visual-changes.png" />
+<img alt="visual-changes" src="images/visual-changes.png" />
 <p>The VSNR <a class="reference internal" href="#chandler-hemami-07" id="id1"><span>[Chandler_Hemami_07]</span></a> and VIF <a class="reference internal" href="#sheikh-bovik-06" id="id2"><span>[Sheikh_Bovik_06]</span></a> implementation can be found through their papers or from this Github <a class="reference external" href="https://github.com/sattarab/image-quality-tools">link</a> and the additional required python library matlabPyrTools is available on this <a class="reference external" href="http://www.cns.nyu.edu/~lcv/software.php">page</a>.</p>
 </div>
 <div class="section" id="safety-related-transformation">
@@ -203,19 +203,19 @@ Then, we identify a class of <em>safety-related</em> image transformations.</p>
 To assess this systematically, we utilize the CV-HAZOP checklist <a class="reference internal" href="#cv-hazop" id="id3"><span>[CV_HAZOP]</span></a> which comprehensively identifies the negative impacts of different modes of interference in the vision pipeline.</p>
 <div class="section" id="machine-vision-pipeline-taken-from-cv-hazop">
 <h3>machine vision pipeline (taken from <a class="reference internal" href="#cv-hazop" id="id4"><span>[CV_HAZOP]</span></a>)<a class="headerlink" href="#machine-vision-pipeline-taken-from-cv-hazop" title="Permalink to this headline">¶</a></h3>
-<img alt="machine vision pipeline" src="_images/vision-pipeline.png" />
+<img alt="machine vision pipeline" src="images/vision-pipeline.png" />
 <p>CV-HAZOP checklist provides a list of properties, i.e., parameters that can change at each pipeline location.
 Please find below, the changeable properties taken from [CV_HAZOP] sorted according to their applicability to our visual change metric <span class="math notranslate nohighlight">\(\Delta_v\)</span>. Columns represent the <a class="reference internal" href="#cv-hazop" id="id5"><span>[CV_HAZOP]</span></a> parameters’ for the perception pipeline. Rows  correspond to the parameters’ applicability in our approach</p>
 </div>
 <div class="section" id="changeable-cv-hazop-properties-that-are-applicable-to-delta-v">
 <h3>Changeable CV-HAZOP properties that are applicable to <span class="math notranslate nohighlight">\(\Delta_v\)</span><a class="headerlink" href="#changeable-cv-hazop-properties-that-are-applicable-to-delta-v" title="Permalink to this headline">¶</a></h3>
-<img alt="changeable properties" src="_images/properties.png" />
+<img alt="changeable properties" src="images/properties.png" />
 <p>Each checklist entry consists of a location, a parameter and a guide word indicating where, what and how much change occurs.
 It also provides the meaning, consequence and possible risk of this entry, as determined by domain experts, for example the example shown below:</p>
 </div>
 <div class="section" id="example-transformations-and-corresponding-cv-hazop-entries">
 <h3>Example transformations and corresponding CV-HAZOP entries<a class="headerlink" href="#example-transformations-and-corresponding-cv-hazop-entries" title="Permalink to this headline">¶</a></h3>
-<img alt="example entries" src="_images/entries-example.png" />
+<img alt="example entries" src="images/entries-example.png" />
 <p>Risk number 184 in the checklist has a location <em>Medium</em>, a parameter <em>Transparency</em> and a guide word <em>less (less of, lower)</em>.
 This entry means that the medium is optically thicker, thus reducing contrast, which could potentially lead to mistakes.</p>
 <p>Since the scope of CV-HAZOP is broader than this image transformation assessment task, we remove those hazard scenarios entries that are not image-related from the checklist.
