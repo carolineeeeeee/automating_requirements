@@ -1,8 +1,8 @@
-*********************
-Suplementary material 
-*********************
+******************************************************************************************
+Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik 
+******************************************************************************************
 
-In this website, we provide the supplementary material for our paper.
+In this website, we provide the supplementary material for our ICSE'2022 paper.
 
 Please find in the figure below an overview of the approach that we propose and a summary that is linked to the supplementary material sections.  
 

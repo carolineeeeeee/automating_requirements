@@ -39,12 +39,6 @@ Welcome to Auto Req's documentation!
    checking/envsetup
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Evaluation of our approach
-
-   evaluation-of-approach
-
 Indices and tables
 ==================
 

@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Explainable Reliability Requirements'
-copyright = '2021, Authors'
-author = 'Authors'
+project = 'If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components'
+copyright = '2022, Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik'
+author = 'Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik'
 master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
