@@ -7,8 +7,8 @@ Visual changes in images
 In this page, we first present the metric :math:`\Delta_v`, which measures human visual changes in images caused by transformations.
 Then, we identify a class of *safety-related* image transformations.
 
-Visual Change (:math:`\Delta_v`)
-================================
+Measuring Visual Change (:math:`\Delta_v`)
+==========================================
 
 Let an image :math:`x`, an applicable transformation :math:`T_X` with a parameter domain :math:`C` and a parameter :math:`c\in C`, s.t. :math:`x' = T_X(x,c)` be given.
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik &mdash; Reliability Requierements for Vision Components  documentation</title>
+  <title>Overview of our requirement instantiation and checking methods &mdash; Reliability Requierements for Vision Components  documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Visual changes in images" href="transformations.html" />
-    <link rel="prev" title="Welcome to Auto Req’s documentation!" href="index.html" /> 
+    <link rel="prev" title="If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,22 +89,19 @@
             
               <p class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview-of-our-requierement-instantiation-and-checking-methods">Overview of our requierement instantiation and checking methods</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview of our requirement instantiation and checking methods</a></li>
 </ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Visual changes in images</span></p>
+<p class="caption" role="heading"><span class="caption-text">Visual changes</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Visual changes in images</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Human Experiment</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Human Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Obtaining Human Experiment Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Estimating tolerated range</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="estimate.html">Estimating</a></li>
+<li class="toctree-l1"><a class="reference internal" href="estimate.html">Implementation of the Estimating Method</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
@@ -157,7 +154,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik</li>
+      <li>Overview of our requirement instantiation and checking methods</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -176,15 +173,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="caroline-hu-lina-marsso-krzysztof-czarnecki-rick-salay-huakun-shen-and-marsha-chechik">
-<h1>Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik<a class="headerlink" href="#caroline-hu-lina-marsso-krzysztof-czarnecki-rick-salay-huakun-shen-and-marsha-chechik" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="overview-of-our-requirement-instantiation-and-checking-methods">
+<h1>Overview of our requirement instantiation and checking methods<a class="headerlink" href="#overview-of-our-requirement-instantiation-and-checking-methods" title="Permalink to this headline">¶</a></h1>
 <p>In this website, we provide the supplementary material for our ICSE’2022 paper.</p>
 <p>Please find in the figure below an overview of the approach that we propose and a summary that is linked to the supplementary material sections.</p>
-<div class="section" id="overview-of-our-requierement-instantiation-and-checking-methods">
-<h2>Overview of our requierement instantiation and checking methods<a class="headerlink" href="#overview-of-our-requierement-instantiation-and-checking-methods" title="Permalink to this headline">¶</a></h2>
 <img alt="8 transformations included in our experiments" src="images/overview.png" />
-<p>Given (i) a vision task for the MVC, (ii) a safety-related transformation (see <a class="reference internal" href="transformations.html#transformation"><span class="std std-ref">Visual changes in images</span></a>) and (iii) experimental data for estimating the ranges of visual changes that do not affect human performance, we provide a process for instantiating machine-verifiable reliability requirements for MVC (see <a class="reference internal" href="estimate.html#estimating"><span class="std std-ref">Estimating</span></a>) and a process for checking whether an MVC satisfies these instantiated requirements (see <a class="reference internal" href="checking/envsetup.html#checking"><span class="std std-ref">Requirement checking method</span></a>).</p>
-</div>
+<p>Given (i) a vision task for the MVC, (ii) a safety-related transformation (see <a class="reference internal" href="transformations.html#transformation"><span class="std std-ref">Visual changes in images</span></a>) and (iii) experimental data for estimating the ranges of visual changes that do not affect human performance, we provide a process for instantiating machine-verifiable reliability requirements for MVC (see <a class="reference internal" href="estimate.html#estimating"><span class="std std-ref">Implementation of the Estimating Method</span></a>) and a process for checking whether an MVC satisfies these instantiated requirements (see <a class="reference internal" href="checking/envsetup.html#checking"><span class="std std-ref">Requirement checking method</span></a>).</p>
 </div>
 
 
@@ -194,7 +188,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="transformations.html" class="btn btn-neutral float-right" title="Visual changes in images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Auto Req’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

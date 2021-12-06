@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Auto Req's documentation!
-====================================
+If a Human Can See It, So Should Your System: Reliability Requirements for Machine Vision Components
+====================================================================================================
 
 .. toctree::
    :maxdepth: 2
@@ -14,14 +14,14 @@ Welcome to Auto Req's documentation!
 
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Visual changes in images 
+   :maxdepth: 2
+   :caption: Visual changes
 
    transformations
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Human Experiment
 
    human-experiment
@@ -37,11 +37,3 @@ Welcome to Auto Req's documentation!
    :caption: Checking reliability requirements
 
    checking/envsetup
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

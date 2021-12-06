@@ -1,13 +1,10 @@
-******************************************************************************************
-Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik 
-******************************************************************************************
+**************************************************************
+Overview of our requirement instantiation and checking methods
+**************************************************************
 
 In this website, we provide the supplementary material for our ICSE'2022 paper.
 
 Please find in the figure below an overview of the approach that we propose and a summary that is linked to the supplementary material sections.  
-
-Overview of our requierement instantiation and checking methods
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. image:: imgs/overview.png
   :alt: 8 transformations included in our experiments

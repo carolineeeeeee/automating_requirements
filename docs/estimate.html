@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Estimating &mdash; Reliability Requierements for Vision Components  documentation</title>
+  <title>Implementation of the Estimating Method &mdash; Reliability Requierements for Vision Components  documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Requirement checking method" href="checking/envsetup.html" />
-    <link rel="prev" title="Human Experiment" href="human-experiment.html" /> 
+    <link rel="prev" title="Obtaining Human Experiment Data" href="human-experiment.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,19 +89,19 @@
             
               <p class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Caroline Hu, Lina Marsso, Krzysztof Czarnecki, Rick Salay, Huakun Shen, and Marsha Chechik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Overview of our requirement instantiation and checking methods</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Visual changes in images</span></p>
+<p class="caption" role="heading"><span class="caption-text">Visual changes</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Visual changes in images</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Human Experiment</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Human Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human-experiment.html">Obtaining Human Experiment Data</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Estimating tolerated range</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Estimating</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation of the Estimating Method</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Checking reliability requirements</span></p>
 <ul>
@@ -154,7 +154,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Estimating</li>
+      <li>Implementation of the Estimating Method</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -173,15 +173,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="estimating">
-<span id="id1"></span><h1>Estimating<a class="headerlink" href="#estimating" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="implementation-of-the-estimating-method">
+<span id="estimating"></span><h1>Implementation of the Estimating Method<a class="headerlink" href="#implementation-of-the-estimating-method" title="Permalink to this headline">¶</a></h1>
 <p>In this page, we provide the implementation for our requirement checking method, which includes the estimating script and the two files containing human experiment results.</p>
 <p>First, it is necessary to update in the estimating file the path specifying the  GitHub repository  location.
 Then,  one needs to run first parse_exp_results.py, then run estimate_range.R</p>
-<dl class="simple">
-<dt>Find the estimating <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/tree/main/estimating">script</a>  and the experiment results for <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/blob/main/estimating/cifar10_experiment_results.csv">cifar10_experiment_results.csv</a></dt><dd><p>and <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/blob/main/estimating/imagenet_experiment_results.csv">imagenet_experiment_results.csv</a> .</p>
-</dd>
-</dl>
+<p>Find the estimating <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/tree/main/estimating">script</a>  and the experiment results for <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/blob/main/estimating/cifar10_experiment_results.csv">cifar10_experiment_results.csv</a> and <a class="reference external" href="https://github.com/carolineeeeeee/automating_requirements/blob/main/estimating/imagenet_experiment_results.csv">imagenet_experiment_results.csv</a> .</p>
 </div>
 
 
@@ -191,7 +188,7 @@ Then,  one needs to run first parse_exp_results.py, then run estimate_range.R</p
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="checking/envsetup.html" class="btn btn-neutral float-right" title="Requirement checking method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="human-experiment.html" class="btn btn-neutral float-left" title="Human Experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="human-experiment.html" class="btn btn-neutral float-left" title="Obtaining Human Experiment Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

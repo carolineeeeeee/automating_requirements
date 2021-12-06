@@ -1,6 +1,6 @@
-################
-Human Experiment
-################
+###############################
+Obtaining Human Experiment Data
+###############################
 
 In this page we present the settings, implementation and results of the image classification experiments with human participants that we conducted.
 We followed the same experiment procedure as Geirhos et al [Geirhos-et-al-18]_.
